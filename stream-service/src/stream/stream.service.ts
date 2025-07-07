@@ -14,16 +14,24 @@ export class StreamService {
         filter: 'audioonly',
       });
 
+      if (!format) {
+        throw new Error('No suitable audio format found.');
+      }
+
       res.setHeader('Content-Type', format.mimeType || 'audio/webm');
       res.setHeader('Content-Disposition', 'inline');
       res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Accept-Ranges', 'bytes');
 
-      ytdl(url, {
+      const stream = ytdl(url, {
         quality: 'highestaudio',
         filter: 'audioonly',
         highWaterMark: 1 << 25,
-      }).pipe(res);
+      });
+
+      stream.pipe(res);
     } catch (err) {
+      console.error('StreamService error:', err);
       throw new Error('Cannot stream audio: ' + (err as Error).message);
     }
   }
