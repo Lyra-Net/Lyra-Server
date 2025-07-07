@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ProcessorRoute } from './routes/processor.route';
 import { UserRoute } from './routes/user.route';
 import { SongRouter } from './routes/song.route';
+import { StreamRoute } from './routes/stream.route';
 
 @Module({
   imports: [
@@ -10,6 +10,6 @@ import { SongRouter } from './routes/song.route';
       isGlobal: true,
     }),
   ],
-  controllers: [ProcessorRoute, UserRoute, SongRouter],
+  controllers: [StreamRoute, UserRoute, SongRouter],
 })
 export class AppModule {}
