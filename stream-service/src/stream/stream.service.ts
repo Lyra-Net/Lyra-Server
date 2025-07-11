@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Response } from 'express';
-import * as ytdl from 'ytdl-core';
+import * as ytdl from '@distube/ytdl-core';
 
 @Injectable()
 export class StreamService {
