@@ -83,7 +83,7 @@ func (s *AuthServer) RefreshToken(ctx context.Context, req *auth.RefreshTokenReq
 		return nil, status.Error(codes.Unauthenticated, "invalid refresh token")
 	}
 	tokenID := claims["jti"].(string)
-	userID := uint(claims["id"].(float64))
+	userID := uint(claims["user_id"].(float64))
 	exp := int64(claims["exp"].(float64))
 
 	if ok, _ := redisconn.IsRefreshTokenBlacklisted(tokenID); ok {
