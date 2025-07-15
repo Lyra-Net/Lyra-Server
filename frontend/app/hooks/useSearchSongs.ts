@@ -1,21 +1,43 @@
-import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import { searchSongs } from "@/app/actions/search";
-import { YouTubeSearchResults } from "youtube-search";
+import { useEffect, useState } from 'react';
+import { searchSongs } from '@/app/actions/search';
+import { YouTubeSearchResults } from 'youtube-search';
 
 export const useSearchSongs = (query: string) => {
-    return useQuery<
-        YouTubeSearchResults[],
-        Error,
-        YouTubeSearchResults[],
-        [string, string]
-    >({
-        queryKey: ["search", query],
-        queryFn: () => searchSongs(query),
-        enabled: !!query,
-        staleTime: Infinity,
-        cacheTime: 1000 * 60 * 60 * 24,
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        refetchOnReconnect: false,
-    } as UseQueryOptions<YouTubeSearchResults[], Error, YouTubeSearchResults[], [string, string]>);
+  const [data, setData] = useState<YouTubeSearchResults[]>([]);
+  const [isFetching, setIsFetching] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchSongs = async () => {
+      if (!query) return;
+
+      setIsFetching(true);
+      setError(null);
+
+      try {
+        const results = await searchSongs(query);
+        if (!cancelled) {
+          setData(results);
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsFetching(false);
+        }
+      }
+    };
+
+    fetchSongs();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query]);
+
+  return { data, isFetching, error };
 };

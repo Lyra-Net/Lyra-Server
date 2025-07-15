@@ -21,8 +21,8 @@ export default function SearchPage() {
   };
 
   const handlePlay = (videoId: string) => {
-      setCurrentSong(videoId);
-      console.log(`playing ${videoId}`)
+    setCurrentSong(videoId);
+    console.log(`playing ${videoId}`);
   };
 
   return (
@@ -32,8 +32,8 @@ export default function SearchPage() {
           <input
             type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            onChange={e => setQuery(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
             className="w-full px-4 py-3 outline-none bg-transparent text-gray-900 dark:text-gray-100"
             placeholder="Search for a song..."
           />
@@ -48,7 +48,7 @@ export default function SearchPage() {
         <div className="mt-8 w-full max-w-3xl space-y-4">
           {isFetching && <div className="text-gray-500">Searching...</div>}
           {!isFetching &&
-            results.map((item: YouTubeSearchResults, i) => {
+            results.map((item: YouTubeSearchResults, i: number) => {
               const videoId = item.id;
               return (
                 <div
