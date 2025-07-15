@@ -92,11 +92,9 @@ export class StreamService {
     res: Response,
     mimeType?: string,
   ): Promise<void> {
+    const options = this.getYtdlOptions();
     return new Promise((resolve, reject) => {
-      const stream = ytdl(youtubeUrl, {
-        quality: 'highestaudio',
-        filter: 'audioonly',
-      })
+      const stream = ytdl(youtubeUrl, options)
         .on('response', (ytRes: StreamResponse) => {
           res.setHeader(
             'Content-Type',
@@ -119,5 +117,18 @@ export class StreamService {
 
   private isValidVideoId(videoId: string): boolean {
     return /^[a-zA-Z0-9_-]{11}$/.test(videoId);
+  }
+  private getYtdlOptions(): ytdl.DownloadOptions {
+    return {
+      quality: 'highestaudio',
+      filter: 'audioonly' as const, // Sử dụng 'as const' để TypeScript hiểu đây là literal type
+      requestOptions: {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept-Language': 'en-US,en;q=0.9',
+        },
+      },
+    };
   }
 }

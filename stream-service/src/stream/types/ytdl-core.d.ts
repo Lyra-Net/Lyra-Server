@@ -31,4 +31,12 @@ declare module '@distube/ytdl-core' {
     url: string,
     options: { quality: string; filter?: string },
   ): IncomingMessage;
+  export interface DownloadOptions {
+    quality?: string;
+    filter?: 'audioonly' | 'videoonly' | ((format: VideoFormat) => boolean);
+    highWaterMark?: number;
+    requestOptions?: {
+      headers?: Record<string, string>;
+    };
+  }
 }
