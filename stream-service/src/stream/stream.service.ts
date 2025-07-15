@@ -75,10 +75,14 @@ export class StreamService {
       itag: format.itag,
     };
 
-    await this.formatRepo.save({
-      videoId,
-      format: sanitizedFormat,
-    });
+    await this.formatRepo.upsert(
+      {
+        videoId,
+        format: sanitizedFormat,
+        createdAt: new Date(),
+      },
+      ['videoId'],
+    );
 
     return { format: sanitizedFormat };
   }
