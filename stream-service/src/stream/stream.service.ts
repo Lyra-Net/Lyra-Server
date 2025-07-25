@@ -1,42 +1,32 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Response } from 'express';
 import * as ytdl from '@distube/ytdl-core';
-import { CachedFormat } from './entities/cached-format.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
-import { IncomingMessage } from 'http';
+// import { IncomingMessage } from 'http';
 
-interface StreamResponse extends IncomingMessage {
-  headers: {
-    'content-type'?: string;
-    [key: string]: string | string[] | undefined;
-  };
-}
+// interface StreamResponse extends IncomingMessage {
+//   headers: {
+//     'content-type'?: string;
+//     [key: string]: string | string[] | undefined;
+//   };
+// }
 
 @Injectable()
 export class StreamService {
-  private readonly CACHE_EXPIRY_MS = 6 * 60 * 60 * 1000; // 6h cache
-
-  constructor(
-    @InjectRepository(CachedFormat)
-    private readonly formatRepo: Repository<CachedFormat>,
-  ) {}
-
   async streamAudioByVideoId(videoId: string, res: Response): Promise<void> {
     if (!this.isValidVideoId(videoId)) {
       throw new BadRequestException('Invalid videoId');
     }
 
-    const { format } = await this.getAudioFormat(videoId);
-
+    const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
     try {
-      await this.streamFromYoutube(
-        `https://www.youtube.com/watch?v=${videoId}`,
-        res,
-        format.mimeType,
-      );
+      await this.streamFromYoutube(youtubeUrl, res);
     } catch (err) {
-      console.error('Stream error:', err);
+      console.error('Stream error:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        videoId,
+        youtubeUrl,
+      });
       throw new BadRequestException(
         'Cannot stream audio: ' +
           (err instanceof Error ? err.message : 'Unknown error'),
@@ -44,84 +34,86 @@ export class StreamService {
     }
   }
 
-  private async getAudioFormat(
-    videoId: string,
-  ): Promise<{ format: ytdl.VideoFormat }> {
-    const cached = await this.formatRepo.findOne({ where: { videoId } });
-    const needsRefresh = !cached || this.isCacheExpired(cached);
-
-    if (!needsRefresh && cached?.format?.url) {
-      return { format: cached.format };
-    }
-
-    const info = await ytdl.getInfo(
-      `https://www.youtube.com/watch?v=${videoId}`,
-    );
-    const format = ytdl.chooseFormat(info.formats, {
-      quality: 'highestaudio',
-      filter: 'audioonly',
-    });
-
-    if (!format?.url) {
-      throw new Error('No suitable audio format found');
-    }
-
-    // save cache
-    const sanitizedFormat = {
-      url: format.url,
-      mimeType: format.mimeType,
-      qualityLabel: format.qualityLabel,
-      bitrate: format.bitrate,
-      itag: format.itag,
-    };
-
-    await this.formatRepo.upsert(
-      {
-        videoId,
-        format: sanitizedFormat,
-        createdAt: new Date(),
-      },
-      ['videoId'],
-    );
-
-    return { format: sanitizedFormat };
-  }
-
   private async streamFromYoutube(
     youtubeUrl: string,
     res: Response,
-    mimeType?: string,
   ): Promise<void> {
     const options = this.getYtdlOptions();
-    return new Promise((resolve, reject) => {
-      const stream = ytdl(youtubeUrl, options)
-        .on('response', (ytRes: StreamResponse) => {
-          res.setHeader(
-            'Content-Type',
-            ytRes.headers['content-type'] || mimeType || 'audio/webm',
-          );
-          res.setHeader('Content-Disposition', 'inline');
-          res.setHeader('Cache-Control', 'no-cache');
-          res.setHeader('Accept-Ranges', 'bytes');
-        })
-        .on('error', reject)
-        .on('end', resolve);
+    try {
+      console.log('Attempting to stream:', { youtubeUrl, options });
 
+      // Validate URL format
+      try {
+        new URL(youtubeUrl);
+        console.log('new url success');
+      } catch (urlErr) {
+        throw new Error(
+          `Invalid YouTube URL format: ${youtubeUrl} - ${urlErr}`,
+        );
+      }
+
+      // Fetch video info to debug
+      try {
+        const info = await ytdl.getInfo(youtubeUrl, options);
+        console.log('Video info:', {
+          title: info.videoDetails.title,
+          formats: info.formats.map((f) => ({
+            itag: f.itag,
+            mimeType: f.mimeType,
+            url: f.url,
+          })),
+        });
+      } catch (infoErr) {
+        console.error('Failed to fetch video info:', infoErr);
+      }
+
+      // Fetch stream
+      const stream = ytdl(youtubeUrl, options);
+      res.setHeader('Content-Type', 'audio/webm');
+      res.setHeader('Content-Disposition', 'inline');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Accept-Ranges', 'bytes');
+
+      // Pipe stream to response
       stream.pipe(res);
-    });
-  }
 
-  private isCacheExpired(cached: CachedFormat): boolean {
-    return Date.now() - cached.createdAt.getTime() > this.CACHE_EXPIRY_MS;
+      // Handle stream errors and completion
+      return new Promise((resolve, reject) => {
+        stream
+          .on('error', (err) => {
+            console.error('Stream pipe error:', {
+              message: err.message,
+              stack: err.stack,
+              youtubeUrl,
+            });
+            reject(err);
+          })
+          .on('end', () => {
+            console.log('Stream completed for:', youtubeUrl);
+            resolve();
+          });
+      });
+    } catch (err) {
+      console.error('Failed to stream from YouTube:', {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+        youtubeUrl,
+      });
+      throw new Error(
+        'Failed to stream from YouTube: ' +
+          (err instanceof Error ? err.message : 'Unknown error'),
+      );
+    }
   }
 
   private isValidVideoId(videoId: string): boolean {
     return /^[a-zA-Z0-9_-]{11}$/.test(videoId);
   }
-  private getYtdlOptions(): ytdl.DownloadOptions {
+
+  private getYtdlOptions(): ytdl.downloadOptions {
     return {
       quality: 'highestaudio',
-      filter: 'audioonly' as const, // Sử dụng 'as const' để TypeScript hiểu đây là literal type
+      filter: 'audioonly',
       requestOptions: {
         headers: {
           'User-Agent':
