@@ -11,7 +11,7 @@ import { useSearchSongs } from '@/app/hooks/useSearchSongs';
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [searchTrigger, setSearchTrigger] = useState('');
-  const { setCurrentSong } = usePlayer();
+  const { currentSong, isPlaying, setCurrentSong, play, pause } = usePlayer();
 
   const { data: results = [], isFetching } = useSearchSongs(searchTrigger);
 
@@ -20,9 +20,20 @@ export default function SearchPage() {
     setSearchTrigger(query);
   };
 
-  const handlePlay = (videoId: string) => {
-    setCurrentSong(videoId);
-    console.log(`playing ${videoId}`);
+  const handlePlay = (videoId: string, title: string) => {
+    if (currentSong?.id === videoId) {
+      if (isPlaying) {
+        pause();
+        console.log(`Paused: ${title}`);
+      } else {
+        play();
+        console.log(`Resumed: ${title}`);
+      }
+    } else {
+      setCurrentSong({ id: videoId, title });
+      play();
+      console.log(`Playing new song: ${title}`);
+    }
   };
 
   return (
@@ -50,20 +61,32 @@ export default function SearchPage() {
           {!isFetching &&
             results.map((item: YouTubeSearchResults, i: number) => {
               const videoId = item.id;
+              const title = he.decode(item.title);
+              const isCurrent = currentSong?.id === videoId;
+
               return (
                 <div
                   key={i}
-                  className="flex items-center gap-4 bg-gray-100 dark:bg-gray-800 p-3 rounded-lg shadow hover:bg-gray-200 dark:hover:bg-gray-700 transition cursor-pointer"
-                  onClick={() => handlePlay(videoId)}
+                  className={`flex items-center gap-4 p-3 rounded-lg shadow transition cursor-pointer
+                    ${
+                      isCurrent
+                        ? 'bg-blue-200 dark:bg-blue-800'
+                        : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }
+                  `}
+                  onClick={() => handlePlay(videoId, title)}
                 >
                   <img
                     src={item.thumbnails.default?.url}
-                    alt={item.title}
+                    alt={title}
                     className="w-16 h-16 rounded-md object-cover"
                   />
-                  <div className="text-gray-900 dark:text-gray-100 font-medium">
-                    {he.decode(item.title)}
-                  </div>
+                  <div className="flex-1 text-gray-900 dark:text-gray-100 font-medium">{title}</div>
+                  {isCurrent && (
+                    <span className="text-sm text-blue-700 dark:text-blue-300">
+                      {isPlaying ? '🔊 Playing' : '⏸ Paused'}
+                    </span>
+                  )}
                 </div>
               );
             })}
