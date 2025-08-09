@@ -20,8 +20,8 @@ export default function Sidebar() {
         />
         <NavItem
           icon={<Share2 size={18} />}
-          label="Shared Playlists"
-          href="/shared"
+          label="Trend Playlists"
+          href="/trends"
           pathname={pathname}
         />
         <NavItem
