@@ -11,8 +11,8 @@ func CreateSong(db *gorm.DB, song *models.Song) error {
 	return repository.SaveSong(db, song)
 }
 
-func GetSongs(db *gorm.DB) ([]models.Song, error) {
-	return repository.GetAllSongs(db)
+func GetSongs(db *gorm.DB, page, limit int) ([]models.Song, int64, error) {
+	return repository.GetSongs(db, page, limit)
 }
 
 func GetSongById(db *gorm.DB, id string) (models.Song, error) {

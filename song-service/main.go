@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"song-service/config"
-	"song-service/consumers"
+
 	"song-service/routes"
 
 	"github.com/gin-gonic/gin"
@@ -11,7 +11,6 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
-	consumers.StartSongReadyConsumer(cfg.DB, cfg.KafkaBroker)
 
 	r := gin.Default()
 	routes.RegisterRoutes(r, cfg.DB)

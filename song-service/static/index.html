@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Admin - Song & Artist Management</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            h2 {
+                margin-top: 40px;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 10px;
+            }
+            th,
+            td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            input,
+            button {
+                padding: 6px;
+                margin: 5px 0;
+            }
+            .section {
+                margin-bottom: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Admin Dashboard</h1>
+
+        <!-- Artist Management -->
+        <div class="section">
+            <h2>Artist Management</h2>
+
+            <!-- Create Artist Form -->
+            <form id="createArtistForm">
+                <input
+                    type="text"
+                    id="artistName"
+                    placeholder="Artist Name"
+                    required
+                />
+                <button type="submit">Create Artist</button>
+            </form>
+
+            <!-- Search bar -->
+            <input
+                type="text"
+                id="artistSearch"
+                placeholder="Search artist by name..."
+            />
+
+            <!-- Artist table -->
+            <table id="artistTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Song Management -->
+        <div class="section">
+            <h2>Song Management</h2>
+
+            <!-- Create Song Form -->
+            <form id="createSongForm">
+                <input type="text" id="songId" placeholder="Song ID" required />
+                <input
+                    type="text"
+                    id="songTitle"
+                    placeholder="Song Title"
+                    required
+                />
+                <input
+                    type="text"
+                    id="songToken"
+                    placeholder="Song Token"
+                    required
+                />
+                <input
+                    type="text"
+                    id="artistIds"
+                    placeholder="Artist IDs (comma separated)"
+                    required
+                />
+                <button type="submit">Create Song</button>
+            </form>
+
+            <!-- Song table -->
+            <table id="songTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Title Token</th>
+                        <th>Artists</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <script>
+            // Debounce helper
+            function debounce(fn, delay) {
+                let timer;
+                return function (...args) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn.apply(this, args), delay);
+                };
+            }
+
+            // Load artists
+            async function loadArtists(name = "") {
+                let url = `/artists?page=1&limit=10`;
+                if (name.trim() !== "") {
+                    url += `&name=${encodeURIComponent(name)}`;
+                }
+                const res = await fetch(url);
+                const data = await res.json();
+                const tbody = document.querySelector("#artistTable tbody");
+                tbody.innerHTML = "";
+                data.data.forEach((artist) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                    <td>${artist.id}</td>
+                    <td>${artist.name}</td>
+                `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Load songs
+            async function loadSongs() {
+                const res = await fetch(`/songs?page=1&limit=10`);
+                const data = await res.json();
+                const tbody = document.querySelector("#songTable tbody");
+                tbody.innerHTML = "";
+                data.data.forEach((song) => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                    <td>${song.id}</td>
+                    <td>${song.title}</td>
+                    <td>${song.title_token}</td>
+                    <td>${song.artists.map((a) => a.name).join(", ")}</td>
+                `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Create artist
+            document
+                .getElementById("createArtistForm")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById("artistName").value;
+                    await fetch(`/artists`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ name }),
+                    });
+                    document.getElementById("artistName").value = "";
+                    loadArtists();
+                });
+
+            // Create song
+            document
+                .getElementById("createSongForm")
+                .addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const id = document.getElementById("songId").value;
+                    const title = document.getElementById("songTitle").value;
+                    const songToken = document
+                        .getElementById("songToken")
+                        .value.split(",")
+                        .map((token) => token.trim());
+                    const artistIds = document
+                        .getElementById("artistIds")
+                        .value.split(",")
+                        .map((id) => parseInt(id.trim()));
+
+                    await fetch(`/songs`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            id,
+                            title,
+                            title_token: songToken,
+                            artist_ids: artistIds,
+                        }),
+                    });
+
+                    loadSongs();
+                });
+
+            // Search artist with debounce
+            document.getElementById("artistSearch").addEventListener(
+                "input",
+                debounce((e) => {
+                    loadArtists(e.target.value);
+                }, 500)
+            );
+
+            // Initial load
+            loadArtists();
+            loadSongs();
+        </script>
+    </body>
+</html>

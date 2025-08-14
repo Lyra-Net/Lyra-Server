@@ -11,9 +11,8 @@ import (
 )
 
 type Config struct {
-	DB          *gorm.DB
-	KafkaBroker string
-	Port        string
+	DB   *gorm.DB
+	Port string
 }
 
 func LoadConfig() *Config {
@@ -25,14 +24,12 @@ func LoadConfig() *Config {
 		log.Fatal("Failed to connect DB:", err)
 	}
 
-	// 👇 Tự động tạo bảng
 	if err := db.AutoMigrate(&models.Song{}, &models.Playlist{}, &models.PlaylistItem{}); err != nil {
 		log.Fatal("Failed to migrate DB:", err)
 	}
 
 	return &Config{
-		DB:          db,
-		KafkaBroker: os.Getenv("KAFKA_BROKER"),
-		Port:        os.Getenv("PORT"),
+		DB:   db,
+		Port: os.Getenv("PORT"),
 	}
 }

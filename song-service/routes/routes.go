@@ -10,14 +10,19 @@ import (
 
 func RegisterRoutes(router *gin.Engine, db *gorm.DB) {
 	router.Use(middleware.UserContextMiddleware())
-
+	router.GET("/", func(c *gin.Context) {
+		c.File("./static/index.html")
+	})
 	songGroup := router.Group("/songs")
 	{
-		songGroup.GET("", controllers.GetSongsHandler(db))
-		songGroup.GET("/:id", controllers.GetSongByIdHandler(db))
 		songGroup.POST("", controllers.CreateSongHandler(db))
+		songGroup.GET("", controllers.GetSongsHandler(db))
 	}
-
+	artistGroup := router.Group("artists")
+	{
+		artistGroup.POST("", controllers.CreateArtistHandler(db))
+		artistGroup.GET("", controllers.GetArtistHandler(db))
+	}
 	playlistGroup := router.Group("/playlists")
 	{
 		playlistGroup.POST("", controllers.CreatePlaylistHandler(db))

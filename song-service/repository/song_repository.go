@@ -6,10 +6,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetAllSongs(db *gorm.DB) ([]models.Song, error) {
+func GetSongs(db *gorm.DB, page, limit int) ([]models.Song, int64, error) {
 	var songs []models.Song
-	err := db.Find(&songs).Error
-	return songs, err
+	var total int64
+
+	db.Model(&models.Song{}).Count(&total)
+
+	offset := (page - 1) * limit
+	err := db.Preload("Artists").Limit(limit).Offset(offset).Find(&songs).Error
+
+	return songs, total, err
 }
 
 func GetSongById(db *gorm.DB, id string) (models.Song, error) {
