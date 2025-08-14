@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package search;
+
+option go_package = "proto/search;search";
+
+// ========================
+// ENUM & COMMON STRUCTS
+// ========================
+enum IndexType {
+  INDEX_TYPE_UNSPECIFIED = 0;
+  SONG = 1;
+  ARTIST = 2;
+  PLAYLIST = 3;
+}
+
+// Common field for owner (optional)
+message Owner {
+  string id = 1;
+  string name = 2;
+}
+
+// ========================
+// ENTITY SCHEMAS
+// ========================
+message SongDocument {
+  string id = 1;
+  string title = 2;
+  repeated string artists = 3;
+  uint32 duration_sec = 4;
+  repeated string tags = 5;
+}
+
+message ArtistDocument {
+  string id = 1;
+  string name = 2;
+}
+
+message PlaylistDocument {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  Owner owner = 4;
+  repeated string song_titles = 5;
+  repeated string tags = 6;
+  bool is_public = 7;
+}
+
+// ========================
+// INDEX MANAGEMENT API
+// ========================
+message IndexRequest {
+  IndexType type = 1;
+  oneof document {
+    SongDocument song = 2;
+    ArtistDocument artist = 3;
+    PlaylistDocument playlist = 4;
+  }
+}
+
+message IndexResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message DeleteIndexRequest {
+  IndexType type = 1;
+  string id = 2;
+}
+
+message DeleteIndexResponse {
+  bool success = 1;
+}
+
+// ========================
+// SEARCH API
+// ========================
+message SearchRequest {
+  string query = 1;
+  IndexType type = 2;
+  uint32 limit = 3;
+  uint32 offset = 4;
+}
+
+message SearchResult {
+  IndexType type = 1;
+  oneof document {
+    SongDocument song = 2;
+    ArtistDocument artist = 3;
+    PlaylistDocument playlist = 4;
+  }
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+}
+
+// ========================
+// SERVICE DEFINITION
+// ========================
+service SearchService {
+  // Index management
+  rpc IndexDocument(IndexRequest) returns (IndexResponse);
+  rpc DeleteDocument(DeleteIndexRequest) returns (DeleteIndexResponse);
+
+  // Query
+  rpc Search(SearchRequest) returns (SearchResponse);
+}
