@@ -5,6 +5,7 @@ import { getDeviceId } from '@/utils/device';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const [showForm, setShowForm] = useState(false);
@@ -15,7 +16,7 @@ export default function RegisterPage() {
   const router = useRouter();
 
   useEffect(() => {
-    setTimeout(() => setShowForm(true), 100);
+    setTimeout(() => setShowForm(true), 50);
   }, []);
 
   const handleRegister = useCallback(
@@ -135,6 +136,15 @@ export default function RegisterPage() {
             {isPending ? 'Signing up...' : 'Sign Up'}
           </button>
         </form>
+        <div className="text-sm text-gray-600 dark:text-gray-300 mt-4">
+          <span>Already have an account?</span>
+          <Link
+            href="/login"
+            className="ml-1 text-blue-500 hover:text-blue-600 font-medium transition-colors"
+          >
+            login here
+          </Link>
+        </div>
       </div>
     </div>
   );

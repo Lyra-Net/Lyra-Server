@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const [showForm, setShowForm] = useState(false);
@@ -14,7 +15,7 @@ export default function LoginPage() {
 
   const router = useRouter();
   useEffect(() => {
-    setTimeout(() => setShowForm(true), 100);
+    setTimeout(() => setShowForm(true), 50);
   }, []);
 
   const handleLogin = useCallback(
@@ -26,18 +27,19 @@ export default function LoginPage() {
       const device_id = getDeviceId();
 
       try {
+        console.time('login');
         const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`, {
           username,
           password,
           device_id,
         });
-
+        console.timeEnd('login');
         const { access_token } = res.data;
 
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('username', username);
         toast.success('Logged in successfuly!');
-        router.push('/dashboard');
+        router.push('/');
       } catch (err: any) {
         toast.error(err.response?.data?.message || 'Login failure');
         console.error('Login failed', err.response?.data || err.message);
@@ -113,6 +115,15 @@ export default function LoginPage() {
             {isPending ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+        <div className="text-sm text-gray-600 dark:text-gray-300 mt-4">
+          <span>Don't have an account?</span>
+          <Link
+            href="/register"
+            className="ml-1 text-blue-500 hover:text-blue-600 font-medium transition-colors"
+          >
+            register here
+          </Link>
+        </div>
       </div>
     </div>
   );
