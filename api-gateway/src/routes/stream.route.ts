@@ -14,7 +14,7 @@ export class StreamRoute {
 
     try {
       const streamRes = await forwardRequest(
-        `${process.env.STREAM_SERVICE_URL}/stream/${videoId}`,
+        `${process.env.STREAM_SERVICE_URL}/stream/${videoId}.mp3`,
         'GET',
         null,
         {
