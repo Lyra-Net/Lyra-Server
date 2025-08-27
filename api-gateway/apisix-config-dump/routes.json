@@ -1,0 +1,27 @@
+{
+  "total": 1,
+  "list": [
+    {
+      "value": {
+        "update_time": 1756287302,
+        "create_time": 1756287302,
+        "priority": 0,
+        "upstream": {
+          "type": "roundrobin",
+          "hash_on": "vars",
+          "scheme": "http",
+          "nodes": {
+            "127.0.0.1:3002": 1
+          },
+          "pass_host": "pass"
+        },
+        "status": 1,
+        "uri": "/stream/*",
+        "id": "1"
+      },
+      "modifiedIndex": 67,
+      "key": "/apisix/routes/1",
+      "createdIndex": 67
+    }
+  ]
+}
