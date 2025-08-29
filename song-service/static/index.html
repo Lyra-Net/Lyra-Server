@@ -133,7 +133,7 @@
                 const data = await res.json();
                 const tbody = document.querySelector("#artistTable tbody");
                 tbody.innerHTML = "";
-                data.data.forEach((artist) => {
+                data.forEach((artist) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                     <td>${artist.id}</td>
@@ -149,7 +149,7 @@
                 const data = await res.json();
                 const tbody = document.querySelector("#songTable tbody");
                 tbody.innerHTML = "";
-                data.data.forEach((song) => {
+                data.forEach((song) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
                     <td>${song.id}</td>

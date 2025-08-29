@@ -1,35 +1,29 @@
 package config
 
 import (
-	"log"
 	"os"
-	"song-service/models"
+	"strings"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 type Config struct {
-	DB   *gorm.DB
-	Port string
+	DbURL    string
+	HttpPort string
+	GRPCPort string
+	Brokers  []string
+	Topic    string
 }
 
 func LoadConfig() *Config {
 	_ = godotenv.Load()
 
-	dsn := os.Getenv("POSTGRES_DSN")
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Failed to connect DB:", err)
-	}
-
-	if err := db.AutoMigrate(&models.Song{}, &models.Playlist{}, &models.PlaylistItem{}); err != nil {
-		log.Fatal("Failed to migrate DB:", err)
-	}
-
+	brokers := strings.Split(os.Getenv("KAFKA_BROKER"), ",")
 	return &Config{
-		DB:   db,
-		Port: os.Getenv("PORT"),
+		DbURL:    os.Getenv("DB_URL"),
+		HttpPort: os.Getenv("HTTP_PORT"),
+		GRPCPort: os.Getenv("GRPC_PORT"),
+		Brokers:  brokers,
+		Topic:    os.Getenv("KAFKA_TOPIC"),
 	}
 }
