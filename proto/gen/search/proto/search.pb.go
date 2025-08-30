@@ -211,7 +211,7 @@ func (x *Song) GetArtist() string {
 
 type Artist struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -247,11 +247,11 @@ func (*Artist) Descriptor() ([]byte, []int) {
 	return file_proto_search_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *Artist) GetId() string {
+func (x *Artist) GetId() int32 {
 	if x != nil {
 		return x.Id
 	}
-	return ""
+	return 0
 }
 
 func (x *Artist) GetName() string {
@@ -263,8 +263,9 @@ func (x *Artist) GetName() string {
 
 type Playlist struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	PlaylistId    string                 `protobuf:"bytes,1,opt,name=playlist_id,json=playlistId,proto3" json:"playlist_id,omitempty"`
+	PlaylistName  string                 `protobuf:"bytes,2,opt,name=playlist_name,json=playlistName,proto3" json:"playlist_name,omitempty"`
+	OwnerId       string                 `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -299,16 +300,23 @@ func (*Playlist) Descriptor() ([]byte, []int) {
 	return file_proto_search_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *Playlist) GetId() string {
+func (x *Playlist) GetPlaylistId() string {
 	if x != nil {
-		return x.Id
+		return x.PlaylistId
 	}
 	return ""
 }
 
-func (x *Playlist) GetName() string {
+func (x *Playlist) GetPlaylistName() string {
 	if x != nil {
-		return x.Name
+		return x.PlaylistName
+	}
+	return ""
+}
+
+func (x *Playlist) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
 	}
 	return ""
 }
@@ -332,11 +340,13 @@ const file_proto_search_proto_rawDesc = "" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
 	"\x06artist\x18\x03 \x01(\tR\x06artist\",\n" +
 	"\x06Artist\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\".\n" +
-	"\bPlaylist\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name2H\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"k\n" +
+	"\bPlaylist\x12\x1f\n" +
+	"\vplaylist_id\x18\x01 \x01(\tR\n" +
+	"playlistId\x12#\n" +
+	"\rplaylist_name\x18\x02 \x01(\tR\fplaylistName\x12\x19\n" +
+	"\bowner_id\x18\x03 \x01(\tR\aownerId2H\n" +
 	"\rSearchService\x127\n" +
 	"\x06Search\x12\x15.search.SearchRequest\x1a\x16.search.SearchResponseB:Z8github.com/dinh-tran/BypassBeats/proto/gen/search;searchb\x06proto3"
 
