@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CONTRACT_DIR="./contracts"
+PROJECT_ROOT="$(pwd)"
+TMP_DIR="/tmp/gen_dto"
+mkdir -p "$TMP_DIR"
+
+gen_for_target() {
+    local service="$1"
+    local file="$2"
+    local target="$3"
+
+    local folder role lang filename
+    IFS=":" read -r folder role lang filename <<< "$target"
+
+    if [[ -z "${filename:-}" ]]; then
+        filename="dto.$lang"
+    fi
+
+    local outdir="$PROJECT_ROOT/$folder/dto"
+    mkdir -p "$outdir"
+    local outfile="$outdir/$filename"
+
+    local input="$TMP_DIR/${service}_${folder}_${role}_${lang}.json"
+    jq 'del(."$meta")' "$file" > "$input"
+
+    echo "[$service] → $folder ($role/$lang) → $outfile"
+
+    if [[ "$role" == "server" ]]; then
+        quicktype \
+            --src "$input" \
+            --src-lang json \
+            --lang "$lang" \
+            --just-types \
+            --top-level "${service^}DTO" \
+            -o "$outfile"
+    else
+        quicktype \
+            --src "$input" \
+            --src-lang json \
+            --lang "$lang" \
+            --top-level "${service^}DTO" \
+            -o "$outfile"
+    fi
+
+    if [[ "$lang" == "go" ]]; then
+        sed -i "1i package dto\n" "$outfile"
+    fi
+}
+
+gen_contract() {
+    local file="$1"
+    local service
+    service="$(basename "$file" .json)"
+
+    echo "=============================="
+    echo "Contract: $file"
+    echo "=============================="
+
+    local targets
+    targets=$(jq -r '."$meta".targets[]' "$file")
+
+    for t in $targets; do
+        gen_for_target "$service" "$file" "$t"
+    done
+}
+
+# ===========================
+# MAIN
+# ===========================
+if [[ $# -eq 0 ]]; then
+    echo "Usage: $0 contracts/<service>.json"
+    exit 1
+fi
+
+for f in "$@"; do
+    gen_contract "$f"
+done
+
+echo "Done."

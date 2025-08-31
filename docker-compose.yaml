@@ -1,0 +1,95 @@
+version: "3"
+services:
+    etcd:
+        image: bitnami/etcd:latest
+        container_name: etcd
+        ports:
+            - "2379:2379"
+            - "2380:2380"
+        environment:
+            - ALLOW_NONE_AUTHENTICATION=yes
+            - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+            - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+        volumes:
+            - etcd-data:/bitnami/etcd
+        networks:
+            - backend-net
+
+    apisix:
+        image: apache/apisix:3.13.0-ubuntu
+        container_name: apisix
+        ports:
+            - "9080:9080" # HTTP
+            - "9091:9091" # HTTPS
+            - "9180:9180" # Admin API
+        environment:
+            - ETCD_HOST=etcd:2379
+        volumes:
+            - ./apisix_data/conf/config.yaml:/usr/local/apisix/conf/config.yaml
+        depends_on:
+            - etcd
+        networks:
+            - backend-net
+
+    zookeeper:
+        image: confluentinc/cp-zookeeper:7.5.1
+        container_name: zookeeper
+        ports:
+            - "2181:2181"
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+        networks:
+            - backend-net
+
+    kafka:
+        image: confluentinc/cp-kafka:7.5.1
+        container_name: kafka
+        ports:
+            - "9092:9092"
+            - "9093:9093"
+        environment:
+            KAFKA_BROKER_ID: 1
+            KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        depends_on:
+            - zookeeper
+        networks:
+            - backend-net
+
+    # ========================
+    # Go microservices
+    # ========================
+    song-service:
+        build: ./song-service
+        container_name: song-service
+        env_file:
+            - ./song-service/.env
+        ports:
+            - "3004:3004"
+        networks:
+            - backend-net
+        depends_on:
+            - kafka
+
+    search-service:
+        build: ./search-service
+        container_name: search-service
+        env_file:
+            - ./search-service/.env
+        ports:
+            - "30005:30005"
+        networks:
+            - backend-net
+        depends_on:
+            - kafka
+
+networks:
+    backend-net:
+        driver: bridge
+
+volumes:
+    etcd-data:
