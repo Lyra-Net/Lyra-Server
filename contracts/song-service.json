@@ -1,0 +1,39 @@
+{
+    "$meta": {
+        "targets": [
+            "song-service:server:go:song.dto.go",
+            "frontend:client:ts:song.dto.ts",
+            "search-service:client:go:song.dto.go"
+        ]
+    },
+    "CreateArtistRequest": {
+        "name": "string"
+    },
+    "CreateSongRequest": {
+        "id": "string",
+        "title": "string",
+        "title_token": ["string"],
+        "categories": ["string"],
+        "artist_ids": [1]
+    },
+    "CreateSongResponse": {
+        "id": "string"
+    },
+    "Artist": {
+        "id": 1,
+        "name": "string"
+    },
+    "Song": {
+        "id": "string",
+        "title": "string",
+        "title_token": ["string"],
+        "categories": ["string"],
+        "artists": ["Artist"]
+    },
+    "Playlist": {
+        "playlist_id": "string",
+        "playlist_name": "string",
+        "owner_id": "string",
+        "is_public": true
+    }
+}
