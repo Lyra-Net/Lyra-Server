@@ -3,68 +3,130 @@ package server
 import (
 	"context"
 	"log"
-	"search-service/config"
-	"search-service/document"
-	"search-service/proto/search"
+	"net"
+	"search-service/dto"
+	"strings"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	pb "github.com/trandinh0506/BypassBeats/proto/gen/search/proto"
+	"google.golang.org/grpc"
 )
 
-type SearchServer struct {
-	search.UnimplementedSearchServiceServer
-	meiliClient *MeiliClient
+type searchServer struct {
+	pb.UnimplementedSearchServiceServer
+	meili MeiliClient
 }
 
-func NewSearchServer(cfg config.MeiliConfig) *SearchServer {
-	return &SearchServer{
-		meiliClient: NewMeiliClient(cfg),
-	}
-}
+func (s *searchServer) Search(ctx context.Context, req *pb.SearchRequest) (*pb.SearchResponse, error) {
+	q := strings.TrimSpace(req.GetQuery())
+	t := strings.ToLower(strings.TrimSpace(req.GetType()))
 
-func (s *SearchServer) IndexDocument(ctx context.Context, req *search.IndexRequest) (*search.IndexResponse, error) {
-	if req == nil || req.Document == nil {
-		return nil, status.Error(codes.InvalidArgument, "Document is required")
-	}
+	const limit int64 = 20
 
-	switch doc := req.Document.(type) {
-	case *search.IndexRequest_Song:
-		log.Println("Indexing Song:", doc.Song.Id)
-		err := s.meiliClient.IndexSong(document.SongDocument{
-			ID:      doc.Song.Id,
-			Title:   doc.Song.Title,
-			Artists: doc.Song.Artists,
-		})
+	resp := &pb.SearchResponse{Success: true}
+
+	switch t {
+	case "song":
+		songsDto, err := s.meili.SearchSongs(q, limit)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to index song: %v", err)
+			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
 		}
+		resp.Songs = toPBSongs(songsDto)
 
-	case *search.IndexRequest_Artist:
-		log.Println("Indexing Artist:", doc.Artist.Id)
-		err := s.meiliClient.IndexArtist(document.ArtistDocument{
-			ID:   doc.Artist.Id,
-			Name: doc.Artist.Name,
-		})
+	case "artist":
+		artistsDto, err := s.meili.SearchArtists(q, limit)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to index artist: %v", err)
+			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
 		}
+		resp.Artists = toPBArtists(artistsDto)
 
-	case *search.IndexRequest_Playlist:
-		log.Println("Indexing Playlist:", doc.Playlist.Id)
-		err := s.meiliClient.IndexPlaylist(document.PlaylistDocument{
-			ID:         doc.Playlist.Id,
-			SongTitles: doc.Playlist.SongTitles,
-		})
+	case "playlist":
+		plsDto, err := s.meili.SearchPlaylists(q, limit)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to index playlist: %v", err)
+			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
+		}
+		resp.Playlists = toPBPlaylists(plsDto)
+
+	// nếu client không truyền type → trả về cả 3
+	case "", "all":
+		if songsDto, err := s.meili.SearchSongs(q, limit); err == nil {
+			resp.Songs = toPBSongs(songsDto)
+		} else {
+			resp.Success = false
+			resp.Error = err.Error()
+			return resp, nil
+		}
+		if artistsDto, err := s.meili.SearchArtists(q, limit); err == nil {
+			resp.Artists = toPBArtists(artistsDto)
+		} else {
+			resp.Success = false
+			resp.Error = err.Error()
+			return resp, nil
+		}
+		if plsDto, err := s.meili.SearchPlaylists(q, limit); err == nil {
+			resp.Playlists = toPBPlaylists(plsDto)
+		} else {
+			resp.Success = false
+			resp.Error = err.Error()
+			return resp, nil
 		}
 
 	default:
-		return nil, status.Error(codes.InvalidArgument, "Unknown document type")
+		return &pb.SearchResponse{
+			Success: false,
+			Error:   "unsupported type: " + t,
+		}, nil
 	}
 
-	return &search.IndexResponse{
-		Success: true,
-		Message: "Document indexed successfully",
-	}, nil
+	return resp, nil
+}
+
+func toPBSongs(in []dto.CreateSongRequest) []*pb.Song {
+	out := make([]*pb.Song, 0, len(in))
+	for _, s := range in {
+		out = append(out, &pb.Song{
+			Id:    s.ID,
+			Title: s.Title,
+			// Chú ý: proto có field Artist string,
+			// nhưng DTO của bạn đang là ArtistIDS []int.
+			// Hoặc đổi proto, hoặc index thêm field artist name.
+			Artist: "", // TODO: điền nếu bạn index sẵn tên artist
+		})
+	}
+	return out
+}
+
+func toPBArtists(in []dto.Artist) []*pb.Artist {
+	out := make([]*pb.Artist, 0, len(in))
+	for _, a := range in {
+		out = append(out, &pb.Artist{
+			Id:   int32(a.ID),
+			Name: a.Name,
+		})
+	}
+	return out
+}
+
+func toPBPlaylists(in []dto.Playlist) []*pb.Playlist {
+	out := make([]*pb.Playlist, 0, len(in))
+	for _, p := range in {
+		out = append(out, &pb.Playlist{
+			PlaylistId:   p.PlaylistID,
+			PlaylistName: p.PlaylistName,
+			OwnerId:      p.OwnerID,
+		})
+	}
+	return out
+}
+
+func RunGRPCServer(addr string, meili *MeiliClient) error {
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	s := grpc.NewServer()
+	pb.RegisterSearchServiceServer(s, &searchServer{
+		meili: *meili,
+	})
+	log.Printf("gRPC SearchService listening on %s", addr)
+	return s.Serve(lis)
 }

@@ -1,9 +1,10 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
 	"search-service/config"
-	"search-service/document"
+	"search-service/dto"
 
 	"github.com/meilisearch/meilisearch-go"
 )
@@ -40,17 +41,66 @@ func (mc *MeiliClient) initIndexes() {
 	}
 }
 
-func (mc *MeiliClient) IndexSong(song document.SongDocument) error {
-	_, err := mc.client.Index("songs").AddDocuments([]document.SongDocument{song}, nil)
+func (mc *MeiliClient) IndexSong(req dto.CreateSongRequest) error {
+	_, err := mc.client.Index("songs").AddDocuments([]dto.CreateSongRequest{req}, nil)
 	return err
 }
 
-func (mc *MeiliClient) IndexArtist(artist document.ArtistDocument) error {
-	_, err := mc.client.Index("artists").AddDocuments([]document.ArtistDocument{artist}, nil)
+func (mc *MeiliClient) IndexArtist(req dto.Artist) error {
+	_, err := mc.client.Index("artists").AddDocuments([]dto.Artist{req}, nil)
 	return err
 }
 
-func (mc *MeiliClient) IndexPlaylist(playlist document.PlaylistDocument) error {
-	_, err := mc.client.Index("playlists").AddDocuments([]document.PlaylistDocument{playlist}, nil)
-	return err
+func (mc *MeiliClient) SearchSongs(query string, limit int64) ([]dto.CreateSongRequest, error) {
+	res, err := mc.client.Index("songs").Search(query, &meilisearch.SearchRequest{
+		Limit: limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(res.Hits)
+	if err != nil {
+		return nil, err
+	}
+	var songs []dto.CreateSongRequest
+	if err := json.Unmarshal(b, &songs); err != nil {
+		return nil, err
+	}
+	return songs, nil
+}
+
+func (mc *MeiliClient) SearchArtists(query string, limit int64) ([]dto.Artist, error) {
+	res, err := mc.client.Index("artists").Search(query, &meilisearch.SearchRequest{
+		Limit: limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(res.Hits)
+	if err != nil {
+		return nil, err
+	}
+	var artists []dto.Artist
+	if err := json.Unmarshal(b, &artists); err != nil {
+		return nil, err
+	}
+	return artists, nil
+}
+
+func (mc *MeiliClient) SearchPlaylists(query string, limit int64) ([]dto.Playlist, error) {
+	res, err := mc.client.Index("playlists").Search(query, &meilisearch.SearchRequest{
+		Limit: limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+	b, err := json.Marshal(res.Hits)
+	if err != nil {
+		return nil, err
+	}
+	var pls []dto.Playlist
+	if err := json.Unmarshal(b, &pls); err != nil {
+		return nil, err
+	}
+	return pls, nil
 }
