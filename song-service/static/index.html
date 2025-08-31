@@ -32,6 +32,12 @@
             .section {
                 margin-bottom: 40px;
             }
+            .pagination {
+                margin-top: 10px;
+            }
+            .pagination button {
+                margin-right: 5px;
+            }
         </style>
     </head>
     <body>
@@ -69,6 +75,13 @@
                 </thead>
                 <tbody></tbody>
             </table>
+
+            <!-- Artist pagination -->
+            <div class="pagination">
+                <button id="prevArtist">Prev</button>
+                <span id="artistPageInfo"></span>
+                <button id="nextArtist">Next</button>
+            </div>
         </div>
 
         <!-- Song Management -->
@@ -111,6 +124,13 @@
                 </thead>
                 <tbody></tbody>
             </table>
+
+            <!-- Song pagination -->
+            <div class="pagination">
+                <button id="prevSong">Prev</button>
+                <span id="songPageInfo"></span>
+                <button id="nextSong">Next</button>
+            </div>
         </div>
 
         <script>
@@ -123,9 +143,18 @@
                 };
             }
 
+            // Global state
+            let artistPage = 1;
+            let songPage = 1;
+            const pageSize = 10;
+
             // Load artists
-            async function loadArtists(name = "") {
-                let url = `/artists?page=1&limit=10`;
+            async function loadArtists(
+                name = "",
+                page = artistPage,
+                limit = pageSize
+            ) {
+                let url = `/artists?page=${page}&limit=${limit}`;
                 if (name.trim() !== "") {
                     url += `&name=${encodeURIComponent(name)}`;
                 }
@@ -136,29 +165,35 @@
                 data.forEach((artist) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                    <td>${artist.id}</td>
-                    <td>${artist.name}</td>
-                `;
+                        <td>${artist.id}</td>
+                        <td>${artist.name}</td>
+                    `;
                     tbody.appendChild(row);
                 });
+                document.getElementById(
+                    "artistPageInfo"
+                ).textContent = `Page ${page}`;
             }
 
             // Load songs
-            async function loadSongs() {
-                const res = await fetch(`/songs?page=1&limit=10`);
+            async function loadSongs(page = songPage, limit = pageSize) {
+                const res = await fetch(`/songs?page=${page}&limit=${limit}`);
                 const data = await res.json();
                 const tbody = document.querySelector("#songTable tbody");
                 tbody.innerHTML = "";
                 data.forEach((song) => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-                    <td>${song.id}</td>
-                    <td>${song.title}</td>
-                    <td>${song.title_token}</td>
-                    <td>${song.artists.map((a) => a.name).join(", ")}</td>
-                `;
+                        <td>${song.id}</td>
+                        <td>${song.title}</td>
+                        <td>${song.title_token}</td>
+                        <td>${song.artists.map((a) => a.name).join(", ")}</td>
+                    `;
                     tbody.appendChild(row);
                 });
+                document.getElementById(
+                    "songPageInfo"
+                ).textContent = `Page ${page}`;
             }
 
             // Create artist
@@ -173,7 +208,7 @@
                         body: JSON.stringify({ name }),
                     });
                     document.getElementById("artistName").value = "";
-                    loadArtists();
+                    loadArtists("", artistPage);
                 });
 
             // Create song
@@ -203,16 +238,54 @@
                         }),
                     });
 
-                    loadSongs();
+                    loadSongs(songPage);
                 });
 
             // Search artist with debounce
             document.getElementById("artistSearch").addEventListener(
                 "input",
                 debounce((e) => {
-                    loadArtists(e.target.value);
+                    artistPage = 1; // reset về page 1 khi search
+                    loadArtists(e.target.value, artistPage);
                 }, 500)
             );
+
+            // Pagination buttons
+            document
+                .getElementById("prevArtist")
+                .addEventListener("click", () => {
+                    if (artistPage > 1) {
+                        artistPage--;
+                        loadArtists(
+                            document.getElementById("artistSearch").value,
+                            artistPage
+                        );
+                    }
+                });
+            document
+                .getElementById("nextArtist")
+                .addEventListener("click", () => {
+                    artistPage++;
+                    loadArtists(
+                        document.getElementById("artistSearch").value,
+                        artistPage
+                    );
+                });
+
+            document
+                .getElementById("prevSong")
+                .addEventListener("click", () => {
+                    if (songPage > 1) {
+                        songPage--;
+                        loadSongs(songPage);
+                    }
+                });
+            document
+                .getElementById("nextSong")
+                .addEventListener("click", () => {
+                    songPage++;
+                    loadSongs(songPage);
+                });
 
             // Initial load
             loadArtists();

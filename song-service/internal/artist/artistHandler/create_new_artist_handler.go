@@ -1,6 +1,7 @@
 package artistHandler
 
 import (
+	"log"
 	"net/http"
 	"song-service/dto"
 	mq "song-service/internal/MQ"
@@ -26,13 +27,18 @@ func CreateArtist(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin
 			return
 		}
 
-		_ = producer.Emit(c.Request.Context(), "artist_created", struct {
+		err = producer.Emit(c.Request.Context(), "artist_created", struct {
 			ID   int32  `json:"id"`
 			Name string `json:"name"`
 		}{
 			ID:   artist.ID,
 			Name: artist.Name,
 		})
+
+		if err != nil {
+			log.Println("failed to write message: %w", err)
+		}
+		log.Println("Event emited to Kafka")
 
 		c.JSON(http.StatusCreated, artist.ID)
 	}

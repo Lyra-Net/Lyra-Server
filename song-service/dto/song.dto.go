@@ -6,10 +6,11 @@ type SongServiceDTO struct {
 	CreateSongResponse  CreateSongResponse  `json:"CreateSongResponse"`
 	Artist              Artist              `json:"Artist"`
 	Song                CreateSongRequest   `json:"Song"`
+	Playlist            Playlist            `json:"Playlist"`
 }
 
 type Artist struct {
-	ID   string `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -28,4 +29,11 @@ type CreateSongRequest struct {
 
 type CreateSongResponse struct {
 	ID string `json:"id"`
+}
+
+type Playlist struct {
+	PlaylistID   string `json:"playlist_id"`
+	PlaylistName string `json:"playlist_name"`
+	OwnerID      string `json:"owner_id"`
+	IsPublic     bool   `json:"is_public"`
 }
