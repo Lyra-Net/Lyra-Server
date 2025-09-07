@@ -17,9 +17,9 @@ func InitConfig() {
 		log.Println("No .env file found, relying on environment variables")
 	}
 
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DB_URL")
 	if dsn == "" {
-		log.Fatal("DATABASE_URL is not set")
+		log.Fatal("DB_URL is not set")
 	}
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
