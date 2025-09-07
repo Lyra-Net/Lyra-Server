@@ -20,7 +20,7 @@ CREATE TABLE artist_songs (
 CREATE TABLE playlists (
     playlist_id UUID PRIMARY KEY,
     playlist_name TEXT,
-    owner_id UUID NOT NULL REFERENCES users(user_id),
+    owner_id UUID NOT NULL,
     is_public BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT now(),
     updated_at TIMESTAMP DEFAULT now()
