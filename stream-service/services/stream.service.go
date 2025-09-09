@@ -1,37 +1,39 @@
 package services
 
 import (
+	"context"
+	"io"
+	"log"
 	"net/http"
-	"os"
-	"path/filepath"
-	"time"
+
+	"github.com/minio/minio-go/v7"
 )
 
 type StreamService struct {
+	minio *MinioService
 }
 
-func NewStreamService() *StreamService {
-	return &StreamService{}
+func NewStreamService(minio *MinioService) *StreamService {
+	return &StreamService{minio: minio}
 }
 
 func (s *StreamService) StreamFile(w http.ResponseWriter, r *http.Request, filename string) error {
-	filePath := filepath.Join("audios", filename)
+	ctx := context.Background()
 
-	file, err := os.Open(filePath)
+	object, err := s.minio.Client.GetObject(ctx, s.minio.Bucket, filename, minio.GetObjectOptions{})
 	if err != nil {
+		log.Println("error getting object:", err)
+		http.Error(w, "File not found", http.StatusNotFound)
 		return err
 	}
-	defer file.Close()
+	defer object.Close()
 
-	w.Header().Set("Content-Type", "audio/mp3")
-	http.ServeContent(w, r, filename, fileStat(filePath), file)
-	return nil
-}
+	w.Header().Set("Content-Type", "audio/mpeg")
 
-func fileStat(path string) (modTime time.Time) {
-	info, err := os.Stat(path)
-	if err != nil {
-		return
+	if _, err := io.Copy(w, object); err != nil {
+		log.Println("error writing response:", err)
+		return err
 	}
-	return info.ModTime()
+
+	return nil
 }

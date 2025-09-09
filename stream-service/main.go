@@ -9,7 +9,7 @@ import (
 
 func main() {
 	r := routers.InitRouter()
-	appEnv := config.InitConfig()
+	appEnv := config.GetConfig()
 	log.Println("Stream service is running on: " + appEnv.PORT)
 	if err := http.ListenAndServe(":"+appEnv.PORT, r); err != nil {
 		log.Fatal(err)

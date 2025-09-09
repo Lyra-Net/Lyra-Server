@@ -12,8 +12,9 @@ type StreamHandler struct {
 }
 
 func NewStreamHandler() *StreamHandler {
+	minIOService := services.NewMinioService()
 	return &StreamHandler{
-		streamService: services.NewStreamService(),
+		streamService: services.NewStreamService(minIOService),
 	}
 }
 
