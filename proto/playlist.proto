@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package playlist;
+
+option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/playlist;playlist";
+
+import "google/protobuf/empty.proto";
+
+message PlaylistSong {
+  string song_id = 1;
+  string title = 2;
+  repeated string title_token = 3;
+  repeated string categories = 4;
+  int32 position = 5;
+}
+
+message Playlist {
+  string playlist_id = 1;
+  string playlist_name = 2;
+  string owner_id = 3;
+  bool is_public = 4;
+  repeated PlaylistSong songs = 5;
+}
+
+message CreatePlaylistRequest {
+  string playlist_name = 1;
+  string owner_id = 2;
+  bool is_public = 3;
+}
+
+message CreatePlaylistResponse {
+  string playlist_id = 1;
+}
+
+message RemoveSongFromPlaylistRequest {
+  string playlist_id = 1;
+  string song_id = 2;
+}
+
+message MoveSongInPlaylistRequest {
+  string playlist_id = 1;
+  string song_id = 2;
+  int32 new_position = 3;
+}
+
+message GetPlaylistByIDRequest {
+  string playlist_id = 1;
+  string user_id = 2; // để check quyền truy cập
+}
+
+message ListMyPlaylistsRequest {
+  string owner_id = 1;
+}
+
+message ListMyPlaylistsResponse {
+  repeated Playlist playlists = 1;
+}
+
+service PlaylistService {
+  rpc CreatePlaylist(CreatePlaylistRequest) returns (CreatePlaylistResponse);
+  rpc RemoveSongFromPlaylist(RemoveSongFromPlaylistRequest) returns (google.protobuf.Empty);
+  rpc MoveSongInPlaylist(MoveSongInPlaylistRequest) returns (google.protobuf.Empty);
+  rpc GetPlaylistByID(GetPlaylistByIDRequest) returns (Playlist);
+  rpc ListMyPlaylists(ListMyPlaylistsRequest) returns (ListMyPlaylistsResponse);
+}
