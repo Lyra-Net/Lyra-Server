@@ -27,7 +27,7 @@ func NewGrpcServer(port string, svc pb.PlaylistServiceServer) *GrpcServer {
 }
 
 func (s *GrpcServer) Start() error {
-	lis, err := net.Listen("tcp", s.port)
+	lis, err := net.Listen("tcp", ":"+s.port)
 	if err != nil {
 		return err
 	}

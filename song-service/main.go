@@ -52,7 +52,6 @@ func main() {
 	httpServer := server.NewHttpServer(ctx, cfg.HttpPort, r)
 
 	go func() {
-		log.Println("http server listening on: ", cfg.HttpPort)
 		if err := httpServer.Start(); err != nil {
 			errCh <- err
 		}
@@ -64,7 +63,6 @@ func main() {
 	grpcServer := server.NewGrpcServer(cfg.GRPCPort, playlistSvc)
 
 	go func() {
-		log.Println("gRPC server listening on: ", cfg.GRPCPort)
 		if err := grpcServer.Start(); err != nil {
 			errCh <- err
 		}
