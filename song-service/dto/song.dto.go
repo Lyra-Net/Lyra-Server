@@ -1,14 +1,5 @@
 package dto
 
-type SongServiceDTO struct {
-	CreateArtistRequest CreateArtistRequest `json:"CreateArtistRequest"`
-	CreateSongRequest   CreateSongRequest   `json:"CreateSongRequest"`
-	CreateSongResponse  CreateSongResponse  `json:"CreateSongResponse"`
-	Artist              Artist              `json:"Artist"`
-	Song                CreateSongRequest   `json:"Song"`
-	Playlist            Playlist            `json:"Playlist"`
-}
-
 type Artist struct {
 	ID   int64  `json:"id"`
 	Name string `json:"name"`
@@ -16,6 +7,17 @@ type Artist struct {
 
 type CreateArtistRequest struct {
 	Name string `json:"name"`
+}
+
+type CreatePlaylistRequest struct {
+	PlaylistName string  `json:"playlist_name"`
+	OwnerID      string  `json:"owner_id"`
+	IsPublic     bool    `json:"is_public"`
+	PlaylistID   *string `json:"playlist_id,omitempty"`
+}
+
+type CreatePlaylistResponse struct {
+	PlaylistID string `json:"playlist_id"`
 }
 
 type CreateSongRequest struct {
@@ -31,9 +33,34 @@ type CreateSongResponse struct {
 	ID string `json:"id"`
 }
 
-type Playlist struct {
+type GetPlaylistByIDResponse struct {
+	PlaylistID   string         `json:"playlist_id"`
+	PlaylistName string         `json:"playlist_name"`
+	Songs        []SongResponse `json:"songs"`
+}
+
+type SongResponse struct {
+	SongID     string   `json:"song_id"`
+	Title      string   `json:"title"`
+	Categories []string `json:"categories"`
+	Position   int32    `json:"position"`
+}
+
+type MoveSongRequest struct {
+	SongID      string `json:"song_id" binding:"required"`
+	NewPosition int32  `json:"new_position" binding:"required"`
+}
+
+type MoveSongResponse struct {
+	PlaylistID  string `json:"playlist_id"`
+	SongID      string `json:"song_id"`
+	NewPosition int32  `json:"new_position"`
+}
+
+type PlaylistDTO struct {
 	PlaylistID   string `json:"playlist_id"`
 	PlaylistName string `json:"playlist_name"`
-	OwnerID      string `json:"owner_id"`
 	IsPublic     bool   `json:"is_public"`
+	CreatedAt    string `json:"created_at"`
+	UpdatedAt    string `json:"updated_at"`
 }

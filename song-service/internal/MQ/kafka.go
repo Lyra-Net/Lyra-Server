@@ -41,3 +41,7 @@ func (p *KafkaProducer) Emit(ctx context.Context, eventType string, payload inte
 		Value: data,
 	})
 }
+
+func (p *KafkaProducer) Close() error {
+	return p.writer.Close()
+}
