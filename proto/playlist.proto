@@ -45,7 +45,7 @@ message MoveSongInPlaylistRequest {
 
 message GetPlaylistByIDRequest {
   string playlist_id = 1;
-  string user_id = 2; // để check quyền truy cập
+  string user_id = 2;
 }
 
 message ListMyPlaylistsRequest {
