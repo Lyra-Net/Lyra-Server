@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -26,6 +25,8 @@ const (
 	PlaylistService_MoveSongInPlaylist_FullMethodName     = "/playlist.PlaylistService/MoveSongInPlaylist"
 	PlaylistService_GetPlaylistByID_FullMethodName        = "/playlist.PlaylistService/GetPlaylistByID"
 	PlaylistService_ListMyPlaylists_FullMethodName        = "/playlist.PlaylistService/ListMyPlaylists"
+	PlaylistService_UpdatePlaylist_FullMethodName         = "/playlist.PlaylistService/UpdatePlaylist"
+	PlaylistService_DeletePlaylist_FullMethodName         = "/playlist.PlaylistService/DeletePlaylist"
 )
 
 // PlaylistServiceClient is the client API for PlaylistService service.
@@ -33,11 +34,13 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlaylistServiceClient interface {
 	CreatePlaylist(ctx context.Context, in *CreatePlaylistRequest, opts ...grpc.CallOption) (*CreatePlaylistResponse, error)
-	AddSongToPlaylist(ctx context.Context, in *AddSongToPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	RemoveSongFromPlaylist(ctx context.Context, in *RemoveSongFromPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	MoveSongInPlaylist(ctx context.Context, in *MoveSongInPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AddSongToPlaylist(ctx context.Context, in *AddSongToPlaylistRequest, opts ...grpc.CallOption) (*AddSongToPlaylistResponse, error)
+	RemoveSongFromPlaylist(ctx context.Context, in *RemoveSongFromPlaylistRequest, opts ...grpc.CallOption) (*RemoveSongFromPlaylistResponse, error)
+	MoveSongInPlaylist(ctx context.Context, in *MoveSongInPlaylistRequest, opts ...grpc.CallOption) (*MoveSongInPlaylistResponse, error)
 	GetPlaylistByID(ctx context.Context, in *GetPlaylistByIDRequest, opts ...grpc.CallOption) (*Playlist, error)
 	ListMyPlaylists(ctx context.Context, in *ListMyPlaylistsRequest, opts ...grpc.CallOption) (*ListMyPlaylistsResponse, error)
+	UpdatePlaylist(ctx context.Context, in *UpdatePlaylistRequest, opts ...grpc.CallOption) (*UpdatePlaylistResponse, error)
+	DeletePlaylist(ctx context.Context, in *DeletePlaylistRequest, opts ...grpc.CallOption) (*DeletePlaylistResponse, error)
 }
 
 type playlistServiceClient struct {
@@ -58,9 +61,9 @@ func (c *playlistServiceClient) CreatePlaylist(ctx context.Context, in *CreatePl
 	return out, nil
 }
 
-func (c *playlistServiceClient) AddSongToPlaylist(ctx context.Context, in *AddSongToPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *playlistServiceClient) AddSongToPlaylist(ctx context.Context, in *AddSongToPlaylistRequest, opts ...grpc.CallOption) (*AddSongToPlaylistResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(AddSongToPlaylistResponse)
 	err := c.cc.Invoke(ctx, PlaylistService_AddSongToPlaylist_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -68,9 +71,9 @@ func (c *playlistServiceClient) AddSongToPlaylist(ctx context.Context, in *AddSo
 	return out, nil
 }
 
-func (c *playlistServiceClient) RemoveSongFromPlaylist(ctx context.Context, in *RemoveSongFromPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *playlistServiceClient) RemoveSongFromPlaylist(ctx context.Context, in *RemoveSongFromPlaylistRequest, opts ...grpc.CallOption) (*RemoveSongFromPlaylistResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(RemoveSongFromPlaylistResponse)
 	err := c.cc.Invoke(ctx, PlaylistService_RemoveSongFromPlaylist_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -78,9 +81,9 @@ func (c *playlistServiceClient) RemoveSongFromPlaylist(ctx context.Context, in *
 	return out, nil
 }
 
-func (c *playlistServiceClient) MoveSongInPlaylist(ctx context.Context, in *MoveSongInPlaylistRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *playlistServiceClient) MoveSongInPlaylist(ctx context.Context, in *MoveSongInPlaylistRequest, opts ...grpc.CallOption) (*MoveSongInPlaylistResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
+	out := new(MoveSongInPlaylistResponse)
 	err := c.cc.Invoke(ctx, PlaylistService_MoveSongInPlaylist_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -108,16 +111,38 @@ func (c *playlistServiceClient) ListMyPlaylists(ctx context.Context, in *ListMyP
 	return out, nil
 }
 
+func (c *playlistServiceClient) UpdatePlaylist(ctx context.Context, in *UpdatePlaylistRequest, opts ...grpc.CallOption) (*UpdatePlaylistResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdatePlaylistResponse)
+	err := c.cc.Invoke(ctx, PlaylistService_UpdatePlaylist_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *playlistServiceClient) DeletePlaylist(ctx context.Context, in *DeletePlaylistRequest, opts ...grpc.CallOption) (*DeletePlaylistResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeletePlaylistResponse)
+	err := c.cc.Invoke(ctx, PlaylistService_DeletePlaylist_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PlaylistServiceServer is the server API for PlaylistService service.
 // All implementations must embed UnimplementedPlaylistServiceServer
 // for forward compatibility.
 type PlaylistServiceServer interface {
 	CreatePlaylist(context.Context, *CreatePlaylistRequest) (*CreatePlaylistResponse, error)
-	AddSongToPlaylist(context.Context, *AddSongToPlaylistRequest) (*emptypb.Empty, error)
-	RemoveSongFromPlaylist(context.Context, *RemoveSongFromPlaylistRequest) (*emptypb.Empty, error)
-	MoveSongInPlaylist(context.Context, *MoveSongInPlaylistRequest) (*emptypb.Empty, error)
+	AddSongToPlaylist(context.Context, *AddSongToPlaylistRequest) (*AddSongToPlaylistResponse, error)
+	RemoveSongFromPlaylist(context.Context, *RemoveSongFromPlaylistRequest) (*RemoveSongFromPlaylistResponse, error)
+	MoveSongInPlaylist(context.Context, *MoveSongInPlaylistRequest) (*MoveSongInPlaylistResponse, error)
 	GetPlaylistByID(context.Context, *GetPlaylistByIDRequest) (*Playlist, error)
 	ListMyPlaylists(context.Context, *ListMyPlaylistsRequest) (*ListMyPlaylistsResponse, error)
+	UpdatePlaylist(context.Context, *UpdatePlaylistRequest) (*UpdatePlaylistResponse, error)
+	DeletePlaylist(context.Context, *DeletePlaylistRequest) (*DeletePlaylistResponse, error)
 	mustEmbedUnimplementedPlaylistServiceServer()
 }
 
@@ -131,13 +156,13 @@ type UnimplementedPlaylistServiceServer struct{}
 func (UnimplementedPlaylistServiceServer) CreatePlaylist(context.Context, *CreatePlaylistRequest) (*CreatePlaylistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePlaylist not implemented")
 }
-func (UnimplementedPlaylistServiceServer) AddSongToPlaylist(context.Context, *AddSongToPlaylistRequest) (*emptypb.Empty, error) {
+func (UnimplementedPlaylistServiceServer) AddSongToPlaylist(context.Context, *AddSongToPlaylistRequest) (*AddSongToPlaylistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddSongToPlaylist not implemented")
 }
-func (UnimplementedPlaylistServiceServer) RemoveSongFromPlaylist(context.Context, *RemoveSongFromPlaylistRequest) (*emptypb.Empty, error) {
+func (UnimplementedPlaylistServiceServer) RemoveSongFromPlaylist(context.Context, *RemoveSongFromPlaylistRequest) (*RemoveSongFromPlaylistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSongFromPlaylist not implemented")
 }
-func (UnimplementedPlaylistServiceServer) MoveSongInPlaylist(context.Context, *MoveSongInPlaylistRequest) (*emptypb.Empty, error) {
+func (UnimplementedPlaylistServiceServer) MoveSongInPlaylist(context.Context, *MoveSongInPlaylistRequest) (*MoveSongInPlaylistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MoveSongInPlaylist not implemented")
 }
 func (UnimplementedPlaylistServiceServer) GetPlaylistByID(context.Context, *GetPlaylistByIDRequest) (*Playlist, error) {
@@ -145,6 +170,12 @@ func (UnimplementedPlaylistServiceServer) GetPlaylistByID(context.Context, *GetP
 }
 func (UnimplementedPlaylistServiceServer) ListMyPlaylists(context.Context, *ListMyPlaylistsRequest) (*ListMyPlaylistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMyPlaylists not implemented")
+}
+func (UnimplementedPlaylistServiceServer) UpdatePlaylist(context.Context, *UpdatePlaylistRequest) (*UpdatePlaylistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlaylist not implemented")
+}
+func (UnimplementedPlaylistServiceServer) DeletePlaylist(context.Context, *DeletePlaylistRequest) (*DeletePlaylistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePlaylist not implemented")
 }
 func (UnimplementedPlaylistServiceServer) mustEmbedUnimplementedPlaylistServiceServer() {}
 func (UnimplementedPlaylistServiceServer) testEmbeddedByValue()                         {}
@@ -275,6 +306,42 @@ func _PlaylistService_ListMyPlaylists_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PlaylistService_UpdatePlaylist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePlaylistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlaylistServiceServer).UpdatePlaylist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlaylistService_UpdatePlaylist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlaylistServiceServer).UpdatePlaylist(ctx, req.(*UpdatePlaylistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PlaylistService_DeletePlaylist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePlaylistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlaylistServiceServer).DeletePlaylist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlaylistService_DeletePlaylist_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlaylistServiceServer).DeletePlaylist(ctx, req.(*DeletePlaylistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PlaylistService_ServiceDesc is the grpc.ServiceDesc for PlaylistService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -305,6 +372,14 @@ var PlaylistService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMyPlaylists",
 			Handler:    _PlaylistService_ListMyPlaylists_Handler,
+		},
+		{
+			MethodName: "UpdatePlaylist",
+			Handler:    _PlaylistService_UpdatePlaylist_Handler,
+		},
+		{
+			MethodName: "DeletePlaylist",
+			Handler:    _PlaylistService_DeletePlaylist_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

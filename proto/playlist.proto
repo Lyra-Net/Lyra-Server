@@ -4,8 +4,6 @@ package playlist;
 
 option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/playlist;playlist";
 
-import "google/protobuf/empty.proto";
-
 message PlaylistSong {
   string song_id = 1;
   string title = 2;
@@ -24,12 +22,12 @@ message Playlist {
 
 message CreatePlaylistRequest {
   string playlist_name = 1;
-  string owner_id = 2;
-  bool is_public = 3;
+  bool is_public = 2;
 }
 
 message CreatePlaylistResponse {
   string playlist_id = 1;
+  bool is_success = 2;
 }
 
 message AddSongToPlaylistRequest {
@@ -37,10 +35,17 @@ message AddSongToPlaylistRequest {
   string song_id = 2;
 }
 
+message AddSongToPlaylistResponse {
+  bool is_success = 1;
+}
 
 message RemoveSongFromPlaylistRequest {
   string playlist_id = 1;
   string song_id = 2;
+}
+
+message RemoveSongFromPlaylistResponse {
+  bool is_success = 1;
 }
 
 message MoveSongInPlaylistRequest {
@@ -49,24 +54,46 @@ message MoveSongInPlaylistRequest {
   int32 new_position = 3;
 }
 
-message GetPlaylistByIDRequest {
-  string playlist_id = 1;
-  string user_id = 2;
+message MoveSongInPlaylistResponse {
+  bool is_success = 1;
 }
 
-message ListMyPlaylistsRequest {
-  string owner_id = 1;
+message GetPlaylistByIDRequest {
+  string playlist_id = 1;
 }
+
+message ListMyPlaylistsRequest {}
 
 message ListMyPlaylistsResponse {
   repeated Playlist playlists = 1;
 }
 
+message UpdatePlaylistRequest {
+  string playlist_id = 1;
+  string playlist_name = 2;
+  bool is_public = 3;
+}
+
+message UpdatePlaylistResponse {
+  Playlist playlist = 1;
+  bool is_success = 2;
+}
+
+message DeletePlaylistRequest {
+  string playlist_id = 1;
+}
+
+message DeletePlaylistResponse {
+  bool is_success = 1;
+}
+
 service PlaylistService {
   rpc CreatePlaylist(CreatePlaylistRequest) returns (CreatePlaylistResponse);
-  rpc AddSongToPlaylist(AddSongToPlaylistRequest) returns (google.protobuf.Empty);
-  rpc RemoveSongFromPlaylist(RemoveSongFromPlaylistRequest) returns (google.protobuf.Empty);
-  rpc MoveSongInPlaylist(MoveSongInPlaylistRequest) returns (google.protobuf.Empty);
+  rpc AddSongToPlaylist(AddSongToPlaylistRequest) returns (AddSongToPlaylistResponse);
+  rpc RemoveSongFromPlaylist(RemoveSongFromPlaylistRequest) returns (RemoveSongFromPlaylistResponse);
+  rpc MoveSongInPlaylist(MoveSongInPlaylistRequest) returns (MoveSongInPlaylistResponse);
   rpc GetPlaylistByID(GetPlaylistByIDRequest) returns (Playlist);
   rpc ListMyPlaylists(ListMyPlaylistsRequest) returns (ListMyPlaylistsResponse);
+  rpc UpdatePlaylist(UpdatePlaylistRequest) returns (UpdatePlaylistResponse);
+  rpc DeletePlaylist(DeletePlaylistRequest) returns (DeletePlaylistResponse);
 }
