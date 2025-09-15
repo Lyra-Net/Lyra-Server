@@ -106,13 +106,12 @@ func toPBArtists(in []dto.Artist) []*pb.Artist {
 	return out
 }
 
-func toPBPlaylists(in []dto.Playlist) []*pb.Playlist {
+func toPBPlaylists(in []dto.PlaylistDTO) []*pb.Playlist {
 	out := make([]*pb.Playlist, 0, len(in))
 	for _, p := range in {
 		out = append(out, &pb.Playlist{
 			PlaylistId:   p.PlaylistID,
 			PlaylistName: p.PlaylistName,
-			OwnerId:      p.OwnerID,
 		})
 	}
 	return out

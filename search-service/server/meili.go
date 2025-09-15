@@ -87,7 +87,7 @@ func (mc *MeiliClient) SearchArtists(query string, limit int64) ([]dto.Artist, e
 	return artists, nil
 }
 
-func (mc *MeiliClient) SearchPlaylists(query string, limit int64) ([]dto.Playlist, error) {
+func (mc *MeiliClient) SearchPlaylists(query string, limit int64) ([]dto.PlaylistDTO, error) {
 	res, err := mc.client.Index("playlists").Search(query, &meilisearch.SearchRequest{
 		Limit: limit,
 	})
@@ -98,7 +98,7 @@ func (mc *MeiliClient) SearchPlaylists(query string, limit int64) ([]dto.Playlis
 	if err != nil {
 		return nil, err
 	}
-	var pls []dto.Playlist
+	var pls []dto.PlaylistDTO
 	if err := json.Unmarshal(b, &pls); err != nil {
 		return nil, err
 	}
