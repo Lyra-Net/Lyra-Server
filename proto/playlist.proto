@@ -32,6 +32,12 @@ message CreatePlaylistResponse {
   string playlist_id = 1;
 }
 
+message AddSongToPlaylistRequest {
+  string playlist_id = 1;
+  string song_id = 2;
+}
+
+
 message RemoveSongFromPlaylistRequest {
   string playlist_id = 1;
   string song_id = 2;
@@ -58,6 +64,7 @@ message ListMyPlaylistsResponse {
 
 service PlaylistService {
   rpc CreatePlaylist(CreatePlaylistRequest) returns (CreatePlaylistResponse);
+  rpc AddSongToPlaylist(AddSongToPlaylistRequest) returns (google.protobuf.Empty);
   rpc RemoveSongFromPlaylist(RemoveSongFromPlaylistRequest) returns (google.protobuf.Empty);
   rpc MoveSongInPlaylist(MoveSongInPlaylistRequest) returns (google.protobuf.Empty);
   rpc GetPlaylistByID(GetPlaylistByIDRequest) returns (Playlist);
