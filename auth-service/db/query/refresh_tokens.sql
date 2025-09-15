@@ -1,0 +1,15 @@
+-- name: CreateRefreshToken :exec
+INSERT INTO refresh_tokens (id, user_id, token, device_id, user_agent, expires_at)
+VALUES ($1, $2, $3, $4, $5, $6);
+
+-- name: GetRefreshToken :one
+SELECT * FROM refresh_tokens
+WHERE id = $1 AND user_id = $2;
+
+-- name: DeleteRefreshToken :exec
+DELETE FROM refresh_tokens
+WHERE id = $1;
+
+-- name: DeleteUserRefreshTokens :exec
+DELETE FROM refresh_tokens
+WHERE user_id = $1;
