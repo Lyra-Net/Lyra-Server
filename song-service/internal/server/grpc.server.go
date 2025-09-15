@@ -3,6 +3,7 @@ package server
 import (
 	"log"
 	"net"
+	"song-service/internal/interceptor"
 
 	pb "github.com/trandinh0506/BypassBeats/proto/gen/playlist"
 
@@ -16,7 +17,9 @@ type GrpcServer struct {
 }
 
 func NewGrpcServer(port string, svc pb.PlaylistServiceServer) *GrpcServer {
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.AuthUnaryInterceptor()),
+	)
 	pb.RegisterPlaylistServiceServer(grpcServer, svc)
 	reflection.Register(grpcServer)
 

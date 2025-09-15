@@ -30,7 +30,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
-	github.com/trandinh0506/BypassBeats/proto v0.0.0-20250909115722-7aceef3b9377 // indirect
+	github.com/trandinh0506/BypassBeats/proto v0.0.0-20250915035644-512d78addad2 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.8.0 // indirect
