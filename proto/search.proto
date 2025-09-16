@@ -9,7 +9,7 @@ service SearchService {
 
 message SearchRequest {
   string query = 1;
-  string type = 2;// "song" | "artist" | "playlist"
+  string type = 2; // "song" | "artist" | "playlist" | "all"
 }
 
 message SearchResponse {
@@ -18,12 +18,13 @@ message SearchResponse {
   repeated Song songs = 3;
   repeated Artist artists = 4;
   repeated Playlist playlists = 5;
+  int32 total_hits = 6;
 }
 
 message Song {
   string id = 1;
   string title = 2;
-  string artist = 3;
+  repeated Artist artists = 3;
 }
 
 message Artist {
@@ -34,5 +35,6 @@ message Artist {
 message Playlist {
   string playlist_id = 1;
   string playlist_name = 2;
-  string owner_id = 3;
+  int32 song_count = 3;
+  repeated string search_keys = 4;
 }

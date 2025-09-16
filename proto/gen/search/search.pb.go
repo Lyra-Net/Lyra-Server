@@ -24,7 +24,7 @@ const (
 type SearchRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Query         string                 `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"` // "song" | "artist" | "playlist"
+	Type          string                 `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"` // "song" | "artist" | "playlist" | "all"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -80,6 +80,7 @@ type SearchResponse struct {
 	Songs         []*Song                `protobuf:"bytes,3,rep,name=songs,proto3" json:"songs,omitempty"`
 	Artists       []*Artist              `protobuf:"bytes,4,rep,name=artists,proto3" json:"artists,omitempty"`
 	Playlists     []*Playlist            `protobuf:"bytes,5,rep,name=playlists,proto3" json:"playlists,omitempty"`
+	TotalHits     int32                  `protobuf:"varint,6,opt,name=total_hits,json=totalHits,proto3" json:"total_hits,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -149,11 +150,18 @@ func (x *SearchResponse) GetPlaylists() []*Playlist {
 	return nil
 }
 
+func (x *SearchResponse) GetTotalHits() int32 {
+	if x != nil {
+		return x.TotalHits
+	}
+	return 0
+}
+
 type Song struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Artist        string                 `protobuf:"bytes,3,opt,name=artist,proto3" json:"artist,omitempty"`
+	Artists       []*Artist              `protobuf:"bytes,3,rep,name=artists,proto3" json:"artists,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,11 +210,11 @@ func (x *Song) GetTitle() string {
 	return ""
 }
 
-func (x *Song) GetArtist() string {
+func (x *Song) GetArtists() []*Artist {
 	if x != nil {
-		return x.Artist
+		return x.Artists
 	}
-	return ""
+	return nil
 }
 
 type Artist struct {
@@ -265,7 +273,8 @@ type Playlist struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PlaylistId    string                 `protobuf:"bytes,1,opt,name=playlist_id,json=playlistId,proto3" json:"playlist_id,omitempty"`
 	PlaylistName  string                 `protobuf:"bytes,2,opt,name=playlist_name,json=playlistName,proto3" json:"playlist_name,omitempty"`
-	OwnerId       string                 `protobuf:"bytes,3,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	SongCount     int32                  `protobuf:"varint,3,opt,name=song_count,json=songCount,proto3" json:"song_count,omitempty"`
+	SearchKeys    []string               `protobuf:"bytes,4,rep,name=search_keys,json=searchKeys,proto3" json:"search_keys,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -314,11 +323,18 @@ func (x *Playlist) GetPlaylistName() string {
 	return ""
 }
 
-func (x *Playlist) GetOwnerId() string {
+func (x *Playlist) GetSongCount() int32 {
 	if x != nil {
-		return x.OwnerId
+		return x.SongCount
 	}
-	return ""
+	return 0
+}
+
+func (x *Playlist) GetSearchKeys() []string {
+	if x != nil {
+		return x.SearchKeys
+	}
+	return nil
 }
 
 var File_search_proto protoreflect.FileDescriptor
@@ -328,25 +344,30 @@ const file_search_proto_rawDesc = "" +
 	"\fsearch.proto\x12\x06search\"9\n" +
 	"\rSearchRequest\x12\x14\n" +
 	"\x05query\x18\x01 \x01(\tR\x05query\x12\x12\n" +
-	"\x04type\x18\x02 \x01(\tR\x04type\"\xbe\x01\n" +
+	"\x04type\x18\x02 \x01(\tR\x04type\"\xdd\x01\n" +
 	"\x0eSearchResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\x12\"\n" +
 	"\x05songs\x18\x03 \x03(\v2\f.search.SongR\x05songs\x12(\n" +
 	"\aartists\x18\x04 \x03(\v2\x0e.search.ArtistR\aartists\x12.\n" +
-	"\tplaylists\x18\x05 \x03(\v2\x10.search.PlaylistR\tplaylists\"D\n" +
+	"\tplaylists\x18\x05 \x03(\v2\x10.search.PlaylistR\tplaylists\x12\x1d\n" +
+	"\n" +
+	"total_hits\x18\x06 \x01(\x05R\ttotalHits\"V\n" +
 	"\x04Song\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
-	"\x06artist\x18\x03 \x01(\tR\x06artist\",\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12(\n" +
+	"\aartists\x18\x03 \x03(\v2\x0e.search.ArtistR\aartists\",\n" +
 	"\x06Artist\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"k\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x90\x01\n" +
 	"\bPlaylist\x12\x1f\n" +
 	"\vplaylist_id\x18\x01 \x01(\tR\n" +
 	"playlistId\x12#\n" +
-	"\rplaylist_name\x18\x02 \x01(\tR\fplaylistName\x12\x19\n" +
-	"\bowner_id\x18\x03 \x01(\tR\aownerId2H\n" +
+	"\rplaylist_name\x18\x02 \x01(\tR\fplaylistName\x12\x1d\n" +
+	"\n" +
+	"song_count\x18\x03 \x01(\x05R\tsongCount\x12\x1f\n" +
+	"\vsearch_keys\x18\x04 \x03(\tR\n" +
+	"searchKeys2H\n" +
 	"\rSearchService\x127\n" +
 	"\x06Search\x12\x15.search.SearchRequest\x1a\x16.search.SearchResponseB=Z;github.com/trandinh0506/BypassBeats/proto/gen/search;searchb\x06proto3"
 
@@ -374,13 +395,14 @@ var file_search_proto_depIdxs = []int32{
 	2, // 0: search.SearchResponse.songs:type_name -> search.Song
 	3, // 1: search.SearchResponse.artists:type_name -> search.Artist
 	4, // 2: search.SearchResponse.playlists:type_name -> search.Playlist
-	0, // 3: search.SearchService.Search:input_type -> search.SearchRequest
-	1, // 4: search.SearchService.Search:output_type -> search.SearchResponse
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 3: search.Song.artists:type_name -> search.Artist
+	0, // 4: search.SearchService.Search:input_type -> search.SearchRequest
+	1, // 5: search.SearchService.Search:output_type -> search.SearchResponse
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_search_proto_init() }
