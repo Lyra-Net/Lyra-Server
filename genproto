@@ -1,20 +1,48 @@
 #!/bin/bash
 set -e
 
+GOROOT="/usr/local/go/bin/go"
+
+PROTOC_GEN_GO=$($GOROOT env GOBIN)/protoc-gen-go
+PROTOC_GEN_GO_GRPC=$($GOROOT env GOBIN)/protoc-gen-go-grpc
+
+
+if [ ! -x "$PROTOC_GEN_GO" ]; then
+  PROTOC_GEN_GO=$(go env GOPATH)/bin/protoc-gen-go
+fi
+
+if [ ! -x "$PROTOC_GEN_GO_GRPC" ]; then
+  PROTOC_GEN_GO_GRPC=$(go env GOPATH)/bin/protoc-gen-go-grpc
+fi
+
+
+if [ ! -x "$PROTOC_GEN_GO" ]; then
+  echo "[ERROR]: protoc-gen-go not found. Run: go install google.golang.org/protobuf/cmd/protoc-gen-go@latest"
+  exit 1
+fi
+
+if [ ! -x "$PROTOC_GEN_GO_GRPC" ]; then
+  echo "[ERROR]: protoc-gen-go-grpc not found. Run: go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest"
+  exit 1
+fi
 
 for file in proto/*.proto; do
-  
   fname=$(basename "$file" .proto)
-
   outdir="proto/gen/$fname"
   mkdir -p "$outdir"
 
   echo ">> Generating code for $file into $outdir"
 
   protoc \
+    --plugin=protoc-gen-go="$PROTOC_GEN_GO" \
+    --plugin=protoc-gen-go-grpc="$PROTOC_GEN_GO_GRPC" \
+    --proto_path=proto \
+    --proto_path=/usr/include \
     --go_out="$outdir" \
     --go-grpc_out="$outdir" \
     --go_opt=paths=source_relative \
     --go-grpc_opt=paths=source_relative \
     "$file"
 done
+
+echo ">> All done!"
