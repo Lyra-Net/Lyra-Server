@@ -2,6 +2,7 @@ package utils
 
 import (
 	"context"
+	"log"
 	"song-service/internal/interceptor"
 	"song-service/internal/repository"
 
@@ -12,6 +13,7 @@ import (
 
 func GetUserID(ctx context.Context) (string, bool) {
 	val := ctx.Value(interceptor.UserIDKey)
+	log.Println("GetUserID - Value:", val)
 	if val == nil {
 		return "", false
 	}

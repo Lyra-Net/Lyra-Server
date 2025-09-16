@@ -2,6 +2,7 @@ package playlist
 
 import (
 	"context"
+	"log"
 	"song-service/internal/repository"
 	"song-service/internal/utils"
 
@@ -103,6 +104,7 @@ func (s *PlaylistService) GetPlaylistByID(ctx context.Context, req *pb.GetPlayli
 
 func (s *PlaylistService) ListMyPlaylists(ctx context.Context, req *pb.ListMyPlaylistsRequest) (*pb.ListMyPlaylistsResponse, error) {
 	userId, ok := utils.GetUserID(ctx)
+	log.Println("UserID:", userId, "OK:", ok)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
