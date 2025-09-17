@@ -8,12 +8,15 @@
 // match the expected interface, even if the JSON is valid.
 
 export interface SongServiceDTO {
-    CreateArtistRequest: CreateArtistRequest;
-    CreateSongRequest:   CreateSongRequest;
-    CreateSongResponse:  CreateSongResponse;
-    Artist:              Artist;
-    Song:                CreateSongRequest;
-    Playlist:            Playlist;
+    CreateArtistRequest:     CreateArtistRequest;
+    CreateSongRequest:       CreateSongRequest;
+    CreateSongResponse:      CreateSongResponse;
+    CreatePlaylistRequest:   CreatePlaylistRequest;
+    CreatePlaylistResponse:  CreatePlaylistResponse;
+    GetPlaylistByIdResponse: GetPlaylistByIDResponse;
+    Artist:                  Artist;
+    Song:                    CreateSongRequest;
+    Playlist:                CreatePlaylistRequest;
 }
 
 export interface Artist {
@@ -23,6 +26,17 @@ export interface Artist {
 
 export interface CreateArtistRequest {
     name: string;
+}
+
+export interface CreatePlaylistRequest {
+    playlist_name: string;
+    owner_id:      string;
+    is_public:     boolean;
+    playlist_id?:  string;
+}
+
+export interface CreatePlaylistResponse {
+    playlist_id: string;
 }
 
 export interface CreateSongRequest {
@@ -38,11 +52,10 @@ export interface CreateSongResponse {
     id: string;
 }
 
-export interface Playlist {
+export interface GetPlaylistByIDResponse {
     playlist_id:   string;
     playlist_name: string;
-    owner_id:      string;
-    is_public:     boolean;
+    songs:         string[];
 }
 
 // Converts JSON strings to/from your types
@@ -214,9 +227,12 @@ const typeMap: any = {
         { json: "CreateArtistRequest", js: "CreateArtistRequest", typ: r("CreateArtistRequest") },
         { json: "CreateSongRequest", js: "CreateSongRequest", typ: r("CreateSongRequest") },
         { json: "CreateSongResponse", js: "CreateSongResponse", typ: r("CreateSongResponse") },
+        { json: "CreatePlaylistRequest", js: "CreatePlaylistRequest", typ: r("CreatePlaylistRequest") },
+        { json: "CreatePlaylistResponse", js: "CreatePlaylistResponse", typ: r("CreatePlaylistResponse") },
+        { json: "GetPlaylistByIdResponse", js: "GetPlaylistByIdResponse", typ: r("GetPlaylistByIDResponse") },
         { json: "Artist", js: "Artist", typ: r("Artist") },
         { json: "Song", js: "Song", typ: r("CreateSongRequest") },
-        { json: "Playlist", js: "Playlist", typ: r("Playlist") },
+        { json: "Playlist", js: "Playlist", typ: r("CreatePlaylistRequest") },
     ], false),
     "Artist": o([
         { json: "id", js: "id", typ: 0 },
@@ -224,6 +240,15 @@ const typeMap: any = {
     ], false),
     "CreateArtistRequest": o([
         { json: "name", js: "name", typ: "" },
+    ], false),
+    "CreatePlaylistRequest": o([
+        { json: "playlist_name", js: "playlist_name", typ: "" },
+        { json: "owner_id", js: "owner_id", typ: "" },
+        { json: "is_public", js: "is_public", typ: true },
+        { json: "playlist_id", js: "playlist_id", typ: u(undefined, "") },
+    ], false),
+    "CreatePlaylistResponse": o([
+        { json: "playlist_id", js: "playlist_id", typ: "" },
     ], false),
     "CreateSongRequest": o([
         { json: "id", js: "id", typ: "" },
@@ -236,10 +261,9 @@ const typeMap: any = {
     "CreateSongResponse": o([
         { json: "id", js: "id", typ: "" },
     ], false),
-    "Playlist": o([
+    "GetPlaylistByIDResponse": o([
         { json: "playlist_id", js: "playlist_id", typ: "" },
         { json: "playlist_name", js: "playlist_name", typ: "" },
-        { json: "owner_id", js: "owner_id", typ: "" },
-        { json: "is_public", js: "is_public", typ: true },
+        { json: "songs", js: "songs", typ: a("") },
     ], false),
 };

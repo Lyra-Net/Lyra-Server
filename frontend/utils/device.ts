@@ -1,9 +1,8 @@
 export const getDeviceId = (): string => {
   const key = 'device_id';
   let deviceId = localStorage.getItem(key);
-
   if (!deviceId) {
-    deviceId = crypto.randomUUID(); // Hoặc dùng uuid()
+    deviceId = crypto.randomUUID();
     localStorage.setItem(key, deviceId);
   }
 

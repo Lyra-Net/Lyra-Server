@@ -33,7 +33,7 @@ export default function RegisterPage() {
       const device_id = getDeviceId();
 
       try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/register`, {
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
           username,
           password,
           device_id,

@@ -1,14 +1,17 @@
 'use client';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Header() {
   const [username, setUsername] = useState<string | null>(null);
-
+  const {data : session} = useSession();
+  const router = useRouter();
   useEffect(() => {
-    const storedName = localStorage.getItem('username');
-    if (storedName) {
-      setUsername(storedName);
+    if (!session) {
+      router.push('/login');
     }
+    setUsername(session?.user?.name || null);
   }, []);
   return (
     <header className="h-16 px-6 flex items-center justify-between bg-gray-900:0">

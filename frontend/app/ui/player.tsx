@@ -10,7 +10,7 @@ export default function Player() {
   useEffect(() => {
     if (currentSong && audioRef.current) {
       const audio = audioRef.current;
-      audio.src = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/play/${currentSong.id}`;
+      audio.src = `${process.env.NEXT_PUBLIC_API_URL}/stream/${currentSong.id}.mp3`;
       audio
         .play()
         .then(() => play())

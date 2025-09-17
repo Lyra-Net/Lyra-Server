@@ -1,11 +1,12 @@
 'use client';
 
-import { getDeviceId } from '@/utils/device';
-import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
+
+import { signIn } from "next-auth/react";
+import { getDeviceId } from '@/utils/device';
 
 export default function LoginPage() {
   const [showForm, setShowForm] = useState(false);
@@ -22,24 +23,21 @@ export default function LoginPage() {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (isPending) return;
-
       setIsPending(true);
-      const device_id = getDeviceId();
-
       try {
-        console.time('login');
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/login`, {
+        const res = await signIn("credentials", {
           username,
           password,
-          device_id,
+          device_id: getDeviceId(),
+          redirect: false,
         });
-        console.timeEnd('login');
-        const { access_token } = res.data;
-
-        localStorage.setItem('access_token', access_token);
-        localStorage.setItem('username', username);
-        toast.success('Logged in successfuly!');
-        router.push('/');
+        if (res?.error) {
+          console.log('Login error', res.error);
+          toast.error(res.error);
+        } else {
+          toast.success('Logged in successfuly!');
+          router.push('/');
+        }        
       } catch (err: any) {
         toast.error(err.response?.data?.message || 'Login failure');
         console.error('Login failed', err.response?.data || err.message);
