@@ -30,9 +30,9 @@ func CreateSong(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin.C
 			return
 		}
 
-		for _, artistId := range req.ArtistIDS {
+		for _, artistId := range req.Artists {
 			err = q.AddSongArtists(c.Request.Context(), repository.AddSongArtistsParams{
-				ArtistID: int32(artistId),
+				ArtistID: artistId.ID,
 				SongID:   song.ID,
 			})
 			if err != nil {

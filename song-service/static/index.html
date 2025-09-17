@@ -134,6 +134,7 @@
         </div>
 
         <script>
+            let Artists = [];
             // Debounce helper
             function debounce(fn, delay) {
                 let timer;
@@ -160,6 +161,7 @@
                 }
                 const res = await fetch(url);
                 const data = await res.json();
+                Artists = data;
                 const tbody = document.querySelector("#artistTable tbody");
                 tbody.innerHTML = "";
                 data.forEach((artist) => {
@@ -222,11 +224,15 @@
                         .getElementById("songToken")
                         .value.split(",")
                         .map((token) => token.trim());
-                    const artistIds = document
+                    const artists = document
                         .getElementById("artistIds")
                         .value.split(",")
-                        .map((id) => parseInt(id.trim()));
-
+                        .map((id) => {
+                            const artist = Artists.find(
+                                (a) => a.id === parseInt(id.trim())
+                            );
+                            return artist ? artist : null;
+                        });
                     await fetch(`/songs`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
@@ -234,7 +240,7 @@
                             id,
                             title,
                             title_token: songToken,
-                            artist_ids: artistIds,
+                            artists: artists,
                         }),
                     });
 

@@ -1,7 +1,7 @@
 package dto
 
 type Artist struct {
-	ID   int64  `json:"id"`
+	ID   int32  `json:"id"`
 	Name string `json:"name"`
 }
 
@@ -25,8 +25,7 @@ type CreateSongRequest struct {
 	Title      string   `json:"title"`
 	TitleToken []string `json:"title_token"`
 	Categories []string `json:"categories"`
-	ArtistIDS  []int64  `json:"artist_ids,omitempty"`
-	Artists    []string `json:"artists,omitempty"`
+	Artists    []Artist `json:"artists"`
 }
 
 type CreateSongResponse struct {
