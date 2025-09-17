@@ -16,11 +16,14 @@ var (
 	REFRESH_TOKEN_TIME = 7 * 24
 )
 
+const APISIX_CONSUMER_KEY = "auth-service"
+
 // ================= ACCESS TOKEN =====================
 
 func GenerateAccessToken(userID uuid.UUID, jti uuid.UUID, changePassAt int64) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id":        userID.String(),
+		"sub":            userID.String(),
+		"key":            APISIX_CONSUMER_KEY,
 		"iat":            time.Now().Unix(),
 		"exp":            time.Now().Add(time.Duration(ACCESS_TOKEN_TIME) * time.Hour).Unix(),
 		"jti":            jti.String(),
@@ -48,10 +51,10 @@ func ParseAccessToken(tokenStr string) (jwt.MapClaims, error) {
 
 func GenerateRefreshToken(userID uuid.UUID, jti uuid.UUID) (string, error) {
 	claims := jwt.MapClaims{
-		"user_id": userID.String(),
-		"iat":     time.Now().Unix(),
-		"exp":     time.Now().Add(time.Duration(REFRESH_TOKEN_TIME) * time.Hour).Unix(),
-		"jti":     jti.String(),
+		"sub": userID.String(),
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(time.Duration(REFRESH_TOKEN_TIME) * time.Hour).Unix(),
+		"jti": jti.String(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(refreshSecret)
