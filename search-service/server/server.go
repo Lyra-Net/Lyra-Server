@@ -7,7 +7,7 @@ import (
 	"search-service/dto"
 	"strings"
 
-	pb "github.com/trandinh0506/BypassBeats/proto/gen/search/proto"
+	pb "github.com/trandinh0506/BypassBeats/proto/gen/search"
 	"google.golang.org/grpc"
 )
 
@@ -21,54 +21,32 @@ func (s *searchServer) Search(ctx context.Context, req *pb.SearchRequest) (*pb.S
 	t := strings.ToLower(strings.TrimSpace(req.GetType()))
 
 	const limit int64 = 20
-
 	resp := &pb.SearchResponse{Success: true}
 
 	switch t {
 	case "song":
-		songsDto, err := s.meili.SearchSongs(q, limit)
+		songsDto, total, err := s.meili.SearchSongs(q, limit)
 		if err != nil {
 			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
 		}
 		resp.Songs = toPBSongs(songsDto)
+		resp.TotalHits = int32(total)
 
 	case "artist":
-		artistsDto, err := s.meili.SearchArtists(q, limit)
+		artistsDto, total, err := s.meili.SearchArtists(q, limit)
 		if err != nil {
 			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
 		}
 		resp.Artists = toPBArtists(artistsDto)
+		resp.TotalHits = int32(total)
 
 	case "playlist":
-		plsDto, err := s.meili.SearchPlaylists(q, limit)
+		plsDto, total, err := s.meili.SearchPlaylists(q, limit)
 		if err != nil {
 			return &pb.SearchResponse{Success: false, Error: err.Error()}, nil
 		}
 		resp.Playlists = toPBPlaylists(plsDto)
-
-	// nếu client không truyền type → trả về cả 3
-	case "", "all":
-		if songsDto, err := s.meili.SearchSongs(q, limit); err == nil {
-			resp.Songs = toPBSongs(songsDto)
-		} else {
-			resp.Success = false
-			resp.Error = err.Error()
-			return resp, nil
-		}
-		if artistsDto, err := s.meili.SearchArtists(q, limit); err == nil {
-			resp.Artists = toPBArtists(artistsDto)
-		} else {
-			resp.Success = false
-			resp.Error = err.Error()
-			return resp, nil
-		}
-		if plsDto, err := s.meili.SearchPlaylists(q, limit); err == nil {
-			resp.Playlists = toPBPlaylists(plsDto)
-		} else {
-			resp.Success = false
-			resp.Error = err.Error()
-			return resp, nil
-		}
+		resp.TotalHits = int32(total)
 
 	default:
 		return &pb.SearchResponse{
@@ -83,13 +61,17 @@ func (s *searchServer) Search(ctx context.Context, req *pb.SearchRequest) (*pb.S
 func toPBSongs(in []dto.CreateSongRequest) []*pb.Song {
 	out := make([]*pb.Song, 0, len(in))
 	for _, s := range in {
+		artists := make([]*pb.Artist, 0, len(s.Artists))
+		for _, a := range s.Artists {
+			artists = append(artists, &pb.Artist{
+				Id:   a.ID,
+				Name: a.Name,
+			})
+		}
 		out = append(out, &pb.Song{
-			Id:    s.ID,
-			Title: s.Title,
-			// Chú ý: proto có field Artist string,
-			// nhưng DTO của bạn đang là ArtistIDS []int.
-			// Hoặc đổi proto, hoặc index thêm field artist name.
-			Artist: "", // TODO: điền nếu bạn index sẵn tên artist
+			Id:      s.ID,
+			Title:   s.Title,
+			Artists: artists,
 		})
 	}
 	return out
@@ -106,12 +88,14 @@ func toPBArtists(in []dto.Artist) []*pb.Artist {
 	return out
 }
 
-func toPBPlaylists(in []dto.PlaylistDTO) []*pb.Playlist {
+func toPBPlaylists(in []dto.Playlist) []*pb.Playlist {
 	out := make([]*pb.Playlist, 0, len(in))
 	for _, p := range in {
 		out = append(out, &pb.Playlist{
-			PlaylistId:   p.PlaylistID,
+			PlaylistId:   p.PlaylistID.String(),
 			PlaylistName: p.PlaylistName,
+			SongCount:    int32(p.SongCount),
+			SearchKeys:   p.SearchKeys,
 		})
 	}
 	return out

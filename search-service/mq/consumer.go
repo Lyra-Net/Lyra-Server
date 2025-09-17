@@ -63,7 +63,7 @@ func (c *KafkaConsumer) Start(ctx context.Context) {
 				log.Printf("Failed to unmarshal artist: %v", err)
 				continue
 			}
-			log.Printf("🎤 New artist created: %+v", artist)
+			log.Printf("New artist created: %+v", artist)
 
 			if err := c.meiliClient.IndexArtist(artist); err != nil {
 				log.Printf("Failed to index artist: %v", err)

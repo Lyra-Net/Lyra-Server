@@ -6,13 +6,14 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/meilisearch/meilisearch-go v0.33.0
 	github.com/segmentio/kafka-go v0.4.49
-	github.com/trandinh0506/BypassBeats/proto v0.0.0-20250830131846-be936b0b7e3d
+	github.com/trandinh0506/BypassBeats/proto v0.0.0-20250916124829-8250093403a9
 	google.golang.org/grpc v1.75.0
 )
 
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	golang.org/x/net v0.41.0 // indirect
