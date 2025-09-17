@@ -1,0 +1,49 @@
+{
+  "list": [
+    {
+      "createdIndex": 684,
+      "value": {
+        "update_time": 1758104847,
+        "create_time": 1758018247,
+        "content": "syntax = \"proto3\";\n\npackage search;\noption go_package = \"github.com/trandinh0506/BypassBeats/proto/gen/search;search\";\n\nservice SearchService {\n  rpc Search(SearchRequest) returns (SearchResponse);\n}\n\nmessage SearchRequest {\n  string query = 1;\n  string type = 2; // \"song\" | \"artist\" | \"playlist\" | \"all\"\n}\n\nmessage SearchResponse {\n  bool success = 1;\n  string error = 2;\n  repeated Song songs = 3;\n  repeated Artist artists = 4;\n  repeated Playlist playlists = 5;\n  int32 total_hits = 6;\n}\n\nmessage Song {\n  string id = 1;\n  string title = 2;\n  repeated Artist artists = 3;\n}\n\nmessage Artist {\n  int32 id = 1;\n  string name = 2;\n}\n\nmessage Playlist {\n  string playlist_id = 1;\n  string playlist_name = 2;\n  int32 song_count = 3;\n  repeated string search_keys = 4;\n}\n",
+        "id": "00000000000000000683"
+      },
+      "key": "/apisix/protos/00000000000000000683",
+      "modifiedIndex": 703
+    },
+    {
+      "createdIndex": 251,
+      "value": {
+        "update_time": 1757396790,
+        "create_time": 1757396790,
+        "content": "syntax = \"proto3\";\n\npackage auth;\noption go_package = \"proto/auth;auth\";\n\nservice AuthService {\n  rpc Register(RegisterRequest) returns (RegisterResponse);\n  rpc Login(LoginRequest) returns (AuthResponse);\n  rpc RefreshToken(RefreshTokenRequest) returns (AuthResponse);\n}\n\nmessage RegisterRequest {\n  string username = 1;\n  string password = 2;\n}\n\nmessage RegisterResponse {\n  string message = 1;\n}\n\nmessage LoginRequest {\n  string username = 1;\n  string password = 2;\n  string device_id = 3;\n  string user_agent = 4;\n}\n\nmessage RefreshTokenRequest {\n  string refresh_token = 1;\n}\n\nmessage AuthResponse {\n  string access_token = 1;\n  string refresh_token = 2;\n}",
+        "id": "2"
+      },
+      "key": "/apisix/protos/2",
+      "modifiedIndex": 251
+    },
+    {
+      "createdIndex": 342,
+      "value": {
+        "update_time": 1757581655,
+        "create_time": 1757581655,
+        "content": "// Protocol Buffers - Google's data interchange format\n// Copyright 2008 Google Inc.  All rights reserved.\n// https://developers.google.com/protocol-buffers/\n//\n// Redistribution and use in source and binary forms, with or without\n// modification, are permitted provided that the following conditions are\n// met:\n//\n//     * Redistributions of source code must retain the above copyright\n// notice, this list of conditions and the following disclaimer.\n//     * Redistributions in binary form must reproduce the above\n// copyright notice, this list of conditions and the following disclaimer\n// in the documentation and/or other materials provided with the\n// distribution.\n//     * Neither the name of Google Inc. nor the names of its\n// contributors may be used to endorse or promote products derived from\n// this software without specific prior written permission.\n//\n// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n// \"AS IS\" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\n// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\n// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\n// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\n// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\n// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\n// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\n// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\n// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\n// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n\nsyntax = \"proto3\";\n\npackage google.protobuf;\n\noption go_package = \"google.golang.org/protobuf/types/known/emptypb\";\noption java_package = \"com.google.protobuf\";\noption java_outer_classname = \"EmptyProto\";\noption java_multiple_files = true;\noption objc_class_prefix = \"GPB\";\noption csharp_namespace = \"Google.Protobuf.WellKnownTypes\";\noption cc_enable_arenas = true;\n\n// A generic empty message that you can re-use to avoid defining duplicated\n// empty messages in your APIs. A typical example is to use it as the request\n// or the response type of an API method. For instance:\n//\n//     service Foo {\n//       rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);\n//     }\n//\nmessage Empty {}\n",
+        "id": "empty"
+      },
+      "key": "/apisix/protos/empty",
+      "modifiedIndex": 342
+    },
+    {
+      "createdIndex": 343,
+      "value": {
+        "update_time": 1757924731,
+        "create_time": 1757582147,
+        "content": "syntax = \"proto3\";\n\npackage playlist;\n\noption go_package = \"github.com/trandinh0506/BypassBeats/proto/gen/playlist;playlist\";\n\nmessage PlaylistSong {\n  string song_id = 1;\n  string title = 2;\n  repeated string title_token = 3;\n  repeated string categories = 4;\n  int32 position = 5;\n}\n\nmessage Playlist {\n  string playlist_id = 1;\n  string playlist_name = 2;\n  string owner_id = 3;\n  bool is_public = 4;\n  repeated PlaylistSong songs = 5;\n}\n\nmessage CreatePlaylistRequest {\n  string playlist_name = 1;\n  bool is_public = 2;\n}\n\nmessage CreatePlaylistResponse {\n  string playlist_id = 1;\n  bool is_success = 2;\n}\n\nmessage AddSongToPlaylistRequest {\n  string playlist_id = 1;\n  string song_id = 2;\n}\n\nmessage AddSongToPlaylistResponse {\n  bool is_success = 1;\n}\n\nmessage RemoveSongFromPlaylistRequest {\n  string playlist_id = 1;\n  string song_id = 2;\n}\n\nmessage RemoveSongFromPlaylistResponse {\n  bool is_success = 1;\n}\n\nmessage MoveSongInPlaylistRequest {\n  string playlist_id = 1;\n  string song_id = 2;\n  int32 new_position = 3;\n}\n\nmessage MoveSongInPlaylistResponse {\n  bool is_success = 1;\n}\n\nmessage GetPlaylistByIDRequest {\n  string playlist_id = 1;\n}\n\nmessage ListMyPlaylistsRequest {}\n\nmessage ListMyPlaylistsResponse {\n  repeated Playlist playlists = 1;\n}\n\nmessage UpdatePlaylistRequest {\n  string playlist_id = 1;\n  string playlist_name = 2;\n  bool is_public = 3;\n}\n\nmessage UpdatePlaylistResponse {\n  Playlist playlist = 1;\n  bool is_success = 2;\n}\n\nmessage DeletePlaylistRequest {\n  string playlist_id = 1;\n}\n\nmessage DeletePlaylistResponse {\n  bool is_success = 1;\n}\n\nservice PlaylistService {\n  rpc CreatePlaylist(CreatePlaylistRequest) returns (CreatePlaylistResponse);\n  rpc AddSongToPlaylist(AddSongToPlaylistRequest) returns (AddSongToPlaylistResponse);\n  rpc RemoveSongFromPlaylist(RemoveSongFromPlaylistRequest) returns (RemoveSongFromPlaylistResponse);\n  rpc MoveSongInPlaylist(MoveSongInPlaylistRequest) returns (MoveSongInPlaylistResponse);\n  rpc GetPlaylistByID(GetPlaylistByIDRequest) returns (Playlist);\n  rpc ListMyPlaylists(ListMyPlaylistsRequest) returns (ListMyPlaylistsResponse);\n  rpc UpdatePlaylist(UpdatePlaylistRequest) returns (UpdatePlaylistResponse);\n  rpc DeletePlaylist(DeletePlaylistRequest) returns (DeletePlaylistResponse);\n}",
+        "id": "playlist_bundle"
+      },
+      "key": "/apisix/protos/playlist_bundle",
+      "modifiedIndex": 450
+    }
+  ],
+  "total": 4
+}

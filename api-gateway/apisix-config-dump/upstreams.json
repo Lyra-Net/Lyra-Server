@@ -1,4 +1,39 @@
 {
-  "total": 0,
-  "list": []
+  "list": [
+    {
+      "createdIndex": 685,
+      "value": {
+        "update_time": 1758018543,
+        "hash_on": "vars",
+        "create_time": 1758018543,
+        "id": "9001",
+        "pass_host": "pass",
+        "type": "roundrobin",
+        "nodes": {
+          "search-service:30005": 1
+        },
+        "scheme": "grpc"
+      },
+      "key": "/apisix/upstreams/9001",
+      "modifiedIndex": 685
+    },
+    {
+      "createdIndex": 344,
+      "value": {
+        "update_time": 1757582314,
+        "create_time": 1757582314,
+        "scheme": "grpc",
+        "id": "playlist_upstream",
+        "pass_host": "pass",
+        "type": "roundrobin",
+        "nodes": {
+          "song-service:30004": 1
+        },
+        "hash_on": "vars"
+      },
+      "key": "/apisix/upstreams/playlist_upstream",
+      "modifiedIndex": 344
+    }
+  ],
+  "total": 2
 }
