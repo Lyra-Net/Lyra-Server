@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../ui/dashboardLayout';
-import { Playlists, Playlist } from '@/declarations/playlists';
+import { Playlist } from '@/declarations/playlists';
 import api from '@/lib/api';
 import AuthRequiredForm from "../components/AuthRequiredForm";
 import Link from "next/link";

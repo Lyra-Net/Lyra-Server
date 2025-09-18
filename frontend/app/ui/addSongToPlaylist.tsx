@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 type AddSongToPlaylistProps = {
   playlist: Playlist;
   setShowAddSong: (show: boolean) => void;
-  refreshPlaylist?: () => void;
+  refreshPlaylist: () => void;
 };
 
 export default function AddSongToPlaylist({ playlist, setShowAddSong, refreshPlaylist }: AddSongToPlaylistProps) {
@@ -93,20 +93,15 @@ export default function AddSongToPlaylist({ playlist, setShowAddSong, refreshPla
         <ul className="space-y-2 max-h-96 overflow-y-auto">
           {searchResults.length ? searchResults.map((song) => (
             <li
-              key={song.id}
+              key={song.song_id}
               className="flex justify-between items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <span>{song.title}</span>
-              {songIdsInPlaylist.has(song.id) ? (
-                <button
-                  onClick={() => handleRemoveSong(song.id)}
-                  className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-                >
-                  Remove
-                </button>
+              {songIdsInPlaylist.has(song.song_id) ? (
+                "Added"
               ) : (
                 <button
-                  onClick={() => handleAddSong(song.id)}
+                  onClick={() => handleAddSong(song.song_id)}
                   className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                 >
                   Add

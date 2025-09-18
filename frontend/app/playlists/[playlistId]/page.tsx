@@ -6,12 +6,13 @@ import DashboardLayout from '@/app/ui/dashboardLayout';
 import { toast } from 'sonner';
 import { playlistApi } from '@/lib/playlistApi';
 import AddSongToPlaylist from '@/app/ui/addSongToPlaylist';
+import { Playlist, Song } from '@/declarations/playlists';
 
 export default function PlaylistDetailPage() {
   const params = useParams();
   const router = useRouter();
   const playlistId = params.playlistId as string;
-  const [playlist, setPlaylist] = useState<any>(null);
+  const [playlist, setPlaylist] = useState<Playlist>();
   const [loading, setLoading] = useState(true);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
@@ -22,6 +23,7 @@ export default function PlaylistDetailPage() {
     try {
       const res = await playlistApi.get(playlistId);
       setPlaylist(res.data);
+      console.log("Fetched playlist", res.data);
       setNewName(res.data.playlist_name);
     } catch (err) {
       console.error("Failed to load playlist", err);
@@ -45,7 +47,7 @@ export default function PlaylistDetailPage() {
       await playlistApi.update({
         playlist_id: playlistId,
         playlist_name: newName,
-        is_public: playlist.is_public ?? false,
+        is_public: playlist?.is_public ?? false,
       });
       toast.success("Playlist renamed");
       setRenaming(false);
@@ -72,6 +74,7 @@ export default function PlaylistDetailPage() {
   // remove song
   const handleRemoveSong = async (songId: string) => {
     try {
+      console.log("Removing song", songId);
       await playlistApi.removeSong(playlistId, songId);
       toast.success("Song removed");
       fetchPlaylist();
@@ -175,29 +178,29 @@ export default function PlaylistDetailPage() {
       </div>
 
       <ul className="space-y-2">
-        {playlist.songs.length ? playlist.songs.map((song: any, idx: number) => (
+        {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
           <li
-            key={song.id}
+            key={song.song_id}
             className="p-3 bg-white dark:bg-gray-700 rounded flex justify-between items-center"
-          >
-            <span>{idx + 1}. {song.title}</span>
+          >           
+            <span>{idx + 1}. <img src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`} /> {song.title} - {song.artists && song.artists.map(artist => artist.name).join(", ")}</span>
             <div className="flex gap-2">
               <button
-                onClick={() => handleMove(song.id, 'up')}
+                onClick={() => handleMove(song.song_id, 'up')}
                 disabled={idx === 0}
                 className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
               >
                 ↑
               </button>
               <button
-                onClick={() => handleMove(song.id, 'down')}
+                onClick={() => handleMove(song.song_id, 'down')}
                 disabled={idx === playlist.songs.length - 1}
                 className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
               >
                 ↓
               </button>
               <button
-                onClick={() => handleRemoveSong(song.id)}
+                onClick={() => handleRemoveSong(song.song_id)}
                 className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Remove
@@ -211,6 +214,7 @@ export default function PlaylistDetailPage() {
       {showAddSong && (
         <AddSongToPlaylist
         setShowAddSong={setShowAddSong}
+        refreshPlaylist={fetchPlaylist}
           playlist={playlist} />)}
     </DashboardLayout>
   );

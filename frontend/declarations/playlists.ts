@@ -1,3 +1,4 @@
+
 export type Playlist = {
   playlist_id: string;
   playlist_name: string;
@@ -12,4 +13,10 @@ export type Song = {
   song_id: string;
   title: string;
   categories: string[];
+  artists: Artist[];
+}
+
+export type Artist = {
+    id:   number;
+    name: string;
 }
