@@ -4,11 +4,14 @@ package playlist;
 
 option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/playlist;playlist";
 
+message Artist {
+  int32 id = 1;
+  string name = 2;
+}
 message PlaylistSong {
   string song_id = 1;
   string title = 2;
-  repeated string title_token = 3;
-  repeated string categories = 4;
+  repeated Artist artists = 3;
   int32 position = 5;
 }
 
