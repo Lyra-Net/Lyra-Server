@@ -78,7 +78,7 @@ type PlaylistSong struct {
 	SongId        string                 `protobuf:"bytes,1,opt,name=song_id,json=songId,proto3" json:"song_id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Artists       []*Artist              `protobuf:"bytes,3,rep,name=artists,proto3" json:"artists,omitempty"`
-	Position      int32                  `protobuf:"varint,5,opt,name=position,proto3" json:"position,omitempty"`
+	Position      int32                  `protobuf:"varint,4,opt,name=position,proto3" json:"position,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -953,7 +953,7 @@ const file_playlist_proto_rawDesc = "" +
 	"\asong_id\x18\x01 \x01(\tR\x06songId\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12*\n" +
 	"\aartists\x18\x03 \x03(\v2\x10.playlist.ArtistR\aartists\x12\x1a\n" +
-	"\bposition\x18\x05 \x01(\x05R\bposition\"\xb6\x01\n" +
+	"\bposition\x18\x04 \x01(\x05R\bposition\"\xb6\x01\n" +
 	"\bPlaylist\x12\x1f\n" +
 	"\vplaylist_id\x18\x01 \x01(\tR\n" +
 	"playlistId\x12#\n" +

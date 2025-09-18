@@ -12,7 +12,7 @@ message PlaylistSong {
   string song_id = 1;
   string title = 2;
   repeated Artist artists = 3;
-  int32 position = 5;
+  int32 position = 4;
 }
 
 message Playlist {
