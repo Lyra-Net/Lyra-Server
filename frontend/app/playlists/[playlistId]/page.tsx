@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { playlistApi } from '@/lib/playlistApi';
 import AddSongToPlaylist from '@/app/ui/addSongToPlaylist';
 import { Playlist, Song } from '@/declarations/playlists';
+import { Play } from 'lucide-react';
 
 export default function PlaylistDetailPage() {
   const params = useParams();
@@ -23,7 +24,6 @@ export default function PlaylistDetailPage() {
     try {
       const res = await playlistApi.get(playlistId);
       setPlaylist(res.data);
-      console.log("Fetched playlist", res.data);
       setNewName(res.data.playlist_name);
     } catch (err) {
       console.error("Failed to load playlist", err);
@@ -74,7 +74,6 @@ export default function PlaylistDetailPage() {
   // remove song
   const handleRemoveSong = async (songId: string) => {
     try {
-      console.log("Removing song", songId);
       await playlistApi.removeSong(playlistId, songId);
       toast.success("Song removed");
       fetchPlaylist();
@@ -86,7 +85,6 @@ export default function PlaylistDetailPage() {
 
   // reorder song
   const handleMove = async (songId: string, new_position: number) => {
-    console.log("Moving song", songId, new_position);
     try {
       await playlistApi.moveSong(playlistId, songId, new_position);
       fetchPlaylist();
@@ -94,6 +92,12 @@ export default function PlaylistDetailPage() {
       console.error("Reorder failed", err);
       toast.error("Failed to move song");
     }
+  };
+
+  // play playlist
+  const handlePlayPlaylist = () => {
+    toast.success(`Playing playlist: ${playlist?.playlist_name}`);
+    
   };
 
   if (loading) {
@@ -144,12 +148,18 @@ export default function PlaylistDetailPage() {
             </button>
           </div>
         ) : (
-          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {playlist.playlist_name}
           </h1>
         )}
 
         <div className="flex gap-2">
+          <button
+            onClick={handlePlayPlaylist}
+            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            <Play size={18} /> Play
+          </button>
           {!renaming && (
             <button
               onClick={() => setRenaming(true)}
@@ -169,10 +179,8 @@ export default function PlaylistDetailPage() {
 
       <div className="mb-4">
         <button
-          onClick={() => {
-            setShowAddSong(true);
-          }}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          onClick={() => setShowAddSong(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           + Add Song
         </button>
@@ -182,21 +190,34 @@ export default function PlaylistDetailPage() {
         {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
           <li
             key={song.song_id}
-            className="p-3 bg-white dark:bg-gray-700/80 rounded flex justify-between items-center"
-          >        
-            <span>{idx + 1}. <img src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`} /> {song.title} - {song.artists && song.artists.map(artist => artist.name).join(", ")}</span>
+            className="p-3 bg-white/60 dark:bg-gray-800/60 rounded flex items-center justify-between shadow-sm"
+          >
+            <div className="flex items-center gap-3">
+              <img
+                src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`}
+                alt={song.title}
+                className="w-14 h-14 rounded"
+              />
+              <div>
+                <p className="font-medium text-gray-900 dark:text-gray-100">{song.title}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {song.artists?.map(a => a.name).join(", ")}
+                </p>
+              </div>
+            </div>
+
             <div className="flex gap-2">
               <button
-                onClick={() => handleMove(song.song_id, idx)} // position is 1-based <=> idx + 1 
+                onClick={() => handleMove(song.song_id, song.position - 1)}
                 disabled={idx === 0}
-                className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
+                className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
               >
                 ↑
               </button>
               <button
-                onClick={() => handleMove(song.song_id, idx + 2)}
+                onClick={() => handleMove(song.song_id, song.position + 1)}
                 disabled={idx === playlist.songs.length - 1}
-                className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
+                className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
               >
                 ↓
               </button>
@@ -204,7 +225,7 @@ export default function PlaylistDetailPage() {
                 onClick={() => handleRemoveSong(song.song_id)}
                 className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
               >
-                Remove
+                ✕
               </button>
             </div>
           </li>
@@ -212,11 +233,14 @@ export default function PlaylistDetailPage() {
           <p className="text-gray-500">No songs in this playlist.</p>
         )}
       </ul>
+
       {showAddSong && (
         <AddSongToPlaylist
-        setShowAddSong={setShowAddSong}
-        refreshPlaylist={fetchPlaylist}
-          playlist={playlist} />)}
+          setShowAddSong={setShowAddSong}
+          refreshPlaylist={fetchPlaylist}
+          playlist={playlist}
+        />
+      )}
     </DashboardLayout>
   );
 }

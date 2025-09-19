@@ -13,6 +13,7 @@ export type Song = {
   song_id: string;
   title: string;
   categories: string[];
+  position: number;
   artists: Artist[];
 }
 
