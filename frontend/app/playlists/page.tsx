@@ -84,7 +84,7 @@ export default function PlaylistPage() {
     <DashboardLayout>
       <div className="mx-20 p-6">
       {/* Create playlist form */}
-      <form onSubmit={handleCreate} className="bg-white dark:bg-gray-800 shadow rounded-lg p-4 mb-6">
+      <form onSubmit={handleCreate} className="bg-white/70 dark:bg-gray-800/70 shadow rounded-lg p-4 mb-6">
         <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Create New Playlist</h2>
         <div className="flex flex-col gap-3">
           <input
@@ -122,7 +122,7 @@ export default function PlaylistPage() {
             <Link
               key={pl.playlist_id}
               href={`/playlists/${pl.playlist_id}`}
-              className="block p-4 rounded-lg shadow bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+              className="block p-4 rounded-lg shadow bg-white/70 dark:bg-gray-800/70 hover:bg-blue-100/50 dark:hover:bg-gray-700 transition"
             >
               <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                 {pl.playlist_name}
@@ -131,7 +131,7 @@ export default function PlaylistPage() {
                 {pl.is_public ? "Public" : "Private"}
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                {pl.songs.length || 0} songs
+                {pl.songs.length || 0} {pl.songs.length === 1 ? "song" : "songs"}
               </p>
             </Link>
             );} )}

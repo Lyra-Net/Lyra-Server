@@ -85,9 +85,10 @@ export default function PlaylistDetailPage() {
   };
 
   // reorder song
-  const handleMove = async (songId: string, direction: 'up' | 'down') => {
+  const handleMove = async (songId: string, new_position: number) => {
+    console.log("Moving song", songId, new_position);
     try {
-      await playlistApi.moveSong(playlistId, songId, direction);
+      await playlistApi.moveSong(playlistId, songId, new_position);
       fetchPlaylist();
     } catch (err) {
       console.error("Reorder failed", err);
@@ -181,19 +182,19 @@ export default function PlaylistDetailPage() {
         {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
           <li
             key={song.song_id}
-            className="p-3 bg-white dark:bg-gray-700 rounded flex justify-between items-center"
-          >           
+            className="p-3 bg-white dark:bg-gray-700/80 rounded flex justify-between items-center"
+          >        
             <span>{idx + 1}. <img src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`} /> {song.title} - {song.artists && song.artists.map(artist => artist.name).join(", ")}</span>
             <div className="flex gap-2">
               <button
-                onClick={() => handleMove(song.song_id, 'up')}
+                onClick={() => handleMove(song.song_id, idx)} // position is 1-based <=> idx + 1 
                 disabled={idx === 0}
                 className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
               >
                 ↑
               </button>
               <button
-                onClick={() => handleMove(song.song_id, 'down')}
+                onClick={() => handleMove(song.song_id, idx + 2)}
                 disabled={idx === playlist.songs.length - 1}
                 className="px-2 py-1 bg-gray-300 dark:bg-gray-600 rounded disabled:opacity-50"
               >

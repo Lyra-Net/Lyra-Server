@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
-import { Playlist } from '@/declarations/playlists';
+import { Playlist, Song } from '@/declarations/playlists';
 import { toast } from 'sonner';
 
 type AddSongToPlaylistProps = {
@@ -50,19 +50,7 @@ export default function AddSongToPlaylist({ playlist, setShowAddSong, refreshPla
     }
   };
 
-  // remove song
-  const handleRemoveSong = async (songId: string) => {
-    try {
-      await api.post('/playlist/remove-song', { playlist_id: playlist.playlist_id, song_id: songId });
-      toast.success("Song removed");
-      refreshPlaylist?.();
-    } catch (err) {
-      console.error("Remove song failed", err);
-      toast.error("Remove song failed");
-    }
-  };
-
-  const songIdsInPlaylist = new Set(playlist.songs.length ? playlist.songs.map((s: any) => s.id): []);
+  const songIdsInPlaylist = new Set(playlist.songs.length ? playlist.songs.map((s: Song) => s.song_id): []);
 
   return (
     <div className="absolute inset-0 bg-black/20 flex justify-center items-start z-20">
@@ -70,7 +58,7 @@ export default function AddSongToPlaylist({ playlist, setShowAddSong, refreshPla
         {/* Header */}
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-            Add or Remove Songs
+            Add Songs
           </h2>
           <button
             onClick={() => setShowAddSong(false)}
@@ -93,15 +81,15 @@ export default function AddSongToPlaylist({ playlist, setShowAddSong, refreshPla
         <ul className="space-y-2 max-h-96 overflow-y-auto">
           {searchResults.length ? searchResults.map((song) => (
             <li
-              key={song.song_id}
+              key={song.id}
               className="flex justify-between items-center p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
             >
               <span>{song.title}</span>
-              {songIdsInPlaylist.has(song.song_id) ? (
+              {songIdsInPlaylist.has(song.id) ? (
                 "Added"
               ) : (
                 <button
-                  onClick={() => handleAddSong(song.song_id)}
+                  onClick={() => handleAddSong(song.id)}
                   className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                 >
                   Add

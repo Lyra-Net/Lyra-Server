@@ -19,6 +19,6 @@ export const playlistApi = {
   removeSong: (playlist_id: string, song_id: string) =>
     api.post("/playlist/remove-song", { playlist_id, song_id }),
 
-  moveSong: (playlist_id: string, song_id: string, direction: "up" | "down") =>
-    api.post("/playlist/move-song", { playlist_id, song_id, direction }),
+  moveSong: (playlist_id: string, song_id: string, new_position: number) =>
+    api.post("/playlist/move-song", { playlist_id, song_id, new_position }),
 };
