@@ -92,6 +92,8 @@ github.com/trandinh0506/BypassBeats/proto v0.0.0-20250912034649-9de4b91214ed h1:
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20250912034649-9de4b91214ed/go.mod h1:I7TWurb4ejtaYGopFYQqXH19v4KxgY92/IRH8bRwwI0=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20250915035644-512d78addad2 h1:+lrkCgs90YWSfnLNF7Q3vswKRdwUxgsJnIRJN6/YyjI=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20250915035644-512d78addad2/go.mod h1:I7TWurb4ejtaYGopFYQqXH19v4KxgY92/IRH8bRwwI0=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20250918080937-845c0ac951ac h1:SC/T6a/RsuIqMRvmmgvBLtSfWZmCJoAZl1W//jSCnCM=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20250918080937-845c0ac951ac/go.mod h1:I7TWurb4ejtaYGopFYQqXH19v4KxgY92/IRH8bRwwI0=
 github.com/twitchyliquid64/golang-asm v0.15.1 h1:SU5vSMR7hnwNxj24w34ZyCi/FmDZTkS4MhqMhdFk5YI=
 github.com/twitchyliquid64/golang-asm v0.15.1/go.mod h1:a1lVb/DtPvCB8fslRZhAngC2+aY1QWCk3Cedj/Gdt08=
 github.com/ugorji/go/codec v1.2.12 h1:9LC83zGrHhuUA9l16C9AHXAqEV/2wBQ4nkvumAE65EE=

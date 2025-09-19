@@ -51,10 +51,10 @@ func (s *PlaylistService) CreatePlaylist(ctx context.Context, req *pb.CreatePlay
 func (s *PlaylistService) GetPlaylistByID(ctx context.Context, req *pb.GetPlaylistByIDRequest) (*pb.Playlist, error) {
 	playlistUUID, err := uuid.Parse(req.PlaylistId)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.InvalidArgument, "invalid playlist id")
 	}
 
-	rows, err := s.q.GetPlaylistWithSongs(ctx, playlistUUID)
+	rows, err := s.q.GetPlaylistWithSongsAndArtists(ctx, playlistUUID)
 	if err != nil {
 		return nil, err
 	}
@@ -62,15 +62,13 @@ func (s *PlaylistService) GetPlaylistByID(ctx context.Context, req *pb.GetPlayli
 	if len(rows) == 0 {
 		return nil, status.Errorf(codes.NotFound, "playlist not found")
 	}
+
 	if !rows[0].IsPublic.Bool {
 		userId, ok := utils.GetUserID(ctx)
 		if !ok {
 			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
-		ownerUUID, err := uuid.Parse(userId)
-		if err != nil {
-			return nil, err
-		}
+		ownerUUID, _ := uuid.Parse(userId)
 		if rows[0].OwnerID != ownerUUID {
 			return nil, status.Errorf(codes.PermissionDenied, "you do not have access to this playlist")
 		}
@@ -81,17 +79,33 @@ func (s *PlaylistService) GetPlaylistByID(ctx context.Context, req *pb.GetPlayli
 		PlaylistName: rows[0].PlaylistName.String,
 		OwnerId:      rows[0].OwnerID.String(),
 		IsPublic:     rows[0].IsPublic.Bool,
-		Songs:        make([]*pb.PlaylistSong, 0),
+		Songs:        []*pb.PlaylistSong{},
 	}
 
+	songMap := make(map[string]*pb.PlaylistSong)
+
 	for _, row := range rows {
-		if row.SongID.Valid {
-			res.Songs = append(res.Songs, &pb.PlaylistSong{
-				SongId:     row.SongID.String,
-				Title:      row.Title.String,
-				TitleToken: row.TitleToken,
-				Categories: row.Categories,
-				Position:   int32(row.Position.Int32),
+		if !row.SongID.Valid {
+			continue
+		}
+
+		songID := row.SongID.String
+		song, exists := songMap[songID]
+		if !exists {
+			song = &pb.PlaylistSong{
+				SongId:   songID,
+				Title:    row.Title.String,
+				Position: int32(row.Position.Int32),
+				Artists:  []*pb.Artist{},
+			}
+			songMap[songID] = song
+			res.Songs = append(res.Songs, song)
+		}
+
+		if row.ArtistID.Valid {
+			song.Artists = append(song.Artists, &pb.Artist{
+				Id:   int32(row.ArtistID.Int32),
+				Name: row.ArtistName.String,
 			})
 		}
 	}
@@ -111,37 +125,54 @@ func (s *PlaylistService) ListMyPlaylists(ctx context.Context, req *pb.ListMyPla
 		return nil, err
 	}
 
-	playlists, err := s.q.ListMyPlaylists(ctx, ownerUUID)
+	rows, err := s.q.ListMyPlaylistsWithSongsAndArtists(ctx, ownerUUID)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := &pb.ListMyPlaylistsResponse{}
-	for _, p := range playlists {
-		pl := &pb.Playlist{
-			PlaylistId:   p.PlaylistID.String(),
-			PlaylistName: p.PlaylistName.String,
-			OwnerId:      p.OwnerID.String(),
-			IsPublic:     p.IsPublic.Bool,
-			Songs:        make([]*pb.PlaylistSong, 0),
+	resp := &pb.ListMyPlaylistsResponse{Playlists: []*pb.Playlist{}}
+	playlistMap := make(map[string]*pb.Playlist)
+
+	for _, row := range rows {
+		pl, exists := playlistMap[row.PlaylistID.String()]
+		if !exists {
+			pl = &pb.Playlist{
+				PlaylistId:   row.PlaylistID.String(),
+				PlaylistName: row.PlaylistName.String,
+				OwnerId:      row.OwnerID.String(),
+				IsPublic:     row.IsPublic.Bool,
+				Songs:        []*pb.PlaylistSong{},
+			}
+			playlistMap[row.PlaylistID.String()] = pl
+			resp.Playlists = append(resp.Playlists, pl)
 		}
 
-		songs, err := s.q.GetSongsInPlaylist(ctx, p.PlaylistID)
-		if err != nil {
-			return nil, err
-		}
+		if row.SongID.Valid {
+			songID := row.SongID.String
+			var song *pb.PlaylistSong
+			for _, sng := range pl.Songs {
+				if sng.SongId == songID {
+					song = sng
+					break
+				}
+			}
+			if song == nil {
+				song = &pb.PlaylistSong{
+					SongId:   songID,
+					Title:    row.Title.String,
+					Position: int32(row.Position.Int32),
+					Artists:  []*pb.Artist{},
+				}
+				pl.Songs = append(pl.Songs, song)
+			}
 
-		for _, sng := range songs {
-			pl.Songs = append(pl.Songs, &pb.PlaylistSong{
-				SongId:     sng.SongID,
-				Title:      sng.Title,
-				TitleToken: sng.TitleToken,
-				Categories: sng.Categories,
-				Position:   sng.Position,
-			})
+			if row.ArtistID.Valid {
+				song.Artists = append(song.Artists, &pb.Artist{
+					Id:   int32(row.ArtistID.Int32),
+					Name: row.ArtistName.String,
+				})
+			}
 		}
-
-		resp.Playlists = append(resp.Playlists, pl)
 	}
 
 	return resp, nil

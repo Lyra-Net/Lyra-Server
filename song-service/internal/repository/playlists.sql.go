@@ -140,6 +140,74 @@ func (q *Queries) GetPlaylistWithSongs(ctx context.Context, playlistID uuid.UUID
 	return items, nil
 }
 
+const getPlaylistWithSongsAndArtists = `-- name: GetPlaylistWithSongsAndArtists :many
+SELECT 
+    p.playlist_id,
+    p.playlist_name,
+    p.owner_id,
+    p.is_public,
+    p.created_at,
+    p.updated_at,
+    ps.song_id,
+    ps.position,
+    s.title,
+    a.id AS artist_id,
+    a.name AS artist_name
+FROM playlists p
+LEFT JOIN playlist_song ps ON p.playlist_id = ps.playlist_id
+LEFT JOIN songs s ON ps.song_id = s.id
+LEFT JOIN artist_songs sa ON s.id = sa.song_id
+LEFT JOIN artists a ON sa.artist_id = a.id
+WHERE p.playlist_id = $1
+ORDER BY ps.position ASC, a.name ASC
+`
+
+type GetPlaylistWithSongsAndArtistsRow struct {
+	PlaylistID   uuid.UUID        `json:"playlist_id"`
+	PlaylistName pgtype.Text      `json:"playlist_name"`
+	OwnerID      uuid.UUID        `json:"owner_id"`
+	IsPublic     pgtype.Bool      `json:"is_public"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	SongID       pgtype.Text      `json:"song_id"`
+	Position     pgtype.Int4      `json:"position"`
+	Title        pgtype.Text      `json:"title"`
+	ArtistID     pgtype.Int4      `json:"artist_id"`
+	ArtistName   pgtype.Text      `json:"artist_name"`
+}
+
+func (q *Queries) GetPlaylistWithSongsAndArtists(ctx context.Context, playlistID uuid.UUID) ([]GetPlaylistWithSongsAndArtistsRow, error) {
+	rows, err := q.db.Query(ctx, getPlaylistWithSongsAndArtists, playlistID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPlaylistWithSongsAndArtistsRow{}
+	for rows.Next() {
+		var i GetPlaylistWithSongsAndArtistsRow
+		if err := rows.Scan(
+			&i.PlaylistID,
+			&i.PlaylistName,
+			&i.OwnerID,
+			&i.IsPublic,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.SongID,
+			&i.Position,
+			&i.Title,
+			&i.ArtistID,
+			&i.ArtistName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getSongsInPlaylist = `-- name: GetSongsInPlaylist :many
 SELECT 
     ps.song_id,
@@ -210,6 +278,68 @@ func (q *Queries) ListMyPlaylists(ctx context.Context, ownerID uuid.UUID) ([]Pla
 			&i.IsPublic,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listMyPlaylistsWithSongsAndArtists = `-- name: ListMyPlaylistsWithSongsAndArtists :many
+SELECT 
+    p.playlist_id,
+    p.playlist_name,
+    p.owner_id,
+    p.is_public,
+    ps.song_id,
+    ps.position,
+    s.title,
+    a.id AS artist_id,
+    a.name AS artist_name
+FROM playlists p
+LEFT JOIN playlist_song ps ON p.playlist_id = ps.playlist_id
+LEFT JOIN songs s ON ps.song_id = s.id
+LEFT JOIN artist_songs sa ON s.id = sa.song_id
+LEFT JOIN artists a ON sa.artist_id = a.id
+WHERE p.owner_id = $1
+ORDER BY p.created_at DESC, ps.position ASC, a.name ASC
+`
+
+type ListMyPlaylistsWithSongsAndArtistsRow struct {
+	PlaylistID   uuid.UUID   `json:"playlist_id"`
+	PlaylistName pgtype.Text `json:"playlist_name"`
+	OwnerID      uuid.UUID   `json:"owner_id"`
+	IsPublic     pgtype.Bool `json:"is_public"`
+	SongID       pgtype.Text `json:"song_id"`
+	Position     pgtype.Int4 `json:"position"`
+	Title        pgtype.Text `json:"title"`
+	ArtistID     pgtype.Int4 `json:"artist_id"`
+	ArtistName   pgtype.Text `json:"artist_name"`
+}
+
+func (q *Queries) ListMyPlaylistsWithSongsAndArtists(ctx context.Context, ownerID uuid.UUID) ([]ListMyPlaylistsWithSongsAndArtistsRow, error) {
+	rows, err := q.db.Query(ctx, listMyPlaylistsWithSongsAndArtists, ownerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListMyPlaylistsWithSongsAndArtistsRow{}
+	for rows.Next() {
+		var i ListMyPlaylistsWithSongsAndArtistsRow
+		if err := rows.Scan(
+			&i.PlaylistID,
+			&i.PlaylistName,
+			&i.OwnerID,
+			&i.IsPublic,
+			&i.SongID,
+			&i.Position,
+			&i.Title,
+			&i.ArtistID,
+			&i.ArtistName,
 		); err != nil {
 			return nil, err
 		}
