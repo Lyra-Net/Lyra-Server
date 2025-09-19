@@ -30,7 +30,7 @@ func (mc *MeiliClient) initIndexes() {
 	}{
 		{
 			"songs", "id",
-			[]string{"title", "artists.name", "categories"},
+			[]string{"title", "title_token", "artists.name", "categories"},
 			[]interface{}{"id"},
 		},
 		{
