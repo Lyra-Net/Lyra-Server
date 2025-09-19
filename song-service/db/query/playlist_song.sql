@@ -1,6 +1,14 @@
 -- name: AddSongToPlaylist :exec
 INSERT INTO playlist_song (playlist_id, song_id, position)
-VALUES ($1, $2, $3);
+VALUES (
+    $1,
+    $2,
+    COALESCE((
+        SELECT MAX(position) + 1
+        FROM playlist_song
+        WHERE playlist_id = $1
+    ), 1)
+);
 
 -- name: RemoveSongFromPlaylist :exec
 DELETE FROM playlist_song

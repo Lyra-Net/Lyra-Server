@@ -2,7 +2,6 @@ package interceptor
 
 import (
 	"context"
-	"log"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -22,7 +21,6 @@ func AuthUnaryInterceptor() grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if ok {
-			log.Println("Metadata:", md)
 			values := md.Get("x-user-id")
 			if len(values) > 0 {
 				ctx = context.WithValue(ctx, UserIDKey, strings.TrimSpace(values[0]))
