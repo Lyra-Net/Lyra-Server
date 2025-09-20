@@ -31,7 +31,7 @@ export default function Player() {
   }, [isPlaying]);
 
   return (
-    <div className="h-16 bg-gray-900/10 px-6 flex items-center justify-between text-sm text-gray-300">
+    <div className="min-h-16 bg-gray-900/10 px-6 flex items-center justify-around text-sm text-gray-300">
       <div>Now playing: 🎵 {currentSong?.title || 'No song selected'}</div>
       <div className="space-x-4">
         <button>⏮</button>

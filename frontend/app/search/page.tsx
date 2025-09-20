@@ -67,7 +67,7 @@ export default function SearchPage() {
               return (
                 <div
                   key={i}
-                  className={`flex items-center gap-4 p-3 rounded-lg shadow transition cursor-pointer
+                  className={`flex items-center gap-0.5 p-3 rounded-lg shadow transition cursor-pointer
                     ${
                       isCurrent
                         ? 'bg-blue-200 dark:bg-blue-800'

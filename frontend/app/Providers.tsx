@@ -9,9 +9,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
       <PlayerProvider>
-        {children}
-        <div className="fixed block bottom-0 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-2xl px-4">
-          <Player />
+        <div className="flex flex-col min-h-screen">
+          <main className="flex-1">{children}</main>
+          <footer className="fixed z-10 bottom-0 bg-gray-900/80 min-w-screen">
+            <Player />
+          </footer>
         </div>
         <ToasterClient />
       </PlayerProvider>

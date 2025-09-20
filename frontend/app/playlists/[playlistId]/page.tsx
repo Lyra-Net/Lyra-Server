@@ -156,21 +156,21 @@ export default function PlaylistDetailPage() {
         <div className="flex gap-2">
           <button
             onClick={handlePlayPlaylist}
-            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-4xl hover:bg-green-700"
           >
             <Play size={18} /> Play
           </button>
           {!renaming && (
             <button
               onClick={() => setRenaming(true)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+              className="px-3 py-1 bg-yellow-500 text-white rounded-2xl hover:bg-yellow-600"
             >
               Rename
             </button>
           )}
           <button
             onClick={handleDelete}
-            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+            className="px-3 py-1 bg-red-600 text-white rounded-2xl hover:bg-red-700"
           >
             Delete
           </button>
@@ -190,13 +190,13 @@ export default function PlaylistDetailPage() {
         {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
           <li
             key={song.song_id}
-            className="p-3 bg-white/60 dark:bg-gray-800/60 rounded flex items-center justify-between shadow-sm"
+            className="p-3 bg-white/60 dark:bg-gray-900/80 rounded flex items-center justify-between shadow-sm"
           >
             <div className="flex items-center gap-3">
               <img
                 src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`}
                 alt={song.title}
-                className="w-14 h-14 rounded"
+                className="w-16 h-14 rounded"
               />
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">{song.title}</p>
