@@ -2,7 +2,7 @@
 import { usePlayerStore } from '@/stores/player';
 
 export default function UpNext() {
-  const { queue, playNext, removeFromQueue } = usePlayerStore();
+  const { queue, removeFromQueue } = usePlayerStore();
 
   return (
     <div className='p-1'>
@@ -22,12 +22,6 @@ export default function UpNext() {
               </li>
             ))}
           </ul>
-        <button
-        onClick={playNext}
-        className="mt-4 px-4 py-2 bg-green-600 rounded text-white"
-        >
-          Play Next
-        </button>
       </>
       ) : (
         <p className="text-gray-400">No songs in queue</p>

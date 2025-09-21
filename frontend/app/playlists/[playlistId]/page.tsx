@@ -8,6 +8,7 @@ import { playlistApi } from '@/lib/playlistApi';
 import AddSongToPlaylist from '@/app/ui/addSongToPlaylist';
 import { Playlist, Song } from '@/declarations/playlists';
 import { Play } from 'lucide-react';
+import { usePlayerStore } from '@/stores/player';
 
 export default function PlaylistDetailPage() {
   const params = useParams();
@@ -18,6 +19,7 @@ export default function PlaylistDetailPage() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [showAddSong, setShowAddSong] = useState(false);
+  const { setQueue, addToQueueUnique } = usePlayerStore();
 
   // fetch playlist
   const fetchPlaylist = async () => {
@@ -95,9 +97,16 @@ export default function PlaylistDetailPage() {
   };
 
   // play playlist
-  const handlePlayPlaylist = () => {
-    toast.success(`Playing playlist: ${playlist?.playlist_name}`);
-    
+  const handlePlayNow = () => {
+    if (!playlist?.songs.length) return;
+    setQueue(playlist.songs);
+    toast.success(`Playing playlist: ${playlist.playlist_name}`);
+  };
+
+  const handleAddToQueue = () => {
+    if (!playlist?.songs.length) return;
+    playlist.songs.forEach((song) => addToQueueUnique(song));
+    toast.success(`Added ${playlist.songs.length} songs to queue`);
   };
 
   if (loading) {
@@ -155,10 +164,16 @@ export default function PlaylistDetailPage() {
 
         <div className="flex gap-2">
           <button
-            onClick={handlePlayPlaylist}
+            onClick={handlePlayNow}
             className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-4xl hover:bg-green-700"
           >
-            <Play size={18} /> Play
+            <Play size={18} /> Play Now
+          </button>
+          <button
+            onClick={handleAddToQueue}
+            className="px-4 py-2 bg-blue-600 text-white rounded-4xl hover:bg-blue-700"
+          >
+            Add to Queue
           </button>
           {!renaming && (
             <button
@@ -175,6 +190,7 @@ export default function PlaylistDetailPage() {
             Delete
           </button>
         </div>
+
       </div>
 
       <div className="mb-4">
