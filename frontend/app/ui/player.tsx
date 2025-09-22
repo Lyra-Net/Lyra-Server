@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePlayerStore } from '@/stores/player';
+import { CirclePause, CirclePlay, Repeat, Shuffle, SkipBack, SkipForward } from 'lucide-react';
 
 export default function Player() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -14,6 +15,7 @@ export default function Player() {
     volume,
     repeat,
     shuffle,
+    restartSong,
     setProgress,
     setDuration,
     setPlaying,
@@ -22,8 +24,22 @@ export default function Player() {
     playPrev,
     toggleRepeat,
     toggleShuffle,
+    setRestartSong,
+    canShuffleRepeat,
   } = usePlayerStore();
+  const [hasHydrated, setHasHydrated] = useState(false);
+  useEffect (() => {
+    setHasHydrated(usePlayerStore.persist.hasHydrated());
+  }, []);
   
+  useEffect(() => {
+    if (!restartSong || !audioRef.current) return;
+    const audio = audioRef.current;
+
+    audio.currentTime = 0;
+    audio.play().catch(() => {});
+    setRestartSong(false);
+  }, [restartSong, setRestartSong]);
   useEffect(() => {
     const audio = audioRef.current;
     if (currentSong && audio) {
@@ -98,7 +114,7 @@ export default function Player() {
   };
 
   return (
-    <div className="h-16 bg-gray-900/80 px-4 flex items-center text-sm text-gray-300 gap-x-4">
+    <div className="h-16 px-4 bg-black flex items-center text-sm text-gray-300 gap-x-4">
       <div className="flex items-center gap-x-3 w-1/4 truncate">
         {currentSong && (
           <img
@@ -116,26 +132,39 @@ export default function Player() {
       </div>
       <div className="flex-1 flex flex-col items-center justify-center gap-y-1">
         <div className="flex items-center gap-x-4">
-          <button onClick={toggleShuffle}>
-            {shuffle ? '🔀(on)' : '🔀'}
-          </button>
-          <button onClick={playPrev}>⏮</button>
-          <button
-            onClick={() => {
+          <Shuffle
+          color={shuffle ? "green" : "white"}
+          onClick={hasHydrated && canShuffleRepeat() ? toggleShuffle : undefined}
+          className={
+            !hasHydrated || !canShuffleRepeat()
+              ? "opacity-50 cursor-not-allowed"
+              : "cursor-pointer"
+          }
+        />
+          <SkipBack onClick={playPrev} />
+          {
+            isPlaying 
+            ?
+            <CirclePause size={32} color="white" onClick={() => setPlaying(false)}/>
+            :
+            <CirclePlay size={32} color='white' onClick={() => {
               if (currentSong) {
                 setPlaying(true);
               } else {
                 playNext();
               }
-            }}
-          >
-            ▶️
-          </button>
-          <button onClick={() => setPlaying(false)}>⏸</button>
-          <button onClick={playNext}>⏭</button>
-          <button onClick={toggleRepeat}>
-            {repeat ? '🔁(on)' : '🔁'}
-          </button>
+            }} />
+          }
+          <SkipForward onClick={playNext} />
+          <Repeat
+            color={repeat ? "green" : "white"}
+            onClick={hasHydrated && canShuffleRepeat() ? toggleRepeat : undefined}
+            className={
+              !hasHydrated || !canShuffleRepeat()
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer"
+            }
+          />
         </div>
 
         <div className="flex items-center gap-x-2 w-full">

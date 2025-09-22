@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Music, Home, List, Share2, Settings } from 'lucide-react';
+import path from 'path';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ function NavItem({
   href: string;
   pathname: string;
 }) {
-  const isActive = pathname === href;
+  const isActive = pathname.includes(href);
 
   return (
     <Link href={href}>

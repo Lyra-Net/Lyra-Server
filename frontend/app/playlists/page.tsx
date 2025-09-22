@@ -15,7 +15,7 @@ export default function PlaylistPage() {
   const { data: session } = useSession();
 
   const [newName, setNewName] = useState("");
-  const [isPublic, setIsPublic] = useState(true);
+  const [isPublic, setIsPublic] = useState(false);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
@@ -84,8 +84,8 @@ export default function PlaylistPage() {
     <DashboardLayout>
       <div className="mx-20 p-6">
       {/* Create playlist form */}
-      <form onSubmit={handleCreate} className="bg-white/70 dark:bg-gray-800/70 shadow rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Create New Playlist</h2>
+      <form onSubmit={handleCreate} className="shadow rounded-lg p-4 mb-6">
+        <h2 className="text-lg font-semibold mb-3 text-gray-800 dark:text-gray-100">Create Playlist</h2>
         <div className="flex flex-col gap-3">
           <input
             type="text"

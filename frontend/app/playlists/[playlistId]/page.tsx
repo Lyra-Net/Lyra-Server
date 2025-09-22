@@ -7,8 +7,9 @@ import { toast } from 'sonner';
 import { playlistApi } from '@/lib/playlistApi';
 import AddSongToPlaylist from '@/app/ui/addSongToPlaylist';
 import { Playlist, Song } from '@/declarations/playlists';
-import { Play } from 'lucide-react';
 import { usePlayerStore } from '@/stores/player';
+import { FaPlayCircle } from 'react-icons/fa';
+import { FaCirclePause } from "react-icons/fa6";
 
 export default function PlaylistDetailPage() {
   const params = useParams();
@@ -19,7 +20,16 @@ export default function PlaylistDetailPage() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [showAddSong, setShowAddSong] = useState(false);
-  const { setQueue, addToQueueUnique } = usePlayerStore();
+  const { setQueue,
+    addToQueueUnique,
+    isPlaying,
+    source,
+    setPlaying,
+  } = usePlayerStore();
+
+
+  const isCurrentPlaylist =
+    source?.type === "playlist" && source?.id === playlist?.playlist_id;
 
   // fetch playlist
   const fetchPlaylist = async () => {
@@ -99,7 +109,11 @@ export default function PlaylistDetailPage() {
   // play playlist
   const handlePlayNow = () => {
     if (!playlist?.songs.length) return;
-    setQueue(playlist.songs);
+    setQueue(playlist.songs, {
+      type: "playlist",
+      id: playlist.playlist_id,
+      name: playlist.playlist_name,
+    });
     toast.success(`Playing playlist: ${playlist.playlist_name}`);
   };
 
@@ -130,83 +144,59 @@ export default function PlaylistDetailPage() {
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
-        {renaming ? (
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={newName}
-              onChange={(e) => setNewName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleRename();
-                if (e.key === "Escape") setRenaming(false);
-              }}
-              className="px-2 py-1 border rounded dark:bg-gray-700 dark:border-gray-600"
-              autoFocus
+        <div className="flex gap-6 items-start bg-gray-500 w-full h-48">
+          <div>
+            <img
+              src={`https://i.ytimg.com/vi/${playlist.songs[0].song_id}/hqdefault.jpg`}
+              className="m-2 w-80 h-[180px] object-cover rounded"
             />
-            <button
-              onClick={handleRename}
-              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setRenaming(false)}
-              className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600"
-            >
-              Cancel
-            </button>
           </div>
-        ) : (
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {playlist.playlist_name}
-          </h1>
-        )}
-
-        <div className="flex gap-2">
-          <button
-            onClick={handlePlayNow}
-            className="flex items-center gap-1 px-4 py-2 bg-green-600 text-white rounded-4xl hover:bg-green-700"
-          >
-            <Play size={18} /> Play Now
-          </button>
-          <button
-            onClick={handleAddToQueue}
-            className="px-4 py-2 bg-blue-600 text-white rounded-4xl hover:bg-blue-700"
-          >
-            Add to Queue
-          </button>
-          {!renaming && (
-            <button
-              onClick={() => setRenaming(true)}
-              className="px-3 py-1 bg-yellow-500 text-white rounded-2xl hover:bg-yellow-600"
-            >
-              Rename
-            </button>
-          )}
-          <button
-            onClick={handleDelete}
-            className="px-3 py-1 bg-red-600 text-white rounded-2xl hover:bg-red-700"
-          >
-            Delete
-          </button>
+          <div className="flex mt-10 flex-col justify-center gap-2">
+            <span className="text-sm text-gray-400">
+              {playlist.is_public ? "public" : "private"} playlist
+            </span>
+            <span className="text-white text-5xl font-bold">
+              {playlist.playlist_name}
+            </span>
+            <span className="text-sm text-gray-400">
+              {playlist.songs.length}{" "}
+              {playlist.songs.length === 1 ? "song" : "songs"}
+            </span>
+          </div>
         </div>
-
+      </div>
+      <div className="flex items-center gap-4">
+        {isCurrentPlaylist ? (
+          isPlaying ? (
+            <FaCirclePause
+              size={48}
+              color='green'
+              className="text-primary cursor-pointer"
+              onClick={() => setPlaying(false)}
+            />
+          ) : (
+            <FaPlayCircle
+              size={48}
+              color='green'
+              className="text-primary cursor-pointer"
+              onClick={() => setPlaying(true)}
+            />
+          )
+        ) : (
+          <FaPlayCircle
+            size={48}
+            color='green'
+            className="text-primary cursor-pointer"
+            onClick={handlePlayNow}
+          />
+        )}
       </div>
 
-      <div className="mb-4">
-        <button
-          onClick={() => setShowAddSong(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          + Add Song
-        </button>
-      </div>
-
-      <ul className="space-y-2">
+      <ul className="space-y-1 p-2">
         {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
           <li
             key={song.song_id}
-            className="p-3 bg-white/60 dark:bg-gray-900/80 rounded flex items-center justify-between shadow-sm"
+            className="p-3 rounded flex items-center justify-between shadow-sm hover:bg-[var(--background-highlight)]"
           >
             <div className="flex items-center gap-3">
               <img
