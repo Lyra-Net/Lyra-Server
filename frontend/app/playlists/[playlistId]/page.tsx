@@ -11,6 +11,63 @@ import { usePlayerStore } from '@/stores/player';
 import { FaPlayCircle } from 'react-icons/fa';
 import { FaCirclePause } from "react-icons/fa6";
 
+import {
+  DndContext,
+  closestCenter,
+  DragEndEvent
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+
+// draggable song item
+function SortableSong({ song, onRemove }: {
+  song: Song;
+  onRemove: (id: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: song.song_id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className="p-3 rounded flex items-center justify-between shadow-sm hover:bg-[var(--background-highlight)] cursor-grab"
+    >
+      <div className="flex items-center gap-3">
+        <img
+          src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`}
+          alt={song.title}
+          className="w-16 h-14 rounded"
+        />
+        <div>
+          <p className="font-medium text-gray-900 dark:text-gray-100">{song.title}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            {song.artists?.map(a => a.name).join(", ")}
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={() => onRemove(song.song_id)}
+        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        ✕
+      </button>
+    </li>
+  );
+}
+
 export default function PlaylistDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -20,14 +77,14 @@ export default function PlaylistDetailPage() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [showAddSong, setShowAddSong] = useState(false);
-  const { setQueue,
+  const {
+    setQueue,
     addToQueueUnique,
     isPlaying,
     source,
     setPlaying,
     currentSong
   } = usePlayerStore();
-
 
   const isCurrentPlaylist = currentSong &&
     source?.type === "playlist" && source?.id === playlist?.playlist_id;
@@ -147,10 +204,10 @@ export default function PlaylistDetailPage() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex gap-6 items-start bg-gray-500 w-full h-48">
           <div>
-            <img
+            {playlist.songs.length && <img
               src={`https://i.ytimg.com/vi/${playlist.songs[0].song_id}/hqdefault.jpg`}
               className="m-2 w-80 h-[180px] object-cover rounded"
-            />
+            />}
           </div>
           <div className="flex mt-10 flex-col justify-center gap-2">
             <span className="text-sm text-gray-400">
@@ -194,49 +251,38 @@ export default function PlaylistDetailPage() {
       </div>
 
       <ul className="space-y-1 p-2">
-        {playlist.songs.length ? playlist.songs.map((song: Song, idx: number) => (
-          <li
-            key={song.song_id}
-            className="p-3 rounded flex items-center justify-between shadow-sm hover:bg-[var(--background-highlight)]"
-          >
-            <div className="flex items-center gap-3">
-              <img
-                src={`https://i.ytimg.com/vi/${song.song_id}/default.jpg`}
-                alt={song.title}
-                className="w-16 h-14 rounded"
-              />
-              <div>
-                <p className="font-medium text-gray-900 dark:text-gray-100">{song.title}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {song.artists?.map(a => a.name).join(", ")}
-                </p>
-              </div>
-            </div>
+        {playlist.songs.length ? (
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={async (event: DragEndEvent) => {
+              const { active, over } = event;
+              if (over && active.id !== over.id) {
+                const oldIndex = playlist.songs.findIndex(s => s.song_id === active.id);
+                const newIndex = playlist.songs.findIndex(s => s.song_id === over.id);
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => handleMove(song.song_id, song.position - 1)}
-                disabled={idx === 0}
-                className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
-              >
-                ↑
-              </button>
-              <button
-                onClick={() => handleMove(song.song_id, song.position + 1)}
-                disabled={idx === playlist.songs.length - 1}
-                className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded disabled:opacity-50"
-              >
-                ↓
-              </button>
-              <button
-                onClick={() => handleRemoveSong(song.song_id)}
-                className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-              >
-                ✕
-              </button>
-            </div>
-          </li>
-        )) : (
+                // re-order local UI
+                const newSongs = arrayMove(playlist.songs, oldIndex, newIndex);
+                setPlaylist({ ...playlist, songs: newSongs });
+
+                // gọi API update position
+                await handleMove(active.id as string, newIndex);
+              }
+            }}
+          >
+            <SortableContext
+              items={playlist.songs.map(s => s.song_id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {playlist.songs.map((song) => (
+                <SortableSong
+                  key={song.song_id}
+                  song={song}
+                  onRemove={handleRemoveSong}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
+        ) : (
           <p className="text-gray-500">No songs in this playlist.</p>
         )}
       </ul>
