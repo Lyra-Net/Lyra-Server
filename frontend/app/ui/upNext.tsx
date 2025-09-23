@@ -2,23 +2,21 @@
 import { usePlayerStore } from '@/stores/player';
 
 export default function UpNext() {
-  const { queue, removeFromQueue } = usePlayerStore();
+  const { queue, shuffledQueue, shuffledIndex, shuffle } = usePlayerStore();
+
+  const upNext = shuffle
+    ? shuffledQueue.slice(shuffledIndex + 1)
+    : queue;
 
   return (
     <div className='p-1'>
       <h2 className="text-lg font-semibold mb-4">Up Next</h2>
-      {queue.length ? (
+      {upNext.length ? (
         <>
           <ul className="space-y-2">
-            {queue.map((song) => (
+            {upNext.map((song) => (
               <li key={song.song_id} className="flex justify-between items-center">
                 <span>{song.title}</span>
-                <button
-                  className="text-sm text-red-400"
-                  onClick={() => removeFromQueue(song.song_id)}
-                >
-                  Remove
-                </button>
               </li>
             ))}
           </ul>

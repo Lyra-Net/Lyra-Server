@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { Song } from "@/declarations/playlists";
 
 type PlayerSource = { type: "playlist"; id: string; name: string } | null;
+type RepeatMode = "one" | "all" | null;
 
 function shuffleArray<T>(array: T[]): T[] {
   const arr = [...array];
@@ -15,14 +16,14 @@ function shuffleArray<T>(array: T[]): T[] {
 
 interface PlayerState {
   currentSong: Song | null;
-  queue: Song[]; 
+  queue: Song[];
   history: Song[];
   currentTime: number;
   duration: number;
   progress: number;
   isPlaying: boolean;
   volume: number;
-  repeat: boolean;
+  repeat: RepeatMode;
   shuffle: boolean;
   restartSong: boolean;
   source: PlayerSource;
@@ -65,7 +66,7 @@ export const usePlayerStore = create<PlayerState>()(
       progress: 0,
       isPlaying: false,
       volume: 1,
-      repeat: false,
+      repeat: null,
       shuffle: false,
       restartSong: false,
       source: null as PlayerSource,
@@ -98,7 +99,7 @@ export const usePlayerStore = create<PlayerState>()(
           currentSong: songs[0] || null,
           currentTime: 0,
           progress: 0,
-          src: src || null,
+          source: src || null,
           isPlaying: songs.length > 0,
           history: [],
           originalQueue: songs,
@@ -111,53 +112,132 @@ export const usePlayerStore = create<PlayerState>()(
         set((state) => ({ queue: state.queue.filter((s) => s.song_id !== songId) })),
 
       clearQueue: () =>
-        set({ queue: [], history: [], originalQueue: [], shuffledQueue: [], shuffledIndex: 0, playedSongs: [] }),
+        set({
+          queue: [],
+          history: [],
+          originalQueue: [],
+          shuffledQueue: [],
+          shuffledIndex: 0,
+          playedSongs: [],
+        }),
 
+      
       playNext: () =>
         set((state) => {
-          const { shuffle, repeat, currentSong, history, source } = state;
+          const {
+            currentSong,
+            queue,
+            originalQueue,
+            shuffle,
+            repeat,
+            shuffledQueue,
+            shuffledIndex,
+            history,
+            source,
+          } = state;
+
+          const pushedHistory = currentSong ? [...history, currentSong] : history;
+
+          const removeFromHistory = (hist: typeof history, songId: string | undefined) =>
+            songId ? hist.filter((s) => s.song_id !== songId) : hist;
+
+          if (repeat === "one" && currentSong) {
+            return {
+              currentTime: 0,
+              progress: 0,
+              restartSong: true,
+              isPlaying: true,
+              history: pushedHistory,
+            };
+          }
 
           if (shuffle) {
-            const nextIndex = state.shuffledIndex + 1;
-            if (nextIndex < state.shuffledQueue.length) {
-              const nextSong = state.shuffledQueue[nextIndex];
+            const nextIndex = shuffledIndex + 1;
+            if (nextIndex < shuffledQueue.length) {
+              const nextSong = shuffledQueue[nextIndex];
+              const newHistory = removeFromHistory(pushedHistory, nextSong.song_id);
               return {
                 currentSong: nextSong,
                 shuffledIndex: nextIndex,
                 playedSongs: [...state.playedSongs, nextSong],
-                history: currentSong ? [...history, currentSong] : history,
+                history: newHistory,
                 currentTime: 0,
                 progress: 0,
                 isPlaying: true,
               };
             }
-            // handle if repeat is on
-            return { isPlaying: false };
+
+            if (repeat === "all" && source && originalQueue.length > 0) {
+              const reshuffled = shuffleArray([...originalQueue]);
+              const nextSong = reshuffled[0];
+              const newHistory = removeFromHistory(pushedHistory, nextSong.song_id);
+              return {
+                currentSong: nextSong,
+                shuffledQueue: reshuffled,
+                shuffledIndex: 0,
+                playedSongs: [nextSong],
+                history: newHistory,
+                currentTime: 0,
+                progress: 0,
+                isPlaying: true,
+              };
+            }
+
+            return {
+              isPlaying: false,
+              currentTime: 0,
+              progress: 0,
+              history: pushedHistory,
+            };
           }
 
-          if (state.queue.length > 0) {
-            const [next, ...rest] = state.queue;
+          if (queue.length > 0) {
+            const [next, ...rest] = queue;
+            const newHistory = removeFromHistory(pushedHistory, next.song_id);
             return {
               currentSong: next,
               queue: rest,
-              history: currentSong ? [...history, currentSong] : history,
+              history: newHistory,
               currentTime: 0,
               progress: 0,
               isPlaying: true,
             };
           }
 
-          if (repeat && source) {
-            // if source exists, restart the queue
-            return { currentTime: 0, progress: 0, isPlaying: true };
+          if (repeat === "all" && source && originalQueue.length > 0) {
+            const newNext = originalQueue[0];
+            const rest = originalQueue.slice(1);
+            const newHistory = removeFromHistory(pushedHistory, newNext.song_id);
+            return {
+              currentSong: newNext,
+              queue: rest,
+              history: newHistory,
+              playedSongs: [newNext],
+              currentTime: 0,
+              progress: 0,
+              isPlaying: true,
+            };
           }
 
-          return { isPlaying: false };
+          return {
+            isPlaying: false,
+            currentTime: 0,
+            progress: 0,
+            history: pushedHistory,
+          };
         }),
 
       playPrev: () =>
         set((state) => {
-          const { history, currentSong, queue, shuffle, shuffledIndex, shuffledQueue } = state;
+          const {
+            history,
+            currentSong,
+            queue,
+            shuffle,
+            shuffledQueue,
+            shuffledIndex,
+            originalQueue,
+          } = state;
 
           if (history.length > 0) {
             const prev = history[history.length - 1];
@@ -189,15 +269,31 @@ export const usePlayerStore = create<PlayerState>()(
             };
           }
 
-          return { currentTime: 0, progress: 0, restartSong: true, isPlaying: true };
+          if (currentSong) {
+            return {
+              currentTime: 0,
+              progress: 0,
+              restartSong: true,
+              isPlaying: true,
+            };
+          }
+
+          return {};
         }),
+
 
       setCurrentTime: (time) => set({ currentTime: time }),
       setDuration: (time) => set({ duration: time }),
       setProgress: (progress) => set({ progress }),
       setPlaying: (playing) => set({ isPlaying: playing }),
       setVolume: (vol) => set({ volume: vol }),
-      toggleRepeat: () => set((s) => ({ repeat: !s.repeat })),
+
+      toggleRepeat: () =>
+        set((state) => {
+          const next: RepeatMode =
+            state.repeat === null ? "one" : state.repeat === "one" ? "all" : null;
+          return { repeat: next };
+        }),
 
       toggleShuffle: () =>
         set((state) => {

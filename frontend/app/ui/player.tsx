@@ -2,7 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { usePlayerStore } from '@/stores/player';
-import { CirclePause, CirclePlay, Repeat, Shuffle, SkipBack, SkipForward } from 'lucide-react';
+import {
+  CirclePause,
+  CirclePlay,
+  Repeat,
+  Shuffle,
+  SkipBack,
+  SkipForward,
+} from 'lucide-react';
 
 export default function Player() {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -27,19 +34,23 @@ export default function Player() {
     setRestartSong,
     canShuffleRepeat,
   } = usePlayerStore();
+
   const [hasHydrated, setHasHydrated] = useState(false);
-  useEffect (() => {
+
+  useEffect(() => {
     setHasHydrated(usePlayerStore.persist.hasHydrated());
   }, []);
-  
+
+  // Restart song
   useEffect(() => {
     if (!restartSong || !audioRef.current) return;
     const audio = audioRef.current;
-
     audio.currentTime = 0;
     audio.play().catch(() => {});
     setRestartSong(false);
   }, [restartSong, setRestartSong]);
+
+  // Load new song
   useEffect(() => {
     const audio = audioRef.current;
     if (currentSong && audio) {
@@ -52,6 +63,10 @@ export default function Player() {
           console.warn('Playback failed:', err);
           setPlaying(false);
         });
+    }
+    if (!currentSong && audio) {
+      audio.src = '';
+      setPlaying(false);
     }
   }, [currentSong, setPlaying]);
 
@@ -113,6 +128,11 @@ export default function Player() {
     return `${minutes}:${seconds}`;
   };
 
+  const canUseShuffle = hasHydrated && canShuffleRepeat();
+  const canUseRepeat =
+    hasHydrated &&
+    (repeat === 'one' || canShuffleRepeat());
+
   return (
     <div className="h-16 px-4 bg-black flex items-center text-sm text-gray-300 gap-x-4">
       <div className="flex items-center gap-x-3 w-1/4 truncate">
@@ -133,38 +153,47 @@ export default function Player() {
       <div className="flex-1 flex flex-col items-center justify-center gap-y-1">
         <div className="flex items-center gap-x-4">
           <Shuffle
-          color={shuffle ? "green" : "white"}
-          onClick={hasHydrated && canShuffleRepeat() ? toggleShuffle : undefined}
-          className={
-            !hasHydrated || !canShuffleRepeat()
-              ? "opacity-50 cursor-not-allowed"
-              : "cursor-pointer"
-          }
-        />
-          <SkipBack onClick={playPrev} />
-          {
-            isPlaying 
-            ?
-            <CirclePause size={32} color="white" onClick={() => setPlaying(false)}/>
-            :
-            <CirclePlay size={32} color='white' onClick={() => {
-              if (currentSong) {
-                setPlaying(true);
-              } else {
-                playNext();
-              }
-            }} />
-          }
-          <SkipForward onClick={playNext} />
-          <Repeat
-            color={repeat ? "green" : "white"}
-            onClick={hasHydrated && canShuffleRepeat() ? toggleRepeat : undefined}
+            color={shuffle ? 'green' : 'white'}
+            onClick={canUseShuffle ? toggleShuffle : undefined}
             className={
-              !hasHydrated || !canShuffleRepeat()
-                ? "opacity-50 cursor-not-allowed"
-                : "cursor-pointer"
+              canUseShuffle ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
             }
           />
+          <SkipBack onClick={playPrev} />
+          {isPlaying ? (
+            <CirclePause
+              size={32}
+              color="white"
+              onClick={() => setPlaying(false)}
+            />
+          ) : (
+            <CirclePlay
+              size={32}
+              color="white"
+              onClick={() => {
+                if (currentSong) {
+                  setPlaying(true);
+                } else {
+                  playNext();
+                }
+              }}
+            />
+          )}
+          <SkipForward onClick={playNext} />
+          <div className="relative flex items-center justify-center w-6 h-6">
+            <Repeat
+              color={repeat ? 'green' : 'white'}
+              onClick={canUseRepeat ? toggleRepeat : undefined}
+              className={
+                canUseRepeat ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'
+              }
+            />
+            {repeat === 'one' && (
+              <span className="absolute top-[-8px] right-[8px] text-[10px] text-green-500 font-bold">
+                1
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-x-2 w-full">

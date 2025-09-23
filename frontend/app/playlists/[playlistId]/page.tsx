@@ -25,10 +25,11 @@ export default function PlaylistDetailPage() {
     isPlaying,
     source,
     setPlaying,
+    currentSong
   } = usePlayerStore();
 
 
-  const isCurrentPlaylist =
+  const isCurrentPlaylist = currentSong &&
     source?.type === "playlist" && source?.id === playlist?.playlist_id;
 
   // fetch playlist
