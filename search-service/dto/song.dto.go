@@ -13,10 +13,12 @@ type CreateSongRequest struct {
 	ID         string   `json:"id"`
 	Title      string   `json:"title"`
 	TitleToken []string `json:"title_token"`
-	Artists    []Artist `json:"artists"`
 	Categories []string `json:"categories"`
+	Duration   int32    `json:"duration"`
+	Genre      string   `json:"genre"`
+	Mood       string   `json:"mood"`
+	Artists    []Artist `json:"artists"`
 }
-
 type Playlist struct {
 	PlaylistID   uuid.UUID `json:"playlist_id"`
 	PlaylistName string    `json:"playlist_name"`
