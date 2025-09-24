@@ -5,9 +5,106 @@
 package repository
 
 import (
+	"database/sql/driver"
+	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+type GenreEnum string
+
+const (
+	GenreEnumPop       GenreEnum = "pop"
+	GenreEnumRock      GenreEnum = "rock"
+	GenreEnumHiphop    GenreEnum = "hiphop"
+	GenreEnumJazz      GenreEnum = "jazz"
+	GenreEnumClassical GenreEnum = "classical"
+	GenreEnumEdm       GenreEnum = "edm"
+	GenreEnumBallad    GenreEnum = "ballad"
+	GenreEnumOther     GenreEnum = "other"
+)
+
+func (e *GenreEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = GenreEnum(s)
+	case string:
+		*e = GenreEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for GenreEnum: %T", src)
+	}
+	return nil
+}
+
+type NullGenreEnum struct {
+	GenreEnum GenreEnum `json:"genre_enum"`
+	Valid     bool      `json:"valid"` // Valid is true if GenreEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullGenreEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.GenreEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.GenreEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullGenreEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.GenreEnum), nil
+}
+
+type MoodEnum string
+
+const (
+	MoodEnumHappy     MoodEnum = "happy"
+	MoodEnumSad       MoodEnum = "sad"
+	MoodEnumChill     MoodEnum = "chill"
+	MoodEnumEnergetic MoodEnum = "energetic"
+	MoodEnumRomantic  MoodEnum = "romantic"
+	MoodEnumOther     MoodEnum = "other"
+)
+
+func (e *MoodEnum) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MoodEnum(s)
+	case string:
+		*e = MoodEnum(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MoodEnum: %T", src)
+	}
+	return nil
+}
+
+type NullMoodEnum struct {
+	MoodEnum MoodEnum `json:"mood_enum"`
+	Valid    bool     `json:"valid"` // Valid is true if MoodEnum is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMoodEnum) Scan(value interface{}) error {
+	if value == nil {
+		ns.MoodEnum, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MoodEnum.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMoodEnum) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MoodEnum), nil
+}
 
 type Artist struct {
 	ID   int32  `json:"id"`
@@ -35,8 +132,11 @@ type PlaylistSong struct {
 }
 
 type Song struct {
-	ID         string   `json:"id"`
-	Title      string   `json:"title"`
-	TitleToken []string `json:"title_token"`
-	Categories []string `json:"categories"`
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+	Duration   pgtype.Int4   `json:"duration"`
 }

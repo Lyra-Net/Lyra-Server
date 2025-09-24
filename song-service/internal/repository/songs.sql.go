@@ -7,34 +7,55 @@ package repository
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createSong = `-- name: CreateSong :one
-INSERT INTO songs (id, title, title_token, categories)
-VALUES ($1, $2, $3, $4)
-RETURNING id, title, title_token, categories
+INSERT INTO songs (id, title, title_token, categories, duration, genre, mood)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, title, title_token, categories, duration, genre, mood
 `
 
 type CreateSongParams struct {
-	ID         string   `json:"id"`
-	Title      string   `json:"title"`
-	TitleToken []string `json:"title_token"`
-	Categories []string `json:"categories"`
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
 }
 
-func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) (Song, error) {
+type CreateSongRow struct {
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+}
+
+func (q *Queries) CreateSong(ctx context.Context, arg CreateSongParams) (CreateSongRow, error) {
 	row := q.db.QueryRow(ctx, createSong,
 		arg.ID,
 		arg.Title,
 		arg.TitleToken,
 		arg.Categories,
+		arg.Duration,
+		arg.Genre,
+		arg.Mood,
 	)
-	var i Song
+	var i CreateSongRow
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
 		&i.TitleToken,
 		&i.Categories,
+		&i.Duration,
+		&i.Genre,
+		&i.Mood,
 	)
 	return i, err
 }
@@ -50,25 +71,38 @@ func (q *Queries) DeleteSong(ctx context.Context, id string) error {
 }
 
 const getSongById = `-- name: GetSongById :one
-SELECT id, title, title_token, categories
+SELECT id, title, title_token, categories, duration, genre, mood
 FROM songs
 WHERE id = $1
 `
 
-func (q *Queries) GetSongById(ctx context.Context, id string) (Song, error) {
+type GetSongByIdRow struct {
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+}
+
+func (q *Queries) GetSongById(ctx context.Context, id string) (GetSongByIdRow, error) {
 	row := q.db.QueryRow(ctx, getSongById, id)
-	var i Song
+	var i GetSongByIdRow
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
 		&i.TitleToken,
 		&i.Categories,
+		&i.Duration,
+		&i.Genre,
+		&i.Mood,
 	)
 	return i, err
 }
 
 const listSongs = `-- name: ListSongs :many
-SELECT id, title, title_token, categories
+SELECT id, title, title_token, categories, duration, genre, mood
 FROM songs
 ORDER BY id
 LIMIT $1 OFFSET $2
@@ -79,20 +113,33 @@ type ListSongsParams struct {
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListSongs(ctx context.Context, arg ListSongsParams) ([]Song, error) {
+type ListSongsRow struct {
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+}
+
+func (q *Queries) ListSongs(ctx context.Context, arg ListSongsParams) ([]ListSongsRow, error) {
 	rows, err := q.db.Query(ctx, listSongs, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Song{}
+	items := []ListSongsRow{}
 	for rows.Next() {
-		var i Song
+		var i ListSongsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
 			&i.TitleToken,
 			&i.Categories,
+			&i.Duration,
+			&i.Genre,
+			&i.Mood,
 		); err != nil {
 			return nil, err
 		}
@@ -110,6 +157,9 @@ SELECT
     s.title, 
     s.title_token, 
     s.categories,
+    s.duration,
+    s.genre,
+    s.mood,
     COALESCE(
         json_agg(json_build_object('id', a.id, 'name', a.name)) 
         FILTER (WHERE a.id IS NOT NULL),
@@ -122,7 +172,7 @@ LEFT JOIN
 LEFT JOIN 
     artists a ON a.id = sa.artist_id
 GROUP BY 
-    s.id, s.title, s.title_token, s.categories
+    s.id, s.title, s.title_token, s.categories, s.duration, s.genre, s.mood
 ORDER BY 
     s.id
 LIMIT $1 OFFSET $2
@@ -134,11 +184,14 @@ type ListSongsWithArtistsParams struct {
 }
 
 type ListSongsWithArtistsRow struct {
-	ID         string      `json:"id"`
-	Title      string      `json:"title"`
-	TitleToken []string    `json:"title_token"`
-	Categories []string    `json:"categories"`
-	Artists    interface{} `json:"artists"`
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+	Artists    interface{}   `json:"artists"`
 }
 
 func (q *Queries) ListSongsWithArtists(ctx context.Context, arg ListSongsWithArtistsParams) ([]ListSongsWithArtistsRow, error) {
@@ -155,6 +208,9 @@ func (q *Queries) ListSongsWithArtists(ctx context.Context, arg ListSongsWithArt
 			&i.Title,
 			&i.TitleToken,
 			&i.Categories,
+			&i.Duration,
+			&i.Genre,
+			&i.Mood,
 			&i.Artists,
 		); err != nil {
 			return nil, err
@@ -169,31 +225,55 @@ func (q *Queries) ListSongsWithArtists(ctx context.Context, arg ListSongsWithArt
 
 const updateSong = `-- name: UpdateSong :one
 UPDATE songs
-SET title = $2, title_token = $3, categories = $4
+SET title       = $2,
+    title_token = $3,
+    categories  = $4,
+    duration    = $5,
+    genre       = $6,
+    mood        = $7
 WHERE id = $1
-RETURNING id, title, title_token, categories
+RETURNING id, title, title_token, categories, duration, genre, mood
 `
 
 type UpdateSongParams struct {
-	ID         string   `json:"id"`
-	Title      string   `json:"title"`
-	TitleToken []string `json:"title_token"`
-	Categories []string `json:"categories"`
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
 }
 
-func (q *Queries) UpdateSong(ctx context.Context, arg UpdateSongParams) (Song, error) {
+type UpdateSongRow struct {
+	ID         string        `json:"id"`
+	Title      string        `json:"title"`
+	TitleToken []string      `json:"title_token"`
+	Categories []string      `json:"categories"`
+	Duration   pgtype.Int4   `json:"duration"`
+	Genre      NullGenreEnum `json:"genre"`
+	Mood       NullMoodEnum  `json:"mood"`
+}
+
+func (q *Queries) UpdateSong(ctx context.Context, arg UpdateSongParams) (UpdateSongRow, error) {
 	row := q.db.QueryRow(ctx, updateSong,
 		arg.ID,
 		arg.Title,
 		arg.TitleToken,
 		arg.Categories,
+		arg.Duration,
+		arg.Genre,
+		arg.Mood,
 	)
-	var i Song
+	var i UpdateSongRow
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
 		&i.TitleToken,
 		&i.Categories,
+		&i.Duration,
+		&i.Genre,
+		&i.Mood,
 	)
 	return i, err
 }

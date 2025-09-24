@@ -13,5 +13,6 @@ func Init(r *gin.Engine, q *repository.Queries, producer *mq.KafkaProducer) {
 	{
 		artistRoute.GET("", songhandler.ListSong(q))
 		artistRoute.POST("", songhandler.CreateSong(q, producer))
+		artistRoute.PUT("/:id", songhandler.UpdateSong(q, producer))
 	}
 }

@@ -16,7 +16,7 @@ type Querier interface {
 	ClearPlaylist(ctx context.Context, playlistID uuid.UUID) error
 	CreateArtist(ctx context.Context, name string) (Artist, error)
 	CreatePlaylist(ctx context.Context, arg CreatePlaylistParams) (Playlist, error)
-	CreateSong(ctx context.Context, arg CreateSongParams) (Song, error)
+	CreateSong(ctx context.Context, arg CreateSongParams) (CreateSongRow, error)
 	DeleteArtist(ctx context.Context, id int32) error
 	DeletePlaylist(ctx context.Context, playlistID uuid.UUID) error
 	DeleteSong(ctx context.Context, id string) error
@@ -24,14 +24,14 @@ type Querier interface {
 	GetPlaylistById(ctx context.Context, playlistID uuid.UUID) (Playlist, error)
 	GetPlaylistWithSongs(ctx context.Context, playlistID uuid.UUID) ([]GetPlaylistWithSongsRow, error)
 	GetPlaylistWithSongsAndArtists(ctx context.Context, playlistID uuid.UUID) ([]GetPlaylistWithSongsAndArtistsRow, error)
-	GetSongById(ctx context.Context, id string) (Song, error)
+	GetSongById(ctx context.Context, id string) (GetSongByIdRow, error)
 	GetSongPosition(ctx context.Context, arg GetSongPositionParams) (int32, error)
 	GetSongsInPlaylist(ctx context.Context, playlistID uuid.UUID) ([]GetSongsInPlaylistRow, error)
 	ListArtists(ctx context.Context, arg ListArtistsParams) ([]Artist, error)
 	ListMyPlaylists(ctx context.Context, ownerID uuid.UUID) ([]Playlist, error)
 	ListMyPlaylistsWithSongsAndArtists(ctx context.Context, ownerID uuid.UUID) ([]ListMyPlaylistsWithSongsAndArtistsRow, error)
 	ListPlaylists(ctx context.Context, arg ListPlaylistsParams) ([]Playlist, error)
-	ListSongs(ctx context.Context, arg ListSongsParams) ([]Song, error)
+	ListSongs(ctx context.Context, arg ListSongsParams) ([]ListSongsRow, error)
 	ListSongsWithArtists(ctx context.Context, arg ListSongsWithArtistsParams) ([]ListSongsWithArtistsRow, error)
 	RemoveSongArtists(ctx context.Context, songID string) error
 	RemoveSongFromPlaylist(ctx context.Context, arg RemoveSongFromPlaylistParams) error
@@ -39,7 +39,7 @@ type Querier interface {
 	ShiftPositionsUp(ctx context.Context, arg ShiftPositionsUpParams) error
 	UpdateArtist(ctx context.Context, arg UpdateArtistParams) (Artist, error)
 	UpdatePlaylist(ctx context.Context, arg UpdatePlaylistParams) (Playlist, error)
-	UpdateSong(ctx context.Context, arg UpdateSongParams) (Song, error)
+	UpdateSong(ctx context.Context, arg UpdateSongParams) (UpdateSongRow, error)
 	UpdateSongPosition(ctx context.Context, arg UpdateSongPositionParams) error
 }
 

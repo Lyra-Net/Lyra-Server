@@ -1,301 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Admin - Song & Artist Management</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 20px;
-            }
-            h2 {
-                margin-top: 40px;
-            }
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                margin-top: 10px;
-            }
-            th,
-            td {
-                border: 1px solid #ddd;
-                padding: 8px;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            input,
-            button {
-                padding: 6px;
-                margin: 5px 0;
-            }
-            .section {
-                margin-bottom: 40px;
-            }
-            .pagination {
-                margin-top: 10px;
-            }
-            .pagination button {
-                margin-right: 5px;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Admin Dashboard</h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin - Song & Artist Management (React)</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h2 { margin-top: 40px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background-color: #f2f2f2; }
+    input, button, select { padding: 6px; margin: 5px 0; }
+    .section { margin-bottom: 40px; }
+    .pagination { margin-top: 10px; }
+    .pagination button { margin-right: 5px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
 
-        <!-- Artist Management -->
-        <div class="section">
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function unwrapEnum(val) {
+      if (!val) return "";
+      if (typeof val === "object") {
+        return val.genre_enum || val.mood_enum || "";
+      }
+      return val;
+    }
+
+    function App() {
+      const [artists, setArtists] = useState([]);
+      const [artistPage, setArtistPage] = useState(1);
+      const [artistSearch, setArtistSearch] = useState("");
+      const [songs, setSongs] = useState([]);
+      const [songPage, setSongPage] = useState(1);
+      const pageSize = 10;
+
+      // enums
+      const [enums, setEnums] = useState({ genres: [], moods: [] });
+
+      // Song form state (dùng chung cho create & update)
+      const [formData, setFormData] = useState({
+        id: "",
+        title: "",
+        title_token: "",
+        artists: "",
+        duration: "",
+        genre: "",
+        mood: ""
+      });
+
+      const [isEditing, setIsEditing] = useState(false);
+
+      async function loadArtists(name = "", page = artistPage, limit = pageSize) {
+        let url = `/artists?page=${page}&limit=${limit}`;
+        if (name.trim() !== "") url += `&name=${encodeURIComponent(name)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        setArtists(data);
+      }
+
+      async function loadSongs(page = songPage, limit = pageSize) {
+        const res = await fetch(`/songs?page=${page}&limit=${limit}`);
+        const data = await res.json();
+        setSongs(data);
+      }
+
+      async function loadEnums() {
+        const res = await fetch("/enums");
+        const data = await res.json();
+        setEnums(data);
+      }
+
+      useEffect(() => { loadArtists(artistSearch, artistPage); }, [artistPage, artistSearch]);
+      useEffect(() => { loadSongs(songPage); }, [songPage]);
+      useEffect(() => { loadEnums(); }, []);
+
+      async function createOrUpdateSong(e) {
+        e.preventDefault();
+        const { id, title, title_token, artists: artistStr, duration, genre, mood } = formData;
+
+        const titleTokens = title_token.split(",").map(t => t.trim());
+        const artistIds = artistStr.split(",").map(id => id.trim()).filter(Boolean);
+        const artistsSelected = artistIds.map(id => {
+          const artist = artists.find(a => a.id === parseInt(id));
+          return artist ? artist : null;
+        }).filter(Boolean);
+
+        const body = {
+          id,
+          title,
+          title_token: titleTokens,
+          artists: artistsSelected,
+          duration: duration ? parseInt(duration) : null,
+          genre: genre || null,
+          mood: mood || null
+        };
+
+        if (isEditing) {
+          await fetch(`/songs/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+        } else {
+          await fetch(`/songs`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+        }
+
+        loadSongs(songPage);
+        setFormData({ id: "", title: "", title_token: "", artists: "", duration: "", genre: "", mood: "" });
+        setIsEditing(false);
+      }
+
+      function handleEditSong(song) {
+        setFormData({
+          id: song.id,
+          title: song.title,
+          title_token: song.title_token.join(", "),
+          artists: song.artists.map(a => a.id).join(", "),
+          duration: song.duration || "",
+          genre: unwrapEnum(song.genre) || "",
+          mood: unwrapEnum(song.mood) || ""
+        });
+        setIsEditing(true);
+      }
+
+      return (
+        <div>
+          <h1>Admin Dashboard</h1>
+
+          {/* Artist Management */}
+          <div className="section">
             <h2>Artist Management</h2>
-
-            <!-- Create Artist Form -->
-            <form id="createArtistForm">
-                <input
-                    type="text"
-                    id="artistName"
-                    placeholder="Artist Name"
-                    required
-                />
-                <button type="submit">Create Artist</button>
+            <form onSubmit={async e => {
+              e.preventDefault();
+              const name = e.target.artistName.value;
+              await fetch(`/artists`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name }),
+              });
+              e.target.reset();
+              loadArtists(artistSearch, artistPage);
+            }}>
+              <input type="text" name="artistName" placeholder="Artist Name" required />
+              <button type="submit">Create Artist</button>
             </form>
 
-            <!-- Search bar -->
             <input
-                type="text"
-                id="artistSearch"
-                placeholder="Search artist by name..."
+              type="text"
+              placeholder="Search artist by name..."
+              value={artistSearch}
+              onChange={(e) => { setArtistSearch(e.target.value); setArtistPage(1); }}
             />
 
-            <!-- Artist table -->
-            <table id="artistTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
+            <table>
+              <thead>
+                <tr><th>ID</th><th>Name</th></tr>
+              </thead>
+              <tbody>
+                {artists.map(artist => (
+                  <tr key={artist.id}><td>{artist.id}</td><td>{artist.name}</td></tr>
+                ))}
+              </tbody>
             </table>
+          </div>
 
-            <!-- Artist pagination -->
-            <div class="pagination">
-                <button id="prevArtist">Prev</button>
-                <span id="artistPageInfo"></span>
-                <button id="nextArtist">Next</button>
-            </div>
-        </div>
-
-        <!-- Song Management -->
-        <div class="section">
+          {/* Song Management */}
+          <div className="section">
             <h2>Song Management</h2>
 
-            <!-- Create Song Form -->
-            <form id="createSongForm">
-                <input type="text" id="songId" placeholder="Song ID" required />
-                <input
-                    type="text"
-                    id="songTitle"
-                    placeholder="Song Title"
-                    required
-                />
-                <input
-                    type="text"
-                    id="songToken"
-                    placeholder="Song Token"
-                    required
-                />
-                <input
-                    type="text"
-                    id="artistIds"
-                    placeholder="Artist IDs (comma separated)"
-                    required
-                />
-                <button type="submit">Create Song</button>
+            {/* Form Create/Update */}
+            <form onSubmit={createOrUpdateSong}>
+              <input type="text" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value})} placeholder="Song ID" required={!isEditing} readOnly={isEditing} />
+              <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="Song Title" required />
+              <input type="text" value={formData.title_token} onChange={e => setFormData({...formData, title_token: e.target.value})} placeholder="Song Token (comma separated)" required />
+              <input type="text" value={formData.artists} onChange={e => setFormData({...formData, artists: e.target.value})} placeholder="Artist IDs (comma separated)" required />
+              <input type="number" value={formData.duration} onChange={e => setFormData({...formData, duration: e.target.value})} placeholder="Duration (sec)" required />
+              <select value={formData.genre} onChange={e => setFormData({...formData, genre: e.target.value})} required>
+                <option value="">Select Genre</option>
+                {enums.genres.map(g => <option key={g}>{g}</option>)}
+              </select>
+              <select value={formData.mood} onChange={e => setFormData({...formData, mood: e.target.value})} required>
+                <option value="">Select Mood</option>
+                {enums.moods.map(m => <option key={m}>{m}</option>)}
+              </select>
+              <button type="submit">{isEditing ? "Update Song" : "Create Song"}</button>
+              {isEditing && <button type="button" onClick={() => {setFormData({id:"", title:"", title_token:"", artists:"", duration:"", genre:"", mood:""}); setIsEditing(false);}}>Cancel</button>}
             </form>
 
-            <!-- Song table -->
-            <table id="songTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Title</th>
-                        <th>Title Token</th>
-                        <th>Artists</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
+            {/* Song Table */}
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th><th>Title</th><th>Title Token</th><th>Artists</th>
+                  <th>Duration</th><th>Genre</th><th>Mood</th><th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {songs.map(song => (
+                  <tr key={song.id}>
+                    <td>{song.id}</td>
+                    <td>{song.title}</td>
+                    <td>{song.title_token}</td>
+                    <td>{song.artists.map(a => a.name).join(", ")}</td>
+                    <td>{song.duration || ""}</td>
+                    <td>{unwrapEnum(song.genre)}</td>
+                    <td>{unwrapEnum(song.mood)}</td>
+                    <td><button onClick={() => handleEditSong(song)}>Edit</button></td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
-
-            <!-- Song pagination -->
-            <div class="pagination">
-                <button id="prevSong">Prev</button>
-                <span id="songPageInfo"></span>
-                <button id="nextSong">Next</button>
-            </div>
+          </div>
         </div>
+      );
+    }
 
-        <script>
-            let Artists = [];
-            // Debounce helper
-            function debounce(fn, delay) {
-                let timer;
-                return function (...args) {
-                    clearTimeout(timer);
-                    timer = setTimeout(() => fn.apply(this, args), delay);
-                };
-            }
-
-            // Global state
-            let artistPage = 1;
-            let songPage = 1;
-            const pageSize = 10;
-
-            // Load artists
-            async function loadArtists(
-                name = "",
-                page = artistPage,
-                limit = pageSize
-            ) {
-                let url = `/artists?page=${page}&limit=${limit}`;
-                if (name.trim() !== "") {
-                    url += `&name=${encodeURIComponent(name)}`;
-                }
-                const res = await fetch(url);
-                const data = await res.json();
-                Artists = data;
-                const tbody = document.querySelector("#artistTable tbody");
-                tbody.innerHTML = "";
-                data.forEach((artist) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${artist.id}</td>
-                        <td>${artist.name}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                document.getElementById(
-                    "artistPageInfo"
-                ).textContent = `Page ${page}`;
-            }
-
-            // Load songs
-            async function loadSongs(page = songPage, limit = pageSize) {
-                const res = await fetch(`/songs?page=${page}&limit=${limit}`);
-                const data = await res.json();
-                const tbody = document.querySelector("#songTable tbody");
-                tbody.innerHTML = "";
-                data.forEach((song) => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
-                        <td>${song.id}</td>
-                        <td>${song.title}</td>
-                        <td>${song.title_token}</td>
-                        <td>${song.artists.map((a) => a.name).join(", ")}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-                document.getElementById(
-                    "songPageInfo"
-                ).textContent = `Page ${page}`;
-            }
-
-            // Create artist
-            document
-                .getElementById("createArtistForm")
-                .addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const name = document.getElementById("artistName").value;
-                    await fetch(`/artists`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ name }),
-                    });
-                    document.getElementById("artistName").value = "";
-                    loadArtists("", artistPage);
-                });
-
-            // Create song
-            document
-                .getElementById("createSongForm")
-                .addEventListener("submit", async (e) => {
-                    e.preventDefault();
-                    const id = document.getElementById("songId").value;
-                    const title = document.getElementById("songTitle").value;
-                    const songToken = document
-                        .getElementById("songToken")
-                        .value.split(",")
-                        .map((token) => token.trim());
-                    const artists = document
-                        .getElementById("artistIds")
-                        .value.split(",")
-                        .map((id) => {
-                            const artist = Artists.find(
-                                (a) => a.id === parseInt(id.trim())
-                            );
-                            return artist ? artist : null;
-                        });
-                    await fetch(`/songs`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            id,
-                            title,
-                            title_token: songToken,
-                            artists: artists,
-                        }),
-                    });
-
-                    loadSongs(songPage);
-                });
-
-            // Search artist with debounce
-            document.getElementById("artistSearch").addEventListener(
-                "input",
-                debounce((e) => {
-                    artistPage = 1; // reset về page 1 khi search
-                    loadArtists(e.target.value, artistPage);
-                }, 500)
-            );
-
-            // Pagination buttons
-            document
-                .getElementById("prevArtist")
-                .addEventListener("click", () => {
-                    if (artistPage > 1) {
-                        artistPage--;
-                        loadArtists(
-                            document.getElementById("artistSearch").value,
-                            artistPage
-                        );
-                    }
-                });
-            document
-                .getElementById("nextArtist")
-                .addEventListener("click", () => {
-                    artistPage++;
-                    loadArtists(
-                        document.getElementById("artistSearch").value,
-                        artistPage
-                    );
-                });
-
-            document
-                .getElementById("prevSong")
-                .addEventListener("click", () => {
-                    if (songPage > 1) {
-                        songPage--;
-                        loadSongs(songPage);
-                    }
-                });
-            document
-                .getElementById("nextSong")
-                .addEventListener("click", () => {
-                    songPage++;
-                    loadSongs(songPage);
-                });
-
-            // Initial load
-            loadArtists();
-            loadSongs();
-        </script>
-    </body>
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
 </html>

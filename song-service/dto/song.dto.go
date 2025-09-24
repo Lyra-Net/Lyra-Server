@@ -25,6 +25,20 @@ type CreateSongRequest struct {
 	Title      string   `json:"title"`
 	TitleToken []string `json:"title_token"`
 	Categories []string `json:"categories"`
+	Duration   int32    `json:"duration"`
+	Genre      string   `json:"genre"`
+	Mood       string   `json:"mood"`
+	Artists    []Artist `json:"artists"`
+}
+
+type UpdateSongRequest struct {
+	ID         string   `json:"id"`
+	Title      string   `json:"title"`
+	TitleToken []string `json:"title_token"`
+	Categories []string `json:"categories"`
+	Duration   int32    `json:"duration"`
+	Genre      string   `json:"genre"`
+	Mood       string   `json:"mood"`
 	Artists    []Artist `json:"artists"`
 }
 

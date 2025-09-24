@@ -10,16 +10,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func CreateSong(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin.Context) {
+func UpdateSong(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var req dto.CreateSongRequest
+		songID := c.Param("id")
+		if songID == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "missing song id"})
+			return
+		}
+
+		var req dto.UpdateSongRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		params := repository.CreateSongParams{
-			ID:         req.ID,
+		params := repository.UpdateSongParams{
+			ID:         songID,
 			Title:      req.Title,
 			TitleToken: req.TitleToken,
 			Categories: req.Categories,
@@ -28,12 +34,20 @@ func CreateSong(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin.C
 			Mood:       repository.NullMoodEnum{Valid: req.Mood != "", MoodEnum: repository.MoodEnum(req.Mood)},
 		}
 
-		song, err := q.CreateSong(c.Request.Context(), params)
+		song, err := q.UpdateSong(c.Request.Context(), params)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
+		// Clear old artists
+		err = q.RemoveSongArtists(c.Request.Context(), songID)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Re-attach artists
 		for _, artistId := range req.Artists {
 			err = q.AddSongArtists(c.Request.Context(), repository.AddSongArtistsParams{
 				ArtistID: artistId.ID,
@@ -44,10 +58,10 @@ func CreateSong(q *repository.Queries, producer *mq.KafkaProducer) func(c *gin.C
 				return
 			}
 		}
-
+		req.ID = songID
 		_ = producer.Emit(c.Request.Context(), "song_created", req)
 
-		c.JSON(http.StatusCreated, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"id": song.ID,
 		})
 	}
