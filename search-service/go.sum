@@ -28,8 +28,6 @@ github.com/segmentio/kafka-go v0.4.49 h1:GJiNX1d/g+kG6ljyJEoi9++PUMdXGAxb7JGPiDC
 github.com/segmentio/kafka-go v0.4.49/go.mod h1:Y1gn60kzLEEaW28YshXyk2+VCUKbJ3Qr6DrnT3i4+9E=
 github.com/stretchr/testify v1.8.2 h1:+h33VjcLVPDHtOdpUCuF+7gSuG3yGIftsP1YvFihtJ8=
 github.com/stretchr/testify v1.8.2/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
-github.com/trandinh0506/BypassBeats/proto v0.0.0-20250830131846-be936b0b7e3d h1:SevWRqUbm0H5vp+4+nR5c9Q/RmbcYng3iEJR66lezOw=
-github.com/trandinh0506/BypassBeats/proto v0.0.0-20250830131846-be936b0b7e3d/go.mod h1:I7TWurb4ejtaYGopFYQqXH19v4KxgY92/IRH8bRwwI0=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20250916124829-8250093403a9 h1:qC822eHATGAcT6CR7AElfCFybkXJsj/8gX5jVR4smUM=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20250916124829-8250093403a9/go.mod h1:I7TWurb4ejtaYGopFYQqXH19v4KxgY92/IRH8bRwwI0=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
