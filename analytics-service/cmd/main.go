@@ -18,15 +18,15 @@ func main() {
 
 	chConn := clickhouse.New(cfg)
 
-	log.Println("Starting Kafka consumer...")
-	consumer := kafka.NewConsumer(cfg.KafkaBrokers, cfg.GroupID, cfg.InputTopic)
-	defer consumer.Close()
+	log.Println("Starting Kafka consumers...")
+	consumers := kafka.NewConsumers(cfg.KafkaBrokers, cfg.GroupID, cfg.InputTopics)
 
 	log.Println("Starting Kafka producer...")
 	producer := kafka.NewProducer(cfg.KafkaBrokers, cfg.OutputTopic)
-	defer producer.Close()
 
-	log.Println("Analytics Service started...")
+	processor.RegisterHandler(&processor.SongPlayHandler{})
+	processor.RegisterHandler(&processor.PlaylistHandler{})
+	processor.RegisterHandler(&processor.SearchHandler{})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -36,13 +36,16 @@ func main() {
 
 	go func() {
 		sig := <-sigChan
-		log.Printf("Received signal: %v. Shutting down gracefully...\n", sig)
+		log.Printf("Received signal: %v. Shutting down...\n", sig)
 		cancel()
 	}()
 
-	kafka.ConsumeLoop(ctx, consumer, func(msg []byte) {
-		processor.HandleEvent(chConn, producer, msg)
+	kafka.ConsumeMultipleTopics(ctx, consumers, func(msg []byte, topic string) {
+		processor.HandleEvent(ctx, topic, msg, chConn, producer)
 	})
 
-	log.Println("Service stopped.")
+	log.Println("Stopping consumers and producer...")
+	kafka.CloseConsumers(consumers)
+	producer.Close()
+	log.Println("Analytics Service stopped.")
 }

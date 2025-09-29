@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -10,7 +11,7 @@ import (
 
 type Config struct {
 	KafkaBrokers string
-	InputTopic   string
+	InputTopics  []string
 	OutputTopic  string
 	GroupID      string
 
@@ -34,24 +35,26 @@ func GetConfig() *Config {
 		}
 
 		KafkaBrokers := getEnv("KAFKA_BROKERS", "kafka:9092")
-		ClickHouseDSN := getEnv("CLICKHOUSE_DSN", "")
-		InputTopic := getEnv("KAFKA_INPUT_TOPIC", "song_play_events")
+		rawTopics := getEnv("KAFKA_INPUT_TOPICS", "song_play_events")
+		InputTopics := parseTopics(rawTopics)
 		OutputTopic := getEnv("KAFKA_OUTPUT_TOPIC", "song_play_counts")
 		GroupID := getEnv("KAFKA_GROUP_ID", "analytics-consumer")
+
+		ClickHouseDSN := getEnv("CLICKHOUSE_DSN", "")
 		ClickHouseHost := getEnv("CLICKHOUSE_HOST", "clickhouse")
 		ClickHousePort := getEnv("CLICKHOUSE_PORT", "9000")
 		ClickHouseUser := getEnv("CLICKHOUSE_USER", "default")
 		ClickHousePass := getEnv("CLICKHOUSE_PASSWORD", "")
 		ClickHouseDB := getEnv("CLICKHOUSE_DB", "default")
 
-		if KafkaBrokers == "" || ClickHouseDSN == "" || InputTopic == "" || OutputTopic == "" || GroupID == "" {
+		if KafkaBrokers == "" || ClickHouseDSN == "" || len(InputTopics) == 0 || OutputTopic == "" || GroupID == "" {
 			log.Fatal("Some required env vars are missing")
 		}
 
 		appEnv = &Config{
 			KafkaBrokers:   KafkaBrokers,
 			ClickHouseDSN:  ClickHouseDSN,
-			InputTopic:     InputTopic,
+			InputTopics:    InputTopics,
 			OutputTopic:    OutputTopic,
 			GroupID:        GroupID,
 			ClickHouseHost: ClickHouseHost,
@@ -70,4 +73,12 @@ func getEnv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+func parseTopics(raw string) []string {
+	topics := strings.Split(raw, ",")
+	for i := range topics {
+		topics[i] = strings.TrimSpace(topics[i])
+	}
+	return topics
 }
