@@ -9,6 +9,7 @@ import (
 
 const (
 	SONG_PLAY_EVENTS = "song_play_events"
+	SONG_SEEK_EVENTS = "song_seek_events"
 	PLAYLIST_EVENTS  = "playlist_events"
 	SEARCH_EVENTS    = "search_events"
 )
