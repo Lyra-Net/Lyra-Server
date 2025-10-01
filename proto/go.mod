@@ -1,6 +1,6 @@
 module github.com/trandinh0506/BypassBeats/proto
 
-go 1.23.5
+go 1.25.1
 
 require (
 	google.golang.org/grpc v1.75.0

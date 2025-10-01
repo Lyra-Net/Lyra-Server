@@ -6,12 +6,21 @@ option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/auth;auth";
 service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (AuthResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
   rpc RefreshToken(RefreshTokenRequest) returns (AuthResponse);
+
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+
+  rpc StartVerification(StartVerificationRequest) returns (StartVerificationResponse);
+  rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
 }
 
 message RegisterRequest {
-  string username = 1;
-  string password = 2;
+  string username = 1;      
+  string display_name = 2;
+  string password = 3;
+  string device_id = 4;
+  string user_agent = 5;
 }
 
 message RegisterResponse {
@@ -29,9 +38,63 @@ message RefreshTokenRequest {
   string access_token = 1;
   string refresh_token = 2;
   string device_id = 3;
+  string user_agent = 4;
+}
+
+message LogoutRequest {
+  string access_token = 1;
+  string refresh_token = 2;
+  string device_id = 3;
+  string user_agent = 4; 
+}
+
+message LogoutResponse {
+  string message = 1;
 }
 
 message AuthResponse {
   string access_token = 1;
   string refresh_token = 2;
+}
+
+message ChangePasswordRequest {
+  string old_password = 1;
+  string new_password = 2;
+  string device_id = 3;
+  string user_agent = 4;
+}
+
+message ChangePasswordResponse {
+  bool is_two_fa = 1;
+  optional string session_id = 2;
+}
+
+enum VerificationType {
+  VERIFICATION_TYPE_UNSPECIFIED = 0;
+  VERIFICATION_TYPE_EMAIL = 1;
+  VERIFICATION_TYPE_CHANGE_PASSWORD = 2;
+  VERIFICATION_TYPE_TWO_FA = 3;
+}
+
+message StartVerificationRequest {
+  VerificationType type = 1;
+  string device_id = 2;
+  string user_agent = 3;
+}
+
+message StartVerificationResponse {
+  string session_id = 1;
+  string message = 2;
+}
+
+message VerifyCodeRequest {
+  string session_id = 1;
+  string otp = 2;
+  string device_id = 3;
+  string user_agent = 4;
+}
+
+message VerifyCodeResponse {
+  bool success = 1;
+  string message = 2;
 }
