@@ -20,7 +20,6 @@ message RegisterRequest {
   string display_name = 2;
   string password = 3;
   string device_id = 4;
-  string user_agent = 5;
 }
 
 message RegisterResponse {
@@ -31,21 +30,18 @@ message LoginRequest {
   string username = 1;
   string password = 2;
   string device_id = 3;
-  string user_agent = 4;
 }
 
 message RefreshTokenRequest {
   string access_token = 1;
   string refresh_token = 2;
   string device_id = 3;
-  string user_agent = 4;
 }
 
 message LogoutRequest {
   string access_token = 1;
   string refresh_token = 2;
-  string device_id = 3;
-  string user_agent = 4; 
+  string device_id = 3; 
 }
 
 message LogoutResponse {
@@ -61,7 +57,6 @@ message ChangePasswordRequest {
   string old_password = 1;
   string new_password = 2;
   string device_id = 3;
-  string user_agent = 4;
 }
 
 message ChangePasswordResponse {
@@ -79,7 +74,6 @@ enum VerificationType {
 message StartVerificationRequest {
   VerificationType type = 1;
   string device_id = 2;
-  string user_agent = 3;
 }
 
 message StartVerificationResponse {
@@ -91,7 +85,6 @@ message VerifyCodeRequest {
   string session_id = 1;
   string otp = 2;
   string device_id = 3;
-  string user_agent = 4;
 }
 
 message VerifyCodeResponse {

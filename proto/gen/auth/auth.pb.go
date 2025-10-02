@@ -79,7 +79,6 @@ type RegisterRequest struct {
 	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	Password      string                 `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,4,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,5,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -142,13 +141,6 @@ func (x *RegisterRequest) GetDeviceId() string {
 	return ""
 }
 
-func (x *RegisterRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
-	}
-	return ""
-}
-
 type RegisterResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -198,7 +190,6 @@ type LoginRequest struct {
 	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,4,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -254,19 +245,11 @@ func (x *LoginRequest) GetDeviceId() string {
 	return ""
 }
 
-func (x *LoginRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
-	}
-	return ""
-}
-
 type RefreshTokenRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,4,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -322,19 +305,11 @@ func (x *RefreshTokenRequest) GetDeviceId() string {
 	return ""
 }
 
-func (x *RefreshTokenRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
-	}
-	return ""
-}
-
 type LogoutRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,4,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -386,13 +361,6 @@ func (x *LogoutRequest) GetRefreshToken() string {
 func (x *LogoutRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
-	}
-	return ""
-}
-
-func (x *LogoutRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
 	}
 	return ""
 }
@@ -498,7 +466,6 @@ type ChangePasswordRequest struct {
 	OldPassword   string                 `protobuf:"bytes,1,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
 	NewPassword   string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,4,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -550,13 +517,6 @@ func (x *ChangePasswordRequest) GetNewPassword() string {
 func (x *ChangePasswordRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
-	}
-	return ""
-}
-
-func (x *ChangePasswordRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
 	}
 	return ""
 }
@@ -617,7 +577,6 @@ type StartVerificationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Type          VerificationType       `protobuf:"varint,1,opt,name=type,proto3,enum=auth.VerificationType" json:"type,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,3,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -662,13 +621,6 @@ func (x *StartVerificationRequest) GetType() VerificationType {
 func (x *StartVerificationRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
-	}
-	return ""
-}
-
-func (x *StartVerificationRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
 	}
 	return ""
 }
@@ -730,7 +682,6 @@ type VerifyCodeRequest struct {
 	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	Otp           string                 `protobuf:"bytes,2,opt,name=otp,proto3" json:"otp,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	UserAgent     string                 `protobuf:"bytes,4,opt,name=user_agent,json=userAgent,proto3" json:"user_agent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -782,13 +733,6 @@ func (x *VerifyCodeRequest) GetOtp() string {
 func (x *VerifyCodeRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
-	}
-	return ""
-}
-
-func (x *VerifyCodeRequest) GetUserAgent() string {
-	if x != nil {
-		return x.UserAgent
 	}
 	return ""
 }
@@ -850,66 +794,52 @@ var File_auth_proto protoreflect.FileDescriptor
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"auth.proto\x12\x04auth\"\xa8\x01\n" +
+	"auth.proto\x12\x04auth\"\x89\x01\n" +
 	"\x0fRegisterRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12!\n" +
 	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1a\n" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tdevice_id\x18\x04 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x05 \x01(\tR\tuserAgent\",\n" +
+	"\tdevice_id\x18\x04 \x01(\tR\bdeviceId\",\n" +
 	"\x10RegisterResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"\x82\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"c\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x04 \x01(\tR\tuserAgent\"\x99\x01\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"z\n" +
 	"\x13RefreshTokenRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x04 \x01(\tR\tuserAgent\"\x93\x01\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"t\n" +
 	"\rLogoutRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x04 \x01(\tR\tuserAgent\"*\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"*\n" +
 	"\x0eLogoutResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"V\n" +
 	"\fAuthResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"\x99\x01\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"z\n" +
 	"\x15ChangePasswordRequest\x12!\n" +
 	"\fold_password\x18\x01 \x01(\tR\voldPassword\x12!\n" +
 	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x04 \x01(\tR\tuserAgent\"g\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"g\n" +
 	"\x16ChangePasswordResponse\x12\x1a\n" +
 	"\tis_two_fa\x18\x01 \x01(\bR\aisTwoFa\x12\"\n" +
 	"\n" +
 	"session_id\x18\x02 \x01(\tH\x00R\tsessionId\x88\x01\x01B\r\n" +
-	"\v_session_id\"\x82\x01\n" +
+	"\v_session_id\"c\n" +
 	"\x18StartVerificationRequest\x12*\n" +
 	"\x04type\x18\x01 \x01(\x0e2\x16.auth.VerificationTypeR\x04type\x12\x1b\n" +
-	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x03 \x01(\tR\tuserAgent\"T\n" +
+	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\"T\n" +
 	"\x19StartVerificationResponse\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x80\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"a\n" +
 	"\x11VerifyCodeRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x10\n" +
 	"\x03otp\x18\x02 \x01(\tR\x03otp\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12\x1d\n" +
-	"\n" +
-	"user_agent\x18\x04 \x01(\tR\tuserAgent\"H\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"H\n" +
 	"\x12VerifyCodeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage*\x97\x01\n" +
