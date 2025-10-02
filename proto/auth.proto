@@ -10,6 +10,10 @@ service AuthService {
   rpc RefreshToken(RefreshTokenRequest) returns (AuthResponse);
 
   rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+  rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
+
+  rpc AddEmail(AddEmailRequest) returns (AddEmailResponse);
+  rpc RemoveEmail(RemoveEmailRequest) returns (RemoveEmailResponse);
 
   rpc StartVerification(StartVerificationRequest) returns (StartVerificationResponse);
   rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
@@ -64,11 +68,40 @@ message ChangePasswordResponse {
   optional string session_id = 2;
 }
 
+message ForgotPasswordRequest {
+  string device_id = 1;
+}
+
+message ForgotPasswordResponse {
+  string session_id = 1;
+}
+
+message AddEmailRequest {
+  string access_token = 1;
+  string device_id = 2;
+  string email = 3;
+}
+
+message AddEmailResponse {
+  bool is_success = 1;
+  optional string session_id = 2; 
+}
+
+message RemoveEmailRequest {
+  string access_token = 1;
+  string device_id = 2;
+}
+
+message RemoveEmailResponse {
+  string session_id = 1;
+}
+
 enum VerificationType {
   VERIFICATION_TYPE_UNSPECIFIED = 0;
   VERIFICATION_TYPE_EMAIL = 1;
   VERIFICATION_TYPE_CHANGE_PASSWORD = 2;
-  VERIFICATION_TYPE_TWO_FA = 3;
+  VERIFICATION_TYPE_FORGOT_PASSWORD = 3;
+  VERIFICATION_TYPE_TWO_FA = 4;
 }
 
 message StartVerificationRequest {
