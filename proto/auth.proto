@@ -65,7 +65,7 @@ message ChangePasswordRequest {
 
 message ChangePasswordResponse {
   bool is_two_fa = 1;
-  optional string session_id = 2;
+  string session_id = 2;
 }
 
 message ForgotPasswordRequest {
@@ -84,7 +84,7 @@ message AddEmailRequest {
 
 message AddEmailResponse {
   bool is_success = 1;
-  optional string session_id = 2; 
+  string session_id = 2; 
 }
 
 message RemoveEmailRequest {

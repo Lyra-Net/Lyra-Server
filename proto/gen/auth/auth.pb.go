@@ -527,7 +527,7 @@ func (x *ChangePasswordRequest) GetDeviceId() string {
 type ChangePasswordResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsTwoFa       bool                   `protobuf:"varint,1,opt,name=is_two_fa,json=isTwoFa,proto3" json:"is_two_fa,omitempty"`
-	SessionId     *string                `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3,oneof" json:"session_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -570,8 +570,8 @@ func (x *ChangePasswordResponse) GetIsTwoFa() bool {
 }
 
 func (x *ChangePasswordResponse) GetSessionId() string {
-	if x != nil && x.SessionId != nil {
-		return *x.SessionId
+	if x != nil {
+		return x.SessionId
 	}
 	return ""
 }
@@ -727,7 +727,7 @@ func (x *AddEmailRequest) GetEmail() string {
 type AddEmailResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	IsSuccess     bool                   `protobuf:"varint,1,opt,name=is_success,json=isSuccess,proto3" json:"is_success,omitempty"`
-	SessionId     *string                `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3,oneof" json:"session_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -770,8 +770,8 @@ func (x *AddEmailResponse) GetIsSuccess() bool {
 }
 
 func (x *AddEmailResponse) GetSessionId() string {
-	if x != nil && x.SessionId != nil {
-		return *x.SessionId
+	if x != nil {
+		return x.SessionId
 	}
 	return ""
 }
@@ -1121,12 +1121,11 @@ const file_auth_proto_rawDesc = "" +
 	"\x15ChangePasswordRequest\x12!\n" +
 	"\fold_password\x18\x01 \x01(\tR\voldPassword\x12!\n" +
 	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"g\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"S\n" +
 	"\x16ChangePasswordResponse\x12\x1a\n" +
-	"\tis_two_fa\x18\x01 \x01(\bR\aisTwoFa\x12\"\n" +
+	"\tis_two_fa\x18\x01 \x01(\bR\aisTwoFa\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tH\x00R\tsessionId\x88\x01\x01B\r\n" +
-	"\v_session_id\"4\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"4\n" +
 	"\x15ForgotPasswordRequest\x12\x1b\n" +
 	"\tdevice_id\x18\x01 \x01(\tR\bdeviceId\"7\n" +
 	"\x16ForgotPasswordResponse\x12\x1d\n" +
@@ -1135,13 +1134,12 @@ const file_auth_proto_rawDesc = "" +
 	"\x0fAddEmailRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\"d\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\"P\n" +
 	"\x10AddEmailResponse\x12\x1d\n" +
 	"\n" +
-	"is_success\x18\x01 \x01(\bR\tisSuccess\x12\"\n" +
+	"is_success\x18\x01 \x01(\bR\tisSuccess\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tH\x00R\tsessionId\x88\x01\x01B\r\n" +
-	"\v_session_id\"T\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"T\n" +
 	"\x12RemoveEmailRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\"4\n" +
@@ -1252,8 +1250,6 @@ func file_auth_proto_init() {
 	if File_auth_proto != nil {
 		return
 	}
-	file_auth_proto_msgTypes[8].OneofWrappers = []any{}
-	file_auth_proto_msgTypes[12].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
