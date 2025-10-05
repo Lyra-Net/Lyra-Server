@@ -985,12 +985,13 @@ func (x *StartVerificationResponse) GetMessage() string {
 }
 
 type VerifyCodeRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	Otp           string                 `protobuf:"bytes,2,opt,name=otp,proto3" json:"otp,omitempty"`
-	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	SessionId      string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	Otp            string                 `protobuf:"bytes,2,opt,name=otp,proto3" json:"otp,omitempty"`
+	DeviceId       string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	RememberDevice bool                   `protobuf:"varint,4,opt,name=remember_device,json=rememberDevice,proto3" json:"remember_device,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *VerifyCodeRequest) Reset() {
@@ -1042,6 +1043,13 @@ func (x *VerifyCodeRequest) GetDeviceId() string {
 		return x.DeviceId
 	}
 	return ""
+}
+
+func (x *VerifyCodeRequest) GetRememberDevice() bool {
+	if x != nil {
+		return x.RememberDevice
+	}
+	return false
 }
 
 type VerifyCodeResponse struct {
@@ -1161,12 +1169,13 @@ const file_auth_proto_rawDesc = "" +
 	"\x19StartVerificationResponse\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"a\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x8a\x01\n" +
 	"\x11VerifyCodeRequest\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x10\n" +
 	"\x03otp\x18\x02 \x01(\tR\x03otp\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"H\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12'\n" +
+	"\x0fremember_device\x18\x04 \x01(\bR\x0erememberDevice\"H\n" +
 	"\x12VerifyCodeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage*\xbe\x01\n" +

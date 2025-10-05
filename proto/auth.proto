@@ -119,6 +119,7 @@ message VerifyCodeRequest {
   string session_id = 1;
   string otp = 2;
   string device_id = 3;
+  bool remember_device = 4;
 }
 
 message VerifyCodeResponse {
