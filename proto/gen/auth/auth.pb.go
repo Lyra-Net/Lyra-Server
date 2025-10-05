@@ -189,12 +189,13 @@ func (x *RegisterResponse) GetMessage() string {
 }
 
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
-	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	Username              string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
+	Password              string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *LoginRequest) Reset() {
@@ -244,6 +245,13 @@ func (x *LoginRequest) GetPassword() string {
 func (x *LoginRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
 	}
 	return ""
 }
@@ -1100,11 +1108,12 @@ const file_auth_proto_rawDesc = "" +
 	"\bpassword\x18\x03 \x01(\tR\bpassword\x12\x1b\n" +
 	"\tdevice_id\x18\x04 \x01(\tR\bdeviceId\",\n" +
 	"\x10RegisterResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage\"c\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage\"\x9a\x01\n" +
 	"\fLoginRequest\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"z\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x125\n" +
+	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"z\n" +
 	"\x13RefreshTokenRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x1b\n" +
