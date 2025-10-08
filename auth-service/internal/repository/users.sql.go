@@ -9,21 +9,59 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addEmail = `-- name: AddEmail :exec
+UPDATE users
+SET email_encrypted = $1,
+    email_hash = $2
+WHERE user_id = $3
+`
+
+type AddEmailParams struct {
+	EmailEncrypted pgtype.Text `json:"email_encrypted"`
+	EmailHash      pgtype.Text `json:"email_hash"`
+	UserID         uuid.UUID   `json:"user_id"`
+}
+
+func (q *Queries) AddEmail(ctx context.Context, arg AddEmailParams) error {
+	_, err := q.db.Exec(ctx, addEmail, arg.EmailEncrypted, arg.EmailHash, arg.UserID)
+	return err
+}
+
+const checkActiveEmail = `-- name: CheckActiveEmail :one
+SELECT email_hash
+FROM users
+WHERE email_hash = $1
+`
+
+func (q *Queries) CheckActiveEmail(ctx context.Context, emailHash pgtype.Text) (pgtype.Text, error) {
+	row := q.db.QueryRow(ctx, checkActiveEmail, emailHash)
+	var email_hash pgtype.Text
+	err := row.Scan(&email_hash)
+	return email_hash, err
+}
+
 const createUser = `-- name: CreateUser :exec
-INSERT INTO users (user_id, username, password_hash)
-VALUES ($1, $2, $3)
+INSERT INTO users (user_id, display_name, username, password_hash)
+VALUES ($1, $2, $3, $4)
 `
 
 type CreateUserParams struct {
-	UserID       uuid.UUID `json:"user_id"`
-	Username     string    `json:"username"`
-	PasswordHash string    `json:"password_hash"`
+	UserID       uuid.UUID   `json:"user_id"`
+	DisplayName  pgtype.Text `json:"display_name"`
+	Username     string      `json:"username"`
+	PasswordHash string      `json:"password_hash"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
-	_, err := q.db.Exec(ctx, createUser, arg.UserID, arg.Username, arg.PasswordHash)
+	_, err := q.db.Exec(ctx, createUser,
+		arg.UserID,
+		arg.DisplayName,
+		arg.Username,
+		arg.PasswordHash,
+	)
 	return err
 }
 
@@ -38,7 +76,7 @@ func (q *Queries) DeleteUser(ctx context.Context, userID uuid.UUID) error {
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, username, password_hash, email, is_verify, created_at, updated_at FROM users
+SELECT user_id, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
 WHERE user_id = $1
 `
 
@@ -47,10 +85,13 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (User, erro
 	var i User
 	err := row.Scan(
 		&i.UserID,
+		&i.DisplayName,
 		&i.Username,
 		&i.PasswordHash,
-		&i.Email,
-		&i.IsVerify,
+		&i.EmailEncrypted,
+		&i.EmailHash,
+		&i.Is2fa,
+		&i.ChangePassAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
@@ -58,7 +99,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (User, erro
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT user_id, username, password_hash, email, is_verify, created_at, updated_at FROM users
+SELECT user_id, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
 WHERE username = $1
 LIMIT 1
 `
@@ -68,10 +109,13 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 	var i User
 	err := row.Scan(
 		&i.UserID,
+		&i.DisplayName,
 		&i.Username,
 		&i.PasswordHash,
-		&i.Email,
-		&i.IsVerify,
+		&i.EmailEncrypted,
+		&i.EmailHash,
+		&i.Is2fa,
+		&i.ChangePassAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

@@ -1,0 +1,64 @@
+@startuml Login_2FA
+title Login Flow with Optional 2FA (Web & Mobile/Desktop)
+
+actor "Web Client" as Web
+actor "Mobile/Desktop Client" as Mobile
+participant "Next.js Proxy\n(Only for Web)" as NextJS
+participant "API Gateway" as Gateway
+participant "AuthService (gRPC)" as Auth
+participant "Redis (Session Store)" as Redis
+participant "Database" as DB
+
+== Web Client Flow ==
+Web -> NextJS: POST /login (username, password, device_id)
+NextJS -> Gateway: /auth/login
+Gateway -> Auth: LoginRequest(username, password, device_id)
+
+Auth -> DB: SELECT * FROM users WHERE username = ?
+DB --> Auth: User data
+
+alt Invalid credentials
+  Auth --> Gateway: Error(Unauthenticated)
+  Gateway --> NextJS: Error 401
+  NextJS --> Web: Show "Invalid credentials"
+else is_2fa = true
+  Auth -> Redis: SET 2FA_SESSION (session_id, user_id, otp, device_id)
+  Auth --> Gateway: Error(2FA_REQUIRED, session_id)
+  Gateway --> NextJS: { "error": "2FA_REQUIRED", "session_id": "..." }
+  NextJS --> Web: Show 2FA verification screen
+
+  == OTP Verification ==
+  Web -> NextJS: POST /verify-otp (session_id, otp)
+  NextJS -> Gateway: StartVerification / VerifyCode
+  Gateway -> Auth: VerifyCodeRequest(session_id, otp, device_id)
+  Auth -> Redis: GET 2FA_SESSION
+  Redis --> Auth: OTP valid → OK
+  Auth --> Gateway: VerifyCodeResponse(success=true)
+  Gateway --> NextJS: OK
+  NextJS --> Web: Show "2FA verified"
+
+  == Retry Login ==
+  Web -> NextJS: POST /login (username, password, device_id, verified_2fa_session_id)
+  NextJS -> Gateway: LoginRequest(..., verified_2fa_session_id)
+  Gateway -> Auth: gRPC Login(...)
+
+  Auth -> Redis: CHECK verified_2fa_session_id
+  Auth -> Auth: Generate AccessToken & RefreshToken
+  Auth -> DB: INSERT refresh_token record
+  DB --> Auth: OK
+
+  Auth --> Gateway: AuthResponse(access_token, refresh_token)
+  Gateway --> NextJS: Tokens
+  NextJS -> Web: Set HttpOnly cookie (refresh_token)
+  Web <- NextJS: Success
+
+else is_2fa = false
+  Auth -> Auth: Generate AccessToken & RefreshToken
+  Auth -> DB: INSERT refresh_token record
+  Auth --> Gateway: AuthResponse(tokens)
+  Gateway --> NextJS: Tokens
+  NextJS -> Web: Set HttpOnly cookie (refresh_token)
+  Web <- NextJS: Success
+end
+
+@enduml

@@ -1,9 +1,10 @@
 package redisconn
 
 import (
+	"auth-service/config"
 	"context"
+	"encoding/json"
 	"fmt"
-	"identity-service/config"
 	"strconv"
 	"time"
 
@@ -15,6 +16,11 @@ var (
 	Client *redis.Client
 	Ctx    = context.Background()
 )
+
+type TwoFAEntry struct {
+	OTP    string `json:"otp"`
+	UserID string `json:"user_id"`
+}
 
 func InitRedis() {
 	cfg := config.GetConfig()
@@ -77,4 +83,61 @@ func IsRefreshTokenBlacklisted(jti uuid.UUID) (bool, error) {
 		return false, nil
 	}
 	return err == nil, err
+}
+
+func Set2faOTP(sessionId, userId, deviceId, otp string) error {
+	key := fmt.Sprintf("2fa:%s:%s", sessionId, deviceId)
+	entry := TwoFAEntry{
+		OTP:    otp,
+		UserID: userId,
+	}
+	data, err := json.Marshal(entry)
+	if err != nil {
+		return err
+	}
+	return Client.Set(Ctx, key, data, 5*time.Minute).Err()
+}
+
+func Get2faOTP(sessionId, deviceId string) (otp string, userId string, err error) {
+	key := fmt.Sprintf("2fa:%s:%s", sessionId, deviceId)
+	data, err := Client.Get(Ctx, key).Bytes()
+	if err != nil {
+		return "", "", err
+	}
+
+	var entry TwoFAEntry
+	if err := json.Unmarshal(data, &entry); err != nil {
+		return "", "", err
+	}
+	return entry.OTP, entry.UserID, nil
+}
+
+func CheckVerifiedSession(sessionId, deviceId string) bool {
+	key := fmt.Sprintf("%s:%s", sessionId, deviceId)
+	val, err := Client.Get(Ctx, key).Result()
+	if err == redis.Nil || val != "1" {
+		return false
+	}
+	Client.Del(Ctx, key)
+	return true
+}
+
+func SetVerifiedSession(sessionId, deviceId string) error {
+	key := fmt.Sprintf("%s:%s", sessionId, deviceId)
+	return Client.Set(Ctx, key, 1, time.Minute*2).Err()
+}
+
+func SetVerifing2Fa(userId string) error {
+	key := fmt.Sprintf("%s:verifing", userId)
+	return Client.Set(Ctx, key, 1, time.Minute*30).Err()
+}
+
+func GetVerifing2Fa(userId string) (string, error) {
+	key := fmt.Sprintf("%s:verifing", userId)
+	return Client.Get(Ctx, key).Result()
+}
+
+func RemoveVerifing2Fa(userId string) error {
+	key := fmt.Sprintf("%s:verifing", userId)
+	return Client.Del(Ctx, key).Err()
 }

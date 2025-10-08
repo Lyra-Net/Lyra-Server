@@ -8,6 +8,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+type Mailer struct {
+	From     string
+	Host     string
+	Port     string
+	Password string
+}
+
 type Cfg struct {
 	PORT               string
 	DB_URL             string
@@ -19,6 +26,7 @@ type Cfg struct {
 	REDIS_URL          string
 	REDIS_HOST         string
 	REDIS_PORT         string
+	MAILER             *Mailer
 }
 
 var (
@@ -42,8 +50,20 @@ func GetConfig() *Cfg {
 		redisURL := os.Getenv("REDIS_URL")
 		redisHost := os.Getenv("REDIS_HOST")
 		redisPort := os.Getenv("REDIS_PORT")
-
-		if port == "" || dbURL == "" || jwtAccess == "" || jwtRefresh == "" || redisURL == "" {
+		mailFrom := os.Getenv("SMTP_EMAIL")
+		mailHost := os.Getenv("SMTP_HOST")
+		mailPort := os.Getenv("SMTP_PORT")
+		mailPass := os.Getenv("SMTP_PASSWORD")
+		mailer := &Mailer{
+			From:     mailFrom,
+			Host:     mailHost,
+			Port:     mailPort,
+			Password: mailPass,
+		}
+		if port == "" || dbURL == "" ||
+			jwtAccess == "" || jwtRefresh == "" ||
+			redisURL == "" || mailFrom == "" ||
+			mailHost == "" || mailPort == "" || mailPass == "" {
 			log.Fatal("Some required env vars are missing")
 		}
 
@@ -58,6 +78,7 @@ func GetConfig() *Cfg {
 			REDIS_URL:          redisURL,
 			REDIS_HOST:         redisHost,
 			REDIS_PORT:         redisPort,
+			MAILER:             mailer,
 		}
 	})
 

@@ -28,6 +28,9 @@ COPY --from=builder /go/bin/migrate /usr/local/bin/migrate
 # Copy migration scripts
 COPY --from=builder /app/db/migration ./migration
 
+# Copy templates
+COPY --from=builder /app/templates ./templates
+
 # Copy entrypoint script
 COPY entrypoint.sh .
 

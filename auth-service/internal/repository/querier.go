@@ -8,17 +8,25 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Querier interface {
+	AddEmail(ctx context.Context, arg AddEmailParams) error
+	CheckActiveEmail(ctx context.Context, emailHash pgtype.Text) (pgtype.Text, error)
+	CreateOrUpdateTrustedDevice(ctx context.Context, arg CreateOrUpdateTrustedDeviceParams) error
 	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
 	DeleteRefreshToken(ctx context.Context, id uuid.UUID) error
+	DeleteTrustedDevice(ctx context.Context, arg DeleteTrustedDeviceParams) error
 	DeleteUser(ctx context.Context, userID uuid.UUID) error
 	DeleteUserRefreshTokens(ctx context.Context, userID uuid.UUID) error
+	GetDeletedEmail(ctx context.Context, emailHash string) (DeletedEmail, error)
 	GetRefreshToken(ctx context.Context, arg GetRefreshTokenParams) (RefreshToken, error)
+	GetTrustedDevices(ctx context.Context, userID uuid.UUID) ([]GetTrustedDevicesRow, error)
 	GetUserByID(ctx context.Context, userID uuid.UUID) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
+	IsValidTrustedDevice(ctx context.Context, arg IsValidTrustedDeviceParams) (int32, error)
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error
 }
 

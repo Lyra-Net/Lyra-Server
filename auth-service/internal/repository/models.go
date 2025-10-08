@@ -9,22 +9,47 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type DeletedEmail struct {
+	EmailHash       string           `json:"email_hash"`
+	DeletedBy       uuid.UUID        `json:"deleted_by"`
+	DeletedAt       pgtype.Timestamp `json:"deleted_at"`
+	CooldownUntil   pgtype.Timestamp `json:"cooldown_until"`
+	SafeWindowUntil pgtype.Timestamp `json:"safe_window_until"`
+	SpamCount       pgtype.Int4      `json:"spam_count"`
+}
+
 type RefreshToken struct {
 	ID        uuid.UUID        `json:"id"`
 	UserID    uuid.UUID        `json:"user_id"`
 	Token     string           `json:"token"`
+	AccessJti uuid.UUID        `json:"access_jti"`
 	DeviceID  pgtype.Text      `json:"device_id"`
-	UserAgent pgtype.Text      `json:"user_agent"`
+	Browser   pgtype.Text      `json:"browser"`
+	Os        pgtype.Text      `json:"os"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 }
 
+type TrustedDevice struct {
+	ID        uuid.UUID        `json:"id"`
+	UserID    uuid.UUID        `json:"user_id"`
+	DeviceID  string           `json:"device_id"`
+	Browser   string           `json:"browser"`
+	Os        string           `json:"os"`
+	ExpiresAt pgtype.Timestamp `json:"expires_at"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+}
+
 type User struct {
-	UserID       uuid.UUID        `json:"user_id"`
-	Username     string           `json:"username"`
-	PasswordHash string           `json:"password_hash"`
-	Email        pgtype.Text      `json:"email"`
-	IsVerify     pgtype.Bool      `json:"is_verify"`
-	CreatedAt    pgtype.Timestamp `json:"created_at"`
-	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
+	UserID         uuid.UUID        `json:"user_id"`
+	DisplayName    pgtype.Text      `json:"display_name"`
+	Username       string           `json:"username"`
+	PasswordHash   string           `json:"password_hash"`
+	EmailEncrypted pgtype.Text      `json:"email_encrypted"`
+	EmailHash      pgtype.Text      `json:"email_hash"`
+	Is2fa          pgtype.Bool      `json:"is_2fa"`
+	ChangePassAt   pgtype.Timestamp `json:"change_pass_at"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
 }

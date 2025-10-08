@@ -1,0 +1,33 @@
+@startuml register
+title Register Sequence Diagram (AuthService + Kafka)
+
+actor Client
+participant "API Gateway" as Gateway
+participant "AuthService (gRPC)" as Auth
+participant "Database" as DB
+participant "Kafka Producer" as Kafka
+participant "SecurityService" as Security
+
+Client -> Gateway: Register(username, display_name, password, device_id)
+Gateway -> Auth: RegisterRequest
+
+Auth -> Auth: Hash password (bcrypt)
+Auth -> Auth: Generate UUID (user_id)
+Auth -> DB: INSERT INTO users(user_id, username, display_name, password_hash)
+DB --> Auth: OK / Error (duplicate username?)
+
+alt Success
+  Auth -> Kafka: Emit event "security.user_registered" (user_id, device_id, ip, browser, os)
+  Kafka -> Security: Deliver event asynchronously
+  Security --> Kafka: ACK
+  Auth --> Gateway: RegisterResponse("User created")
+  Gateway --> Client: Success message
+else Username already exists
+  Auth --> Gateway: Error (AlreadyExists)
+  Gateway --> Client: Username already in use
+else Internal error
+  Auth --> Gateway: Error (Internal)
+  Gateway --> Client: Register failed
+end
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml risk
+skinparam sequence {
+  ArrowColor black
+  ActorBorderColor black
+  LifeLineBorderColor black
+  LifeLineBackgroundColor #DDDDDD
+  ParticipantBorderColor black
+  ParticipantBackgroundColor #EEEEEE
+  NoteBackgroundColor #FFFFCC
+  NoteBorderColor black
+}
+
+actor Client
+participant AuthService
+participant SecurityService
+
+== FAST PATH (Trusted login) ==
+Client -> AuthService: Login request (username, pass, device_id, ip)
+AuthService -> AuthService: Check trusted device + IP zone
+alt Trusted
+  AuthService --> Client: Issue Access + Refresh Token
+  AuthService -> SecurityService: Async notify login event
+end
+
+== SLOW PATH (Untrusted login) ==
+Client -> AuthService: Login request (username, pass, device_id, ip)
+AuthService -> AuthService: Check trusted device + IP zone
+alt Not Trusted
+  AuthService -> SecurityService: Sync risk check
+  SecurityService --> AuthService: Risk Score / Decision
+  alt Risk OK
+    AuthService --> Client: Issue Access + Refresh Token
+  else Risk Suspicious
+    AuthService --> Client: Require OTP / Block
+  end
+  AuthService -> SecurityService: Async notify login event (logging)
+end
+@enduml

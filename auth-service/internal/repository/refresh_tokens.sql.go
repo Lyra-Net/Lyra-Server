@@ -13,16 +13,18 @@ import (
 )
 
 const createRefreshToken = `-- name: CreateRefreshToken :exec
-INSERT INTO refresh_tokens (id, user_id, token, device_id, user_agent, expires_at)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT INTO refresh_tokens (id, user_id, token, access_jti, device_id, browser, os, expires_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 type CreateRefreshTokenParams struct {
 	ID        uuid.UUID        `json:"id"`
 	UserID    uuid.UUID        `json:"user_id"`
 	Token     string           `json:"token"`
+	AccessJti uuid.UUID        `json:"access_jti"`
 	DeviceID  pgtype.Text      `json:"device_id"`
-	UserAgent pgtype.Text      `json:"user_agent"`
+	Browser   pgtype.Text      `json:"browser"`
+	Os        pgtype.Text      `json:"os"`
 	ExpiresAt pgtype.Timestamp `json:"expires_at"`
 }
 
@@ -31,8 +33,10 @@ func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshToken
 		arg.ID,
 		arg.UserID,
 		arg.Token,
+		arg.AccessJti,
 		arg.DeviceID,
-		arg.UserAgent,
+		arg.Browser,
+		arg.Os,
 		arg.ExpiresAt,
 	)
 	return err
@@ -59,7 +63,7 @@ func (q *Queries) DeleteUserRefreshTokens(ctx context.Context, userID uuid.UUID)
 }
 
 const getRefreshToken = `-- name: GetRefreshToken :one
-SELECT id, user_id, token, device_id, user_agent, expires_at, created_at FROM refresh_tokens
+SELECT id, user_id, token, access_jti, device_id, browser, os, expires_at, created_at FROM refresh_tokens
 WHERE id = $1 AND user_id = $2
 `
 
@@ -75,8 +79,10 @@ func (q *Queries) GetRefreshToken(ctx context.Context, arg GetRefreshTokenParams
 		&i.ID,
 		&i.UserID,
 		&i.Token,
+		&i.AccessJti,
 		&i.DeviceID,
-		&i.UserAgent,
+		&i.Browser,
+		&i.Os,
 		&i.ExpiresAt,
 		&i.CreatedAt,
 	)

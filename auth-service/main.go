@@ -6,11 +6,17 @@ import (
 	"log"
 	"net"
 
-	"identity-service/config"
-	"identity-service/internal/repository"
-	"identity-service/proto/auth"
-	"identity-service/redisconn"
-	"identity-service/services"
+	"google.golang.org/grpc/reflection"
+
+	"auth-service/config"
+	"auth-service/internal/interceptor"
+	"auth-service/internal/repository"
+	"auth-service/utils"
+
+	"github.com/trandinh0506/BypassBeats/proto/gen/auth"
+
+	"auth-service/internal/redisconn"
+	"auth-service/internal/services"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc"
@@ -18,6 +24,7 @@ import (
 
 func main() {
 	cfg := config.GetConfig()
+	utils.InitCrypto()
 
 	// Redis
 	redisconn.InitRedis()
@@ -36,10 +43,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.AuthUnaryInterceptor()),
+	)
 
 	auth.RegisterAuthServiceServer(grpcServer, services.NewAuthServer(queries))
-
+	reflection.Register(grpcServer)
 	fmt.Println("gRPC server is running on port " + cfg.PORT)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

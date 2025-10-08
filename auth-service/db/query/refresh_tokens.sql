@@ -1,6 +1,6 @@
 -- name: CreateRefreshToken :exec
-INSERT INTO refresh_tokens (id, user_id, token, device_id, user_agent, expires_at)
-VALUES ($1, $2, $3, $4, $5, $6);
+INSERT INTO refresh_tokens (id, user_id, token, access_jti, device_id, browser, os, expires_at)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 
 -- name: GetRefreshToken :one
 SELECT * FROM refresh_tokens
