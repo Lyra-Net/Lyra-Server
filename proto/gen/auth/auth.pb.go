@@ -1115,6 +1115,142 @@ func (x *VerifyCodeResponse) GetMessage() string {
 	return ""
 }
 
+type Toggle2FaRequest struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Enable                bool                   `protobuf:"varint,3,opt,name=enable,proto3" json:"enable,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *Toggle2FaRequest) Reset() {
+	*x = Toggle2FaRequest{}
+	mi := &file_auth_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Toggle2FaRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Toggle2FaRequest) ProtoMessage() {}
+
+func (x *Toggle2FaRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Toggle2FaRequest.ProtoReflect.Descriptor instead.
+func (*Toggle2FaRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *Toggle2FaRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *Toggle2FaRequest) GetDeviceId() string {
+	if x != nil {
+		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *Toggle2FaRequest) GetEnable() bool {
+	if x != nil {
+		return x.Enable
+	}
+	return false
+}
+
+func (x *Toggle2FaRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
+	}
+	return ""
+}
+
+type Toggle2FaResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	IsTwoFa       bool                   `protobuf:"varint,2,opt,name=is_two_fa,json=isTwoFa,proto3" json:"is_two_fa,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	IsSuccess     bool                   `protobuf:"varint,4,opt,name=is_success,json=isSuccess,proto3" json:"is_success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Toggle2FaResponse) Reset() {
+	*x = Toggle2FaResponse{}
+	mi := &file_auth_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Toggle2FaResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Toggle2FaResponse) ProtoMessage() {}
+
+func (x *Toggle2FaResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Toggle2FaResponse.ProtoReflect.Descriptor instead.
+func (*Toggle2FaResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *Toggle2FaResponse) GetSessionId() string {
+	if x != nil {
+		return x.SessionId
+	}
+	return ""
+}
+
+func (x *Toggle2FaResponse) GetIsTwoFa() bool {
+	if x != nil {
+		return x.IsTwoFa
+	}
+	return false
+}
+
+func (x *Toggle2FaResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *Toggle2FaResponse) GetIsSuccess() bool {
+	if x != nil {
+		return x.IsSuccess
+	}
+	return false
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -1198,7 +1334,19 @@ const file_auth_proto_rawDesc = "" +
 	"\x0fremember_device\x18\x04 \x01(\bR\x0erememberDevice\"H\n" +
 	"\x12VerifyCodeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\xa0\x05\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xa1\x01\n" +
+	"\x10Toggle2FaRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
+	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x16\n" +
+	"\x06enable\x18\x03 \x01(\bR\x06enable\x125\n" +
+	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"\x87\x01\n" +
+	"\x11Toggle2FaResponse\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1a\n" +
+	"\tis_two_fa\x18\x02 \x01(\bR\aisTwoFa\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"is_success\x18\x04 \x01(\bR\tisSuccess2\xde\x05\n" +
 	"\vAuthService\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x12/\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x12.auth.AuthResponse\x123\n" +
@@ -1210,7 +1358,8 @@ const file_auth_proto_rawDesc = "" +
 	"\vRemoveEmail\x12\x18.auth.RemoveEmailRequest\x1a\x19.auth.RemoveEmailResponse\x12W\n" +
 	"\x12ResendVerification\x12\x1f.auth.ResendVerificationRequest\x1a .auth.ResendVerificationResponse\x12?\n" +
 	"\n" +
-	"VerifyCode\x12\x17.auth.VerifyCodeRequest\x1a\x18.auth.VerifyCodeResponseB9Z7github.com/trandinh0506/BypassBeats/proto/gen/auth;authb\x06proto3"
+	"VerifyCode\x12\x17.auth.VerifyCodeRequest\x1a\x18.auth.VerifyCodeResponse\x12<\n" +
+	"\tToggle2Fa\x12\x16.auth.Toggle2FaRequest\x1a\x17.auth.Toggle2FaResponseB9Z7github.com/trandinh0506/BypassBeats/proto/gen/auth;authb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -1224,7 +1373,7 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_auth_proto_goTypes = []any{
 	(*RegisterRequest)(nil),            // 0: auth.RegisterRequest
 	(*RegisterResponse)(nil),           // 1: auth.RegisterResponse
@@ -1245,6 +1394,8 @@ var file_auth_proto_goTypes = []any{
 	(*ResendVerificationResponse)(nil), // 16: auth.ResendVerificationResponse
 	(*VerifyCodeRequest)(nil),          // 17: auth.VerifyCodeRequest
 	(*VerifyCodeResponse)(nil),         // 18: auth.VerifyCodeResponse
+	(*Toggle2FaRequest)(nil),           // 19: auth.Toggle2FaRequest
+	(*Toggle2FaResponse)(nil),          // 20: auth.Toggle2FaResponse
 }
 var file_auth_proto_depIdxs = []int32{
 	0,  // 0: auth.AuthService.Register:input_type -> auth.RegisterRequest
@@ -1257,18 +1408,20 @@ var file_auth_proto_depIdxs = []int32{
 	13, // 7: auth.AuthService.RemoveEmail:input_type -> auth.RemoveEmailRequest
 	15, // 8: auth.AuthService.ResendVerification:input_type -> auth.ResendVerificationRequest
 	17, // 9: auth.AuthService.VerifyCode:input_type -> auth.VerifyCodeRequest
-	1,  // 10: auth.AuthService.Register:output_type -> auth.RegisterResponse
-	6,  // 11: auth.AuthService.Login:output_type -> auth.AuthResponse
-	5,  // 12: auth.AuthService.Logout:output_type -> auth.LogoutResponse
-	6,  // 13: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
-	8,  // 14: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
-	10, // 15: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
-	12, // 16: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
-	14, // 17: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
-	16, // 18: auth.AuthService.ResendVerification:output_type -> auth.ResendVerificationResponse
-	18, // 19: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
-	10, // [10:20] is the sub-list for method output_type
-	0,  // [0:10] is the sub-list for method input_type
+	19, // 10: auth.AuthService.Toggle2Fa:input_type -> auth.Toggle2FaRequest
+	1,  // 11: auth.AuthService.Register:output_type -> auth.RegisterResponse
+	6,  // 12: auth.AuthService.Login:output_type -> auth.AuthResponse
+	5,  // 13: auth.AuthService.Logout:output_type -> auth.LogoutResponse
+	6,  // 14: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
+	8,  // 15: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
+	10, // 16: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
+	12, // 17: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
+	14, // 18: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
+	16, // 19: auth.AuthService.ResendVerification:output_type -> auth.ResendVerificationResponse
+	18, // 20: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
+	20, // 21: auth.AuthService.Toggle2Fa:output_type -> auth.Toggle2FaResponse
+	11, // [11:22] is the sub-list for method output_type
+	0,  // [0:11] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -1285,7 +1438,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   19,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -29,6 +29,7 @@ const (
 	AuthService_RemoveEmail_FullMethodName        = "/auth.AuthService/RemoveEmail"
 	AuthService_ResendVerification_FullMethodName = "/auth.AuthService/ResendVerification"
 	AuthService_VerifyCode_FullMethodName         = "/auth.AuthService/VerifyCode"
+	AuthService_Toggle2Fa_FullMethodName          = "/auth.AuthService/Toggle2Fa"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -45,6 +46,7 @@ type AuthServiceClient interface {
 	RemoveEmail(ctx context.Context, in *RemoveEmailRequest, opts ...grpc.CallOption) (*RemoveEmailResponse, error)
 	ResendVerification(ctx context.Context, in *ResendVerificationRequest, opts ...grpc.CallOption) (*ResendVerificationResponse, error)
 	VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts ...grpc.CallOption) (*VerifyCodeResponse, error)
+	Toggle2Fa(ctx context.Context, in *Toggle2FaRequest, opts ...grpc.CallOption) (*Toggle2FaResponse, error)
 }
 
 type authServiceClient struct {
@@ -155,6 +157,16 @@ func (c *authServiceClient) VerifyCode(ctx context.Context, in *VerifyCodeReques
 	return out, nil
 }
 
+func (c *authServiceClient) Toggle2Fa(ctx context.Context, in *Toggle2FaRequest, opts ...grpc.CallOption) (*Toggle2FaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Toggle2FaResponse)
+	err := c.cc.Invoke(ctx, AuthService_Toggle2Fa_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
@@ -169,6 +181,7 @@ type AuthServiceServer interface {
 	RemoveEmail(context.Context, *RemoveEmailRequest) (*RemoveEmailResponse, error)
 	ResendVerification(context.Context, *ResendVerificationRequest) (*ResendVerificationResponse, error)
 	VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error)
+	Toggle2Fa(context.Context, *Toggle2FaRequest) (*Toggle2FaResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -208,6 +221,9 @@ func (UnimplementedAuthServiceServer) ResendVerification(context.Context, *Resen
 }
 func (UnimplementedAuthServiceServer) VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyCode not implemented")
+}
+func (UnimplementedAuthServiceServer) Toggle2Fa(context.Context, *Toggle2FaRequest) (*Toggle2FaResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Toggle2Fa not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
@@ -410,6 +426,24 @@ func _AuthService_VerifyCode_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_Toggle2Fa_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Toggle2FaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Toggle2Fa(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_Toggle2Fa_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Toggle2Fa(ctx, req.(*Toggle2FaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +490,10 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "VerifyCode",
 			Handler:    _AuthService_VerifyCode_Handler,
+		},
+		{
+			MethodName: "Toggle2Fa",
+			Handler:    _AuthService_Toggle2Fa_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
