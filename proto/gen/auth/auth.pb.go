@@ -21,61 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type VerificationType int32
-
-const (
-	VerificationType_VERIFICATION_TYPE_UNSPECIFIED     VerificationType = 0
-	VerificationType_VERIFICATION_TYPE_EMAIL           VerificationType = 1
-	VerificationType_VERIFICATION_TYPE_CHANGE_PASSWORD VerificationType = 2
-	VerificationType_VERIFICATION_TYPE_FORGOT_PASSWORD VerificationType = 3
-	VerificationType_VERIFICATION_TYPE_TWO_FA          VerificationType = 4
-)
-
-// Enum value maps for VerificationType.
-var (
-	VerificationType_name = map[int32]string{
-		0: "VERIFICATION_TYPE_UNSPECIFIED",
-		1: "VERIFICATION_TYPE_EMAIL",
-		2: "VERIFICATION_TYPE_CHANGE_PASSWORD",
-		3: "VERIFICATION_TYPE_FORGOT_PASSWORD",
-		4: "VERIFICATION_TYPE_TWO_FA",
-	}
-	VerificationType_value = map[string]int32{
-		"VERIFICATION_TYPE_UNSPECIFIED":     0,
-		"VERIFICATION_TYPE_EMAIL":           1,
-		"VERIFICATION_TYPE_CHANGE_PASSWORD": 2,
-		"VERIFICATION_TYPE_FORGOT_PASSWORD": 3,
-		"VERIFICATION_TYPE_TWO_FA":          4,
-	}
-)
-
-func (x VerificationType) Enum() *VerificationType {
-	p := new(VerificationType)
-	*p = x
-	return p
-}
-
-func (x VerificationType) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (VerificationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_auth_proto_enumTypes[0].Descriptor()
-}
-
-func (VerificationType) Type() protoreflect.EnumType {
-	return &file_auth_proto_enumTypes[0]
-}
-
-func (x VerificationType) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use VerificationType.Descriptor instead.
-func (VerificationType) EnumDescriptor() ([]byte, []int) {
-	return file_auth_proto_rawDescGZIP(), []int{0}
-}
-
 type RegisterRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Username      string                 `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
@@ -473,12 +418,14 @@ func (x *AuthResponse) GetRefreshToken() string {
 }
 
 type ChangePasswordRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	OldPassword   string                 `protobuf:"bytes,1,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
-	NewPassword   string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
-	DeviceId      string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	OldPassword           string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
+	NewPassword           string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,4,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,5,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ChangePasswordRequest) Reset() {
@@ -511,6 +458,13 @@ func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{7}
 }
 
+func (x *ChangePasswordRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
 func (x *ChangePasswordRequest) GetOldPassword() string {
 	if x != nil {
 		return x.OldPassword
@@ -528,6 +482,13 @@ func (x *ChangePasswordRequest) GetNewPassword() string {
 func (x *ChangePasswordRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *ChangePasswordRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
 	}
 	return ""
 }
@@ -584,11 +545,17 @@ func (x *ChangePasswordResponse) GetSessionId() string {
 	return ""
 }
 
+// client { email, device_id } -> server -> send otp to email & return session_id ->
+// client {email, device_id, new_password, verified_2fa_session_id} -> server
 type ForgotPasswordRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	DeviceId      string                 `protobuf:"bytes,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	Email                 string                 `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
+	Username              string                 `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	NewPassword           string                 `protobuf:"bytes,4,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,5,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ForgotPasswordRequest) Reset() {
@@ -621,9 +588,37 @@ func (*ForgotPasswordRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{9}
 }
 
+func (x *ForgotPasswordRequest) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *ForgotPasswordRequest) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
 func (x *ForgotPasswordRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *ForgotPasswordRequest) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
+func (x *ForgotPasswordRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
 	}
 	return ""
 }
@@ -673,12 +668,13 @@ func (x *ForgotPasswordResponse) GetSessionId() string {
 }
 
 type AddEmailRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	DeviceId      string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Email                 string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *AddEmailRequest) Reset() {
@@ -728,6 +724,13 @@ func (x *AddEmailRequest) GetDeviceId() string {
 func (x *AddEmailRequest) GetEmail() string {
 	if x != nil {
 		return x.Email
+	}
+	return ""
+}
+
+func (x *AddEmailRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
 	}
 	return ""
 }
@@ -785,11 +788,12 @@ func (x *AddEmailResponse) GetSessionId() string {
 }
 
 type RemoveEmailRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	DeviceId      string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,3,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *RemoveEmailRequest) Reset() {
@@ -832,6 +836,13 @@ func (x *RemoveEmailRequest) GetAccessToken() string {
 func (x *RemoveEmailRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
+	}
+	return ""
+}
+
+func (x *RemoveEmailRequest) GetVerified_2FaSessionId() string {
+	if x != nil {
+		return x.Verified_2FaSessionId
 	}
 	return ""
 }
@@ -880,28 +891,28 @@ func (x *RemoveEmailResponse) GetSessionId() string {
 	return ""
 }
 
-type StartVerificationRequest struct {
+type ResendVerificationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Type          VerificationType       `protobuf:"varint,1,opt,name=type,proto3,enum=auth.VerificationType" json:"type,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	DeviceId      string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StartVerificationRequest) Reset() {
-	*x = StartVerificationRequest{}
+func (x *ResendVerificationRequest) Reset() {
+	*x = ResendVerificationRequest{}
 	mi := &file_auth_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StartVerificationRequest) String() string {
+func (x *ResendVerificationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StartVerificationRequest) ProtoMessage() {}
+func (*ResendVerificationRequest) ProtoMessage() {}
 
-func (x *StartVerificationRequest) ProtoReflect() protoreflect.Message {
+func (x *ResendVerificationRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_auth_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -913,26 +924,26 @@ func (x *StartVerificationRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StartVerificationRequest.ProtoReflect.Descriptor instead.
-func (*StartVerificationRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use ResendVerificationRequest.ProtoReflect.Descriptor instead.
+func (*ResendVerificationRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *StartVerificationRequest) GetType() VerificationType {
+func (x *ResendVerificationRequest) GetSessionId() string {
 	if x != nil {
-		return x.Type
+		return x.SessionId
 	}
-	return VerificationType_VERIFICATION_TYPE_UNSPECIFIED
+	return ""
 }
 
-func (x *StartVerificationRequest) GetDeviceId() string {
+func (x *ResendVerificationRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
 	}
 	return ""
 }
 
-type StartVerificationResponse struct {
+type ResendVerificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
@@ -940,20 +951,20 @@ type StartVerificationResponse struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StartVerificationResponse) Reset() {
-	*x = StartVerificationResponse{}
+func (x *ResendVerificationResponse) Reset() {
+	*x = ResendVerificationResponse{}
 	mi := &file_auth_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StartVerificationResponse) String() string {
+func (x *ResendVerificationResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StartVerificationResponse) ProtoMessage() {}
+func (*ResendVerificationResponse) ProtoMessage() {}
 
-func (x *StartVerificationResponse) ProtoReflect() protoreflect.Message {
+func (x *ResendVerificationResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_auth_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -965,19 +976,19 @@ func (x *StartVerificationResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StartVerificationResponse.ProtoReflect.Descriptor instead.
-func (*StartVerificationResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use ResendVerificationResponse.ProtoReflect.Descriptor instead.
+func (*ResendVerificationResponse) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{16}
 }
 
-func (x *StartVerificationResponse) GetSessionId() string {
+func (x *ResendVerificationResponse) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
 	}
 	return ""
 }
 
-func (x *StartVerificationResponse) GetMessage() string {
+func (x *ResendVerificationResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
@@ -1134,39 +1145,48 @@ const file_auth_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"V\n" +
 	"\fAuthResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"z\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"\xd4\x01\n" +
 	"\x15ChangePasswordRequest\x12!\n" +
-	"\fold_password\x18\x01 \x01(\tR\voldPassword\x12!\n" +
-	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\x12\x1b\n" +
-	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\"S\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12!\n" +
+	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\x12\x1b\n" +
+	"\tdevice_id\x18\x04 \x01(\tR\bdeviceId\x125\n" +
+	"\x17verified_2fa_session_id\x18\x05 \x01(\tR\x14verified2faSessionId\"S\n" +
 	"\x16ChangePasswordResponse\x12\x1a\n" +
 	"\tis_two_fa\x18\x01 \x01(\bR\aisTwoFa\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tR\tsessionId\"4\n" +
-	"\x15ForgotPasswordRequest\x12\x1b\n" +
-	"\tdevice_id\x18\x01 \x01(\tR\bdeviceId\"7\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"\xc0\x01\n" +
+	"\x15ForgotPasswordRequest\x12\x14\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
+	"\busername\x18\x02 \x01(\tR\busername\x12\x1b\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12!\n" +
+	"\fnew_password\x18\x04 \x01(\tR\vnewPassword\x125\n" +
+	"\x17verified_2fa_session_id\x18\x05 \x01(\tR\x14verified2faSessionId\"7\n" +
 	"\x16ForgotPasswordResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"g\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"\x9e\x01\n" +
 	"\x0fAddEmailRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\"P\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x125\n" +
+	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"P\n" +
 	"\x10AddEmailResponse\x12\x1d\n" +
 	"\n" +
 	"is_success\x18\x01 \x01(\bR\tisSuccess\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tR\tsessionId\"T\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"\x8b\x01\n" +
 	"\x12RemoveEmailRequest\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
-	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\"4\n" +
+	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x125\n" +
+	"\x17verified_2fa_session_id\x18\x03 \x01(\tR\x14verified2faSessionId\"4\n" +
 	"\x13RemoveEmailResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"c\n" +
-	"\x18StartVerificationRequest\x12*\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x16.auth.VerificationTypeR\x04type\x12\x1b\n" +
-	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\"T\n" +
-	"\x19StartVerificationResponse\x12\x1d\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"W\n" +
+	"\x19ResendVerificationRequest\x12\x1d\n" +
+	"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1b\n" +
+	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\"U\n" +
+	"\x1aResendVerificationResponse\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"\x8a\x01\n" +
@@ -1178,13 +1198,7 @@ const file_auth_proto_rawDesc = "" +
 	"\x0fremember_device\x18\x04 \x01(\bR\x0erememberDevice\"H\n" +
 	"\x12VerifyCodeResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage*\xbe\x01\n" +
-	"\x10VerificationType\x12!\n" +
-	"\x1dVERIFICATION_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
-	"\x17VERIFICATION_TYPE_EMAIL\x10\x01\x12%\n" +
-	"!VERIFICATION_TYPE_CHANGE_PASSWORD\x10\x02\x12%\n" +
-	"!VERIFICATION_TYPE_FORGOT_PASSWORD\x10\x03\x12\x1c\n" +
-	"\x18VERIFICATION_TYPE_TWO_FA\x10\x042\x9d\x05\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\xa0\x05\n" +
 	"\vAuthService\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x12/\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x12.auth.AuthResponse\x123\n" +
@@ -1193,8 +1207,8 @@ const file_auth_proto_rawDesc = "" +
 	"\x0eChangePassword\x12\x1b.auth.ChangePasswordRequest\x1a\x1c.auth.ChangePasswordResponse\x12K\n" +
 	"\x0eForgotPassword\x12\x1b.auth.ForgotPasswordRequest\x1a\x1c.auth.ForgotPasswordResponse\x129\n" +
 	"\bAddEmail\x12\x15.auth.AddEmailRequest\x1a\x16.auth.AddEmailResponse\x12B\n" +
-	"\vRemoveEmail\x12\x18.auth.RemoveEmailRequest\x1a\x19.auth.RemoveEmailResponse\x12T\n" +
-	"\x11StartVerification\x12\x1e.auth.StartVerificationRequest\x1a\x1f.auth.StartVerificationResponse\x12?\n" +
+	"\vRemoveEmail\x12\x18.auth.RemoveEmailRequest\x1a\x19.auth.RemoveEmailResponse\x12W\n" +
+	"\x12ResendVerification\x12\x1f.auth.ResendVerificationRequest\x1a .auth.ResendVerificationResponse\x12?\n" +
 	"\n" +
 	"VerifyCode\x12\x17.auth.VerifyCodeRequest\x1a\x18.auth.VerifyCodeResponseB9Z7github.com/trandinh0506/BypassBeats/proto/gen/auth;authb\x06proto3"
 
@@ -1210,57 +1224,54 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_auth_proto_goTypes = []any{
-	(VerificationType)(0),             // 0: auth.VerificationType
-	(*RegisterRequest)(nil),           // 1: auth.RegisterRequest
-	(*RegisterResponse)(nil),          // 2: auth.RegisterResponse
-	(*LoginRequest)(nil),              // 3: auth.LoginRequest
-	(*RefreshTokenRequest)(nil),       // 4: auth.RefreshTokenRequest
-	(*LogoutRequest)(nil),             // 5: auth.LogoutRequest
-	(*LogoutResponse)(nil),            // 6: auth.LogoutResponse
-	(*AuthResponse)(nil),              // 7: auth.AuthResponse
-	(*ChangePasswordRequest)(nil),     // 8: auth.ChangePasswordRequest
-	(*ChangePasswordResponse)(nil),    // 9: auth.ChangePasswordResponse
-	(*ForgotPasswordRequest)(nil),     // 10: auth.ForgotPasswordRequest
-	(*ForgotPasswordResponse)(nil),    // 11: auth.ForgotPasswordResponse
-	(*AddEmailRequest)(nil),           // 12: auth.AddEmailRequest
-	(*AddEmailResponse)(nil),          // 13: auth.AddEmailResponse
-	(*RemoveEmailRequest)(nil),        // 14: auth.RemoveEmailRequest
-	(*RemoveEmailResponse)(nil),       // 15: auth.RemoveEmailResponse
-	(*StartVerificationRequest)(nil),  // 16: auth.StartVerificationRequest
-	(*StartVerificationResponse)(nil), // 17: auth.StartVerificationResponse
-	(*VerifyCodeRequest)(nil),         // 18: auth.VerifyCodeRequest
-	(*VerifyCodeResponse)(nil),        // 19: auth.VerifyCodeResponse
+	(*RegisterRequest)(nil),            // 0: auth.RegisterRequest
+	(*RegisterResponse)(nil),           // 1: auth.RegisterResponse
+	(*LoginRequest)(nil),               // 2: auth.LoginRequest
+	(*RefreshTokenRequest)(nil),        // 3: auth.RefreshTokenRequest
+	(*LogoutRequest)(nil),              // 4: auth.LogoutRequest
+	(*LogoutResponse)(nil),             // 5: auth.LogoutResponse
+	(*AuthResponse)(nil),               // 6: auth.AuthResponse
+	(*ChangePasswordRequest)(nil),      // 7: auth.ChangePasswordRequest
+	(*ChangePasswordResponse)(nil),     // 8: auth.ChangePasswordResponse
+	(*ForgotPasswordRequest)(nil),      // 9: auth.ForgotPasswordRequest
+	(*ForgotPasswordResponse)(nil),     // 10: auth.ForgotPasswordResponse
+	(*AddEmailRequest)(nil),            // 11: auth.AddEmailRequest
+	(*AddEmailResponse)(nil),           // 12: auth.AddEmailResponse
+	(*RemoveEmailRequest)(nil),         // 13: auth.RemoveEmailRequest
+	(*RemoveEmailResponse)(nil),        // 14: auth.RemoveEmailResponse
+	(*ResendVerificationRequest)(nil),  // 15: auth.ResendVerificationRequest
+	(*ResendVerificationResponse)(nil), // 16: auth.ResendVerificationResponse
+	(*VerifyCodeRequest)(nil),          // 17: auth.VerifyCodeRequest
+	(*VerifyCodeResponse)(nil),         // 18: auth.VerifyCodeResponse
 }
 var file_auth_proto_depIdxs = []int32{
-	0,  // 0: auth.StartVerificationRequest.type:type_name -> auth.VerificationType
-	1,  // 1: auth.AuthService.Register:input_type -> auth.RegisterRequest
-	3,  // 2: auth.AuthService.Login:input_type -> auth.LoginRequest
-	5,  // 3: auth.AuthService.Logout:input_type -> auth.LogoutRequest
-	4,  // 4: auth.AuthService.RefreshToken:input_type -> auth.RefreshTokenRequest
-	8,  // 5: auth.AuthService.ChangePassword:input_type -> auth.ChangePasswordRequest
-	10, // 6: auth.AuthService.ForgotPassword:input_type -> auth.ForgotPasswordRequest
-	12, // 7: auth.AuthService.AddEmail:input_type -> auth.AddEmailRequest
-	14, // 8: auth.AuthService.RemoveEmail:input_type -> auth.RemoveEmailRequest
-	16, // 9: auth.AuthService.StartVerification:input_type -> auth.StartVerificationRequest
-	18, // 10: auth.AuthService.VerifyCode:input_type -> auth.VerifyCodeRequest
-	2,  // 11: auth.AuthService.Register:output_type -> auth.RegisterResponse
-	7,  // 12: auth.AuthService.Login:output_type -> auth.AuthResponse
-	6,  // 13: auth.AuthService.Logout:output_type -> auth.LogoutResponse
-	7,  // 14: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
-	9,  // 15: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
-	11, // 16: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
-	13, // 17: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
-	15, // 18: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
-	17, // 19: auth.AuthService.StartVerification:output_type -> auth.StartVerificationResponse
-	19, // 20: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
-	11, // [11:21] is the sub-list for method output_type
-	1,  // [1:11] is the sub-list for method input_type
-	1,  // [1:1] is the sub-list for extension type_name
-	1,  // [1:1] is the sub-list for extension extendee
-	0,  // [0:1] is the sub-list for field type_name
+	0,  // 0: auth.AuthService.Register:input_type -> auth.RegisterRequest
+	2,  // 1: auth.AuthService.Login:input_type -> auth.LoginRequest
+	4,  // 2: auth.AuthService.Logout:input_type -> auth.LogoutRequest
+	3,  // 3: auth.AuthService.RefreshToken:input_type -> auth.RefreshTokenRequest
+	7,  // 4: auth.AuthService.ChangePassword:input_type -> auth.ChangePasswordRequest
+	9,  // 5: auth.AuthService.ForgotPassword:input_type -> auth.ForgotPasswordRequest
+	11, // 6: auth.AuthService.AddEmail:input_type -> auth.AddEmailRequest
+	13, // 7: auth.AuthService.RemoveEmail:input_type -> auth.RemoveEmailRequest
+	15, // 8: auth.AuthService.ResendVerification:input_type -> auth.ResendVerificationRequest
+	17, // 9: auth.AuthService.VerifyCode:input_type -> auth.VerifyCodeRequest
+	1,  // 10: auth.AuthService.Register:output_type -> auth.RegisterResponse
+	6,  // 11: auth.AuthService.Login:output_type -> auth.AuthResponse
+	5,  // 12: auth.AuthService.Logout:output_type -> auth.LogoutResponse
+	6,  // 13: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
+	8,  // 14: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
+	10, // 15: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
+	12, // 16: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
+	14, // 17: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
+	16, // 18: auth.AuthService.ResendVerification:output_type -> auth.ResendVerificationResponse
+	18, // 19: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
+	10, // [10:20] is the sub-list for method output_type
+	0,  // [0:10] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_auth_proto_init() }
@@ -1273,14 +1284,13 @@ func file_auth_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
-			NumEnums:      1,
+			NumEnums:      0,
 			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_auth_proto_goTypes,
 		DependencyIndexes: file_auth_proto_depIdxs,
-		EnumInfos:         file_auth_proto_enumTypes,
 		MessageInfos:      file_auth_proto_msgTypes,
 	}.Build()
 	File_auth_proto = out.File

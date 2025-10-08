@@ -19,16 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName          = "/auth.AuthService/Register"
-	AuthService_Login_FullMethodName             = "/auth.AuthService/Login"
-	AuthService_Logout_FullMethodName            = "/auth.AuthService/Logout"
-	AuthService_RefreshToken_FullMethodName      = "/auth.AuthService/RefreshToken"
-	AuthService_ChangePassword_FullMethodName    = "/auth.AuthService/ChangePassword"
-	AuthService_ForgotPassword_FullMethodName    = "/auth.AuthService/ForgotPassword"
-	AuthService_AddEmail_FullMethodName          = "/auth.AuthService/AddEmail"
-	AuthService_RemoveEmail_FullMethodName       = "/auth.AuthService/RemoveEmail"
-	AuthService_StartVerification_FullMethodName = "/auth.AuthService/StartVerification"
-	AuthService_VerifyCode_FullMethodName        = "/auth.AuthService/VerifyCode"
+	AuthService_Register_FullMethodName           = "/auth.AuthService/Register"
+	AuthService_Login_FullMethodName              = "/auth.AuthService/Login"
+	AuthService_Logout_FullMethodName             = "/auth.AuthService/Logout"
+	AuthService_RefreshToken_FullMethodName       = "/auth.AuthService/RefreshToken"
+	AuthService_ChangePassword_FullMethodName     = "/auth.AuthService/ChangePassword"
+	AuthService_ForgotPassword_FullMethodName     = "/auth.AuthService/ForgotPassword"
+	AuthService_AddEmail_FullMethodName           = "/auth.AuthService/AddEmail"
+	AuthService_RemoveEmail_FullMethodName        = "/auth.AuthService/RemoveEmail"
+	AuthService_ResendVerification_FullMethodName = "/auth.AuthService/ResendVerification"
+	AuthService_VerifyCode_FullMethodName         = "/auth.AuthService/VerifyCode"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -43,7 +43,7 @@ type AuthServiceClient interface {
 	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error)
 	AddEmail(ctx context.Context, in *AddEmailRequest, opts ...grpc.CallOption) (*AddEmailResponse, error)
 	RemoveEmail(ctx context.Context, in *RemoveEmailRequest, opts ...grpc.CallOption) (*RemoveEmailResponse, error)
-	StartVerification(ctx context.Context, in *StartVerificationRequest, opts ...grpc.CallOption) (*StartVerificationResponse, error)
+	ResendVerification(ctx context.Context, in *ResendVerificationRequest, opts ...grpc.CallOption) (*ResendVerificationResponse, error)
 	VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts ...grpc.CallOption) (*VerifyCodeResponse, error)
 }
 
@@ -135,10 +135,10 @@ func (c *authServiceClient) RemoveEmail(ctx context.Context, in *RemoveEmailRequ
 	return out, nil
 }
 
-func (c *authServiceClient) StartVerification(ctx context.Context, in *StartVerificationRequest, opts ...grpc.CallOption) (*StartVerificationResponse, error) {
+func (c *authServiceClient) ResendVerification(ctx context.Context, in *ResendVerificationRequest, opts ...grpc.CallOption) (*ResendVerificationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StartVerificationResponse)
-	err := c.cc.Invoke(ctx, AuthService_StartVerification_FullMethodName, in, out, cOpts...)
+	out := new(ResendVerificationResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResendVerification_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -167,7 +167,7 @@ type AuthServiceServer interface {
 	ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error)
 	AddEmail(context.Context, *AddEmailRequest) (*AddEmailResponse, error)
 	RemoveEmail(context.Context, *RemoveEmailRequest) (*RemoveEmailResponse, error)
-	StartVerification(context.Context, *StartVerificationRequest) (*StartVerificationResponse, error)
+	ResendVerification(context.Context, *ResendVerificationRequest) (*ResendVerificationResponse, error)
 	VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -203,8 +203,8 @@ func (UnimplementedAuthServiceServer) AddEmail(context.Context, *AddEmailRequest
 func (UnimplementedAuthServiceServer) RemoveEmail(context.Context, *RemoveEmailRequest) (*RemoveEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveEmail not implemented")
 }
-func (UnimplementedAuthServiceServer) StartVerification(context.Context, *StartVerificationRequest) (*StartVerificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartVerification not implemented")
+func (UnimplementedAuthServiceServer) ResendVerification(context.Context, *ResendVerificationRequest) (*ResendVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResendVerification not implemented")
 }
 func (UnimplementedAuthServiceServer) VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VerifyCode not implemented")
@@ -374,20 +374,20 @@ func _AuthService_RemoveEmail_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_StartVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(StartVerificationRequest)
+func _AuthService_ResendVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResendVerificationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).StartVerification(ctx, in)
+		return srv.(AuthServiceServer).ResendVerification(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_StartVerification_FullMethodName,
+		FullMethod: AuthService_ResendVerification_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).StartVerification(ctx, req.(*StartVerificationRequest))
+		return srv.(AuthServiceServer).ResendVerification(ctx, req.(*ResendVerificationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -450,8 +450,8 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_RemoveEmail_Handler,
 		},
 		{
-			MethodName: "StartVerification",
-			Handler:    _AuthService_StartVerification_Handler,
+			MethodName: "ResendVerification",
+			Handler:    _AuthService_ResendVerification_Handler,
 		},
 		{
 			MethodName: "VerifyCode",

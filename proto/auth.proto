@@ -15,7 +15,7 @@ service AuthService {
   rpc AddEmail(AddEmailRequest) returns (AddEmailResponse);
   rpc RemoveEmail(RemoveEmailRequest) returns (RemoveEmailResponse);
 
-  rpc StartVerification(StartVerificationRequest) returns (StartVerificationResponse);
+  rpc ResendVerification(ResendVerificationRequest) returns (ResendVerificationResponse);
   rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
 }
 
@@ -59,9 +59,11 @@ message AuthResponse {
 }
 
 message ChangePasswordRequest {
-  string old_password = 1;
-  string new_password = 2;
-  string device_id = 3;
+  string access_token = 1;
+  string old_password = 2;
+  string new_password = 3;
+  string device_id = 4;
+  string verified_2fa_session_id = 5;
 }
 
 message ChangePasswordResponse {
@@ -69,8 +71,14 @@ message ChangePasswordResponse {
   string session_id = 2;
 }
 
+// client { email, device_id } -> server -> send otp to email & return session_id ->
+// client {email, device_id, new_password, verified_2fa_session_id} -> server
 message ForgotPasswordRequest {
-  string device_id = 1;
+  string email = 1;
+  string username = 2;
+  string device_id = 3;
+  string new_password = 4;
+  string verified_2fa_session_id = 5;
 }
 
 message ForgotPasswordResponse {
@@ -81,6 +89,7 @@ message AddEmailRequest {
   string access_token = 1;
   string device_id = 2;
   string email = 3;
+  string verified_2fa_session_id = 4;
 }
 
 message AddEmailResponse {
@@ -91,26 +100,20 @@ message AddEmailResponse {
 message RemoveEmailRequest {
   string access_token = 1;
   string device_id = 2;
+  string verified_2fa_session_id = 3;
 }
 
 message RemoveEmailResponse {
   string session_id = 1;
 }
 
-enum VerificationType {
-  VERIFICATION_TYPE_UNSPECIFIED = 0;
-  VERIFICATION_TYPE_EMAIL = 1;
-  VERIFICATION_TYPE_CHANGE_PASSWORD = 2;
-  VERIFICATION_TYPE_FORGOT_PASSWORD = 3;
-  VERIFICATION_TYPE_TWO_FA = 4;
-}
 
-message StartVerificationRequest {
-  VerificationType type = 1;
+message ResendVerificationRequest {
+  string session_id = 1;
   string device_id = 2;
 }
 
-message StartVerificationResponse {
+message ResendVerificationResponse {
   string session_id = 1;
   string message = 2;
 }
