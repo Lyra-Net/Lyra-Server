@@ -146,7 +146,7 @@ func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.A
 		}
 	}()
 
-	accessToken, err := utils.GenerateAccessToken(user.UserID, accessJti, changePassAt)
+	accessToken, err := utils.GenerateAccessToken(user.UserID, accessJti, user.DisplayName.String, changePassAt)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "generate access token failed")
 	}

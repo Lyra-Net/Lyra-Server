@@ -20,9 +20,10 @@ const APISIX_CONSUMER_KEY = "auth-service"
 
 // ================= ACCESS TOKEN =====================
 
-func GenerateAccessToken(userID uuid.UUID, jti uuid.UUID, changePassAt int64) (string, error) {
+func GenerateAccessToken(userID uuid.UUID, jti uuid.UUID, displayName string, changePassAt int64) (string, error) {
 	claims := jwt.MapClaims{
 		"sub":            userID.String(),
+		"display_name":   displayName,
 		"key":            APISIX_CONSUMER_KEY,
 		"iat":            time.Now().Unix(),
 		"exp":            time.Now().Add(time.Duration(ACCESS_TOKEN_TIME) * time.Hour).Unix(),
