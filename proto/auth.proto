@@ -17,6 +17,8 @@ service AuthService {
 
   rpc ResendVerification(ResendVerificationRequest) returns (ResendVerificationResponse);
   rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
+
+  rpc Toggle2Fa(Toggle2FaRequest) returns (Toggle2FaResponse);
 }
 
 message RegisterRequest {
@@ -128,4 +130,18 @@ message VerifyCodeRequest {
 message VerifyCodeResponse {
   bool success = 1;
   string message = 2;
+}
+
+message Toggle2FaRequest {
+  string access_token = 1;
+  string device_id = 2;
+  bool enable = 3;
+  string verified_2fa_session_id = 4;
+}
+
+message Toggle2FaResponse {
+  string session_id = 1;
+  bool is_two_fa = 2;
+  string message = 3;
+  bool is_success = 4;
 }
