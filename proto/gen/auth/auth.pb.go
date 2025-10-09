@@ -1251,6 +1251,238 @@ func (x *Toggle2FaResponse) GetIsSuccess() bool {
 	return false
 }
 
+type GetProfileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetProfileRequest) Reset() {
+	*x = GetProfileRequest{}
+	mi := &file_auth_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetProfileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetProfileRequest) ProtoMessage() {}
+
+func (x *GetProfileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetProfileRequest.ProtoReflect.Descriptor instead.
+func (*GetProfileRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetProfileRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+type GetProfileResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AvatarUrl     string                 `protobuf:"bytes,1,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
+	Is_2Fa        bool                   `protobuf:"varint,4,opt,name=is_2fa,json=is2fa,proto3" json:"is_2fa,omitempty"`
+	CreatedAt     int64                  `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     int64                  `protobuf:"varint,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetProfileResponse) Reset() {
+	*x = GetProfileResponse{}
+	mi := &file_auth_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetProfileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetProfileResponse) ProtoMessage() {}
+
+func (x *GetProfileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetProfileResponse.ProtoReflect.Descriptor instead.
+func (*GetProfileResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GetProfileResponse) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return ""
+}
+
+func (x *GetProfileResponse) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *GetProfileResponse) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *GetProfileResponse) GetIs_2Fa() bool {
+	if x != nil {
+		return x.Is_2Fa
+	}
+	return false
+}
+
+func (x *GetProfileResponse) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *GetProfileResponse) GetUpdatedAt() int64 {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return 0
+}
+
+type UpdateProfileRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,3,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProfileRequest) Reset() {
+	*x = UpdateProfileRequest{}
+	mi := &file_auth_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProfileRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProfileRequest) ProtoMessage() {}
+
+func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProfileRequest.ProtoReflect.Descriptor instead.
+func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *UpdateProfileRequest) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *UpdateProfileRequest) GetDisplayName() string {
+	if x != nil {
+		return x.DisplayName
+	}
+	return ""
+}
+
+func (x *UpdateProfileRequest) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return ""
+}
+
+type UpdateProfileResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateProfileResponse) Reset() {
+	*x = UpdateProfileResponse{}
+	mi := &file_auth_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateProfileResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateProfileResponse) ProtoMessage() {}
+
+func (x *UpdateProfileResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_auth_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateProfileResponse.ProtoReflect.Descriptor instead.
+func (*UpdateProfileResponse) Descriptor() ([]byte, []int) {
+	return file_auth_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *UpdateProfileResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -1346,7 +1578,26 @@ const file_auth_proto_rawDesc = "" +
 	"\tis_two_fa\x18\x02 \x01(\bR\aisTwoFa\x12\x18\n" +
 	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
-	"is_success\x18\x04 \x01(\bR\tisSuccess2\xde\x05\n" +
+	"is_success\x18\x04 \x01(\bR\tisSuccess\"6\n" +
+	"\x11GetProfileRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\xc1\x01\n" +
+	"\x12GetProfileResponse\x12\x1d\n" +
+	"\n" +
+	"avatar_url\x18\x01 \x01(\tR\tavatarUrl\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x14\n" +
+	"\x05email\x18\x03 \x01(\tR\x05email\x12\x15\n" +
+	"\x06is_2fa\x18\x04 \x01(\bR\x05is2fa\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\x03R\tcreatedAt\x12\x1d\n" +
+	"\n" +
+	"updated_at\x18\x06 \x01(\x03R\tupdatedAt\"{\n" +
+	"\x14UpdateProfileRequest\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12!\n" +
+	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1d\n" +
+	"\n" +
+	"avatar_url\x18\x03 \x01(\tR\tavatarUrl\"1\n" +
+	"\x15UpdateProfileResponse\x12\x18\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xe9\x06\n" +
 	"\vAuthService\x129\n" +
 	"\bRegister\x12\x15.auth.RegisterRequest\x1a\x16.auth.RegisterResponse\x12/\n" +
 	"\x05Login\x12\x12.auth.LoginRequest\x1a\x12.auth.AuthResponse\x123\n" +
@@ -1359,7 +1610,10 @@ const file_auth_proto_rawDesc = "" +
 	"\x12ResendVerification\x12\x1f.auth.ResendVerificationRequest\x1a .auth.ResendVerificationResponse\x12?\n" +
 	"\n" +
 	"VerifyCode\x12\x17.auth.VerifyCodeRequest\x1a\x18.auth.VerifyCodeResponse\x12<\n" +
-	"\tToggle2Fa\x12\x16.auth.Toggle2FaRequest\x1a\x17.auth.Toggle2FaResponseB9Z7github.com/trandinh0506/BypassBeats/proto/gen/auth;authb\x06proto3"
+	"\tToggle2Fa\x12\x16.auth.Toggle2FaRequest\x1a\x17.auth.Toggle2FaResponse\x12?\n" +
+	"\n" +
+	"GetProfile\x12\x17.auth.GetProfileRequest\x1a\x18.auth.GetProfileResponse\x12H\n" +
+	"\rUpdateProfile\x12\x1a.auth.UpdateProfileRequest\x1a\x1b.auth.UpdateProfileResponseB9Z7github.com/trandinh0506/BypassBeats/proto/gen/auth;authb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -1373,7 +1627,7 @@ func file_auth_proto_rawDescGZIP() []byte {
 	return file_auth_proto_rawDescData
 }
 
-var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_auth_proto_goTypes = []any{
 	(*RegisterRequest)(nil),            // 0: auth.RegisterRequest
 	(*RegisterResponse)(nil),           // 1: auth.RegisterResponse
@@ -1396,6 +1650,10 @@ var file_auth_proto_goTypes = []any{
 	(*VerifyCodeResponse)(nil),         // 18: auth.VerifyCodeResponse
 	(*Toggle2FaRequest)(nil),           // 19: auth.Toggle2FaRequest
 	(*Toggle2FaResponse)(nil),          // 20: auth.Toggle2FaResponse
+	(*GetProfileRequest)(nil),          // 21: auth.GetProfileRequest
+	(*GetProfileResponse)(nil),         // 22: auth.GetProfileResponse
+	(*UpdateProfileRequest)(nil),       // 23: auth.UpdateProfileRequest
+	(*UpdateProfileResponse)(nil),      // 24: auth.UpdateProfileResponse
 }
 var file_auth_proto_depIdxs = []int32{
 	0,  // 0: auth.AuthService.Register:input_type -> auth.RegisterRequest
@@ -1409,19 +1667,23 @@ var file_auth_proto_depIdxs = []int32{
 	15, // 8: auth.AuthService.ResendVerification:input_type -> auth.ResendVerificationRequest
 	17, // 9: auth.AuthService.VerifyCode:input_type -> auth.VerifyCodeRequest
 	19, // 10: auth.AuthService.Toggle2Fa:input_type -> auth.Toggle2FaRequest
-	1,  // 11: auth.AuthService.Register:output_type -> auth.RegisterResponse
-	6,  // 12: auth.AuthService.Login:output_type -> auth.AuthResponse
-	5,  // 13: auth.AuthService.Logout:output_type -> auth.LogoutResponse
-	6,  // 14: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
-	8,  // 15: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
-	10, // 16: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
-	12, // 17: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
-	14, // 18: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
-	16, // 19: auth.AuthService.ResendVerification:output_type -> auth.ResendVerificationResponse
-	18, // 20: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
-	20, // 21: auth.AuthService.Toggle2Fa:output_type -> auth.Toggle2FaResponse
-	11, // [11:22] is the sub-list for method output_type
-	0,  // [0:11] is the sub-list for method input_type
+	21, // 11: auth.AuthService.GetProfile:input_type -> auth.GetProfileRequest
+	23, // 12: auth.AuthService.UpdateProfile:input_type -> auth.UpdateProfileRequest
+	1,  // 13: auth.AuthService.Register:output_type -> auth.RegisterResponse
+	6,  // 14: auth.AuthService.Login:output_type -> auth.AuthResponse
+	5,  // 15: auth.AuthService.Logout:output_type -> auth.LogoutResponse
+	6,  // 16: auth.AuthService.RefreshToken:output_type -> auth.AuthResponse
+	8,  // 17: auth.AuthService.ChangePassword:output_type -> auth.ChangePasswordResponse
+	10, // 18: auth.AuthService.ForgotPassword:output_type -> auth.ForgotPasswordResponse
+	12, // 19: auth.AuthService.AddEmail:output_type -> auth.AddEmailResponse
+	14, // 20: auth.AuthService.RemoveEmail:output_type -> auth.RemoveEmailResponse
+	16, // 21: auth.AuthService.ResendVerification:output_type -> auth.ResendVerificationResponse
+	18, // 22: auth.AuthService.VerifyCode:output_type -> auth.VerifyCodeResponse
+	20, // 23: auth.AuthService.Toggle2Fa:output_type -> auth.Toggle2FaResponse
+	22, // 24: auth.AuthService.GetProfile:output_type -> auth.GetProfileResponse
+	24, // 25: auth.AuthService.UpdateProfile:output_type -> auth.UpdateProfileResponse
+	13, // [13:26] is the sub-list for method output_type
+	0,  // [0:13] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -1438,7 +1700,7 @@ func file_auth_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_auth_proto_rawDesc), len(file_auth_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   21,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

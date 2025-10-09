@@ -19,6 +19,9 @@ service AuthService {
   rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
 
   rpc Toggle2Fa(Toggle2FaRequest) returns (Toggle2FaResponse);
+
+  rpc GetProfile(GetProfileRequest) returns (GetProfileResponse);
+  rpc UpdateProfile(UpdateProfileRequest) returns (UpdateProfileResponse);
 }
 
 message RegisterRequest {
@@ -144,4 +147,27 @@ message Toggle2FaResponse {
   bool is_two_fa = 2;
   string message = 3;
   bool is_success = 4;
+}
+
+message GetProfileRequest {
+  string access_token = 1;
+}
+
+message GetProfileResponse {
+  string avatar_url = 1;
+  string display_name = 2;
+  string email = 3;
+  bool is_2fa = 4;
+  int64 created_at = 5;
+  int64 updated_at = 6;
+}
+
+message  UpdateProfileRequest {
+  string access_token = 1;
+  string display_name = 2;
+  string avatar_url = 3;
+}
+
+message UpdateProfileResponse {
+  string message = 1;
 }
