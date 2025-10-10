@@ -64,11 +64,10 @@ message AuthResponse {
 }
 
 message ChangePasswordRequest {
-  string access_token = 1;
-  string old_password = 2;
-  string new_password = 3;
-  string device_id = 4;
-  string verified_2fa_session_id = 5;
+  string old_password = 1;
+  string new_password = 2;
+  string device_id = 3;
+  string verified_2fa_session_id = 4;
 }
 
 message ChangePasswordResponse {
@@ -91,7 +90,6 @@ message ForgotPasswordResponse {
 }
 
 message AddEmailRequest {
-  string access_token = 1;
   string device_id = 2;
   string email = 3;
   string verified_2fa_session_id = 4;
@@ -103,9 +101,8 @@ message AddEmailResponse {
 }
 
 message RemoveEmailRequest {
-  string access_token = 1;
-  string device_id = 2;
-  string verified_2fa_session_id = 3;
+  string device_id = 1;
+  string verified_2fa_session_id = 2;
 }
 
 message RemoveEmailResponse {
@@ -131,26 +128,24 @@ message VerifyCodeRequest {
 }
 
 message VerifyCodeResponse {
-  bool success = 1;
+  bool is_success = 1;
   string message = 2;
 }
 
 message Toggle2FaRequest {
-  string access_token = 1;
-  string device_id = 2;
-  bool enable = 3;
-  string verified_2fa_session_id = 4;
+  string device_id = 1;
+  bool enable = 2;
+  string verified_2fa_session_id = 3;
 }
 
 message Toggle2FaResponse {
   string session_id = 1;
-  bool is_two_fa = 2;
-  string message = 3;
-  bool is_success = 4;
+  string message = 2;
+  bool is_success = 3;
 }
 
 message GetProfileRequest {
-  string access_token = 1;
+
 }
 
 message GetProfileResponse {
@@ -163,9 +158,8 @@ message GetProfileResponse {
 }
 
 message  UpdateProfileRequest {
-  string access_token = 1;
-  string display_name = 2;
-  string avatar_url = 3;
+  string display_name = 1;
+  string avatar_url = 2;
 }
 
 message UpdateProfileResponse {

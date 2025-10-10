@@ -419,11 +419,10 @@ func (x *AuthResponse) GetRefreshToken() string {
 
 type ChangePasswordRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	OldPassword           string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
-	NewPassword           string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
-	DeviceId              string                 `protobuf:"bytes,4,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	Verified_2FaSessionId string                 `protobuf:"bytes,5,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	OldPassword           string                 `protobuf:"bytes,1,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
+	NewPassword           string                 `protobuf:"bytes,2,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,3,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -456,13 +455,6 @@ func (x *ChangePasswordRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use ChangePasswordRequest.ProtoReflect.Descriptor instead.
 func (*ChangePasswordRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *ChangePasswordRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 func (x *ChangePasswordRequest) GetOldPassword() string {
@@ -669,7 +661,6 @@ func (x *ForgotPasswordResponse) GetSessionId() string {
 
 type AddEmailRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
 	Email                 string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
 	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
@@ -705,13 +696,6 @@ func (x *AddEmailRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use AddEmailRequest.ProtoReflect.Descriptor instead.
 func (*AddEmailRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{11}
-}
-
-func (x *AddEmailRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 func (x *AddEmailRequest) GetDeviceId() string {
@@ -789,9 +773,8 @@ func (x *AddEmailResponse) GetSessionId() string {
 
 type RemoveEmailRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	Verified_2FaSessionId string                 `protobuf:"bytes,3,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,2,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -824,13 +807,6 @@ func (x *RemoveEmailRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use RemoveEmailRequest.ProtoReflect.Descriptor instead.
 func (*RemoveEmailRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{13}
-}
-
-func (x *RemoveEmailRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 func (x *RemoveEmailRequest) GetDeviceId() string {
@@ -1065,7 +1041,7 @@ func (x *VerifyCodeRequest) GetRememberDevice() bool {
 
 type VerifyCodeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	IsSuccess     bool                   `protobuf:"varint,1,opt,name=is_success,json=isSuccess,proto3" json:"is_success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1101,9 +1077,9 @@ func (*VerifyCodeResponse) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{18}
 }
 
-func (x *VerifyCodeResponse) GetSuccess() bool {
+func (x *VerifyCodeResponse) GetIsSuccess() bool {
 	if x != nil {
-		return x.Success
+		return x.IsSuccess
 	}
 	return false
 }
@@ -1117,10 +1093,9 @@ func (x *VerifyCodeResponse) GetMessage() string {
 
 type Toggle2FaRequest struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken           string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	DeviceId              string                 `protobuf:"bytes,2,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
-	Enable                bool                   `protobuf:"varint,3,opt,name=enable,proto3" json:"enable,omitempty"`
-	Verified_2FaSessionId string                 `protobuf:"bytes,4,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
+	DeviceId              string                 `protobuf:"bytes,1,opt,name=device_id,json=deviceId,proto3" json:"device_id,omitempty"`
+	Enable                bool                   `protobuf:"varint,2,opt,name=enable,proto3" json:"enable,omitempty"`
+	Verified_2FaSessionId string                 `protobuf:"bytes,3,opt,name=verified_2fa_session_id,json=verified2faSessionId,proto3" json:"verified_2fa_session_id,omitempty"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
 }
@@ -1155,13 +1130,6 @@ func (*Toggle2FaRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{19}
 }
 
-func (x *Toggle2FaRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
-}
-
 func (x *Toggle2FaRequest) GetDeviceId() string {
 	if x != nil {
 		return x.DeviceId
@@ -1186,9 +1154,8 @@ func (x *Toggle2FaRequest) GetVerified_2FaSessionId() string {
 type Toggle2FaResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	IsTwoFa       bool                   `protobuf:"varint,2,opt,name=is_two_fa,json=isTwoFa,proto3" json:"is_two_fa,omitempty"`
-	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
-	IsSuccess     bool                   `protobuf:"varint,4,opt,name=is_success,json=isSuccess,proto3" json:"is_success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	IsSuccess     bool                   `protobuf:"varint,3,opt,name=is_success,json=isSuccess,proto3" json:"is_success,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1230,13 +1197,6 @@ func (x *Toggle2FaResponse) GetSessionId() string {
 	return ""
 }
 
-func (x *Toggle2FaResponse) GetIsTwoFa() bool {
-	if x != nil {
-		return x.IsTwoFa
-	}
-	return false
-}
-
 func (x *Toggle2FaResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
@@ -1253,7 +1213,6 @@ func (x *Toggle2FaResponse) GetIsSuccess() bool {
 
 type GetProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1286,13 +1245,6 @@ func (x *GetProfileRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetProfileRequest.ProtoReflect.Descriptor instead.
 func (*GetProfileRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{21}
-}
-
-func (x *GetProfileRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 type GetProfileResponse struct {
@@ -1381,9 +1333,8 @@ func (x *GetProfileResponse) GetUpdatedAt() int64 {
 
 type UpdateProfileRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
-	DisplayName   string                 `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	AvatarUrl     string                 `protobuf:"bytes,3,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	DisplayName   string                 `protobuf:"bytes,1,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	AvatarUrl     string                 `protobuf:"bytes,2,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1416,13 +1367,6 @@ func (x *UpdateProfileRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateProfileRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProfileRequest) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{23}
-}
-
-func (x *UpdateProfileRequest) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
 }
 
 func (x *UpdateProfileRequest) GetDisplayName() string {
@@ -1513,13 +1457,12 @@ const file_auth_proto_rawDesc = "" +
 	"\amessage\x18\x01 \x01(\tR\amessage\"V\n" +
 	"\fAuthResponse\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"\xd4\x01\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"\xb1\x01\n" +
 	"\x15ChangePasswordRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12!\n" +
-	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
-	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\x12\x1b\n" +
-	"\tdevice_id\x18\x04 \x01(\tR\bdeviceId\x125\n" +
-	"\x17verified_2fa_session_id\x18\x05 \x01(\tR\x14verified2faSessionId\"S\n" +
+	"\fold_password\x18\x01 \x01(\tR\voldPassword\x12!\n" +
+	"\fnew_password\x18\x02 \x01(\tR\vnewPassword\x12\x1b\n" +
+	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x125\n" +
+	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"S\n" +
 	"\x16ChangePasswordResponse\x12\x1a\n" +
 	"\tis_two_fa\x18\x01 \x01(\bR\aisTwoFa\x12\x1d\n" +
 	"\n" +
@@ -1532,9 +1475,8 @@ const file_auth_proto_rawDesc = "" +
 	"\x17verified_2fa_session_id\x18\x05 \x01(\tR\x14verified2faSessionId\"7\n" +
 	"\x16ForgotPasswordResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\"\x9e\x01\n" +
-	"\x0fAddEmailRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\"{\n" +
+	"\x0fAddEmailRequest\x12\x1b\n" +
 	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x14\n" +
 	"\x05email\x18\x03 \x01(\tR\x05email\x125\n" +
 	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"P\n" +
@@ -1542,11 +1484,10 @@ const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"is_success\x18\x01 \x01(\bR\tisSuccess\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tR\tsessionId\"\x8b\x01\n" +
-	"\x12RemoveEmailRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
-	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x125\n" +
-	"\x17verified_2fa_session_id\x18\x03 \x01(\tR\x14verified2faSessionId\"4\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\"h\n" +
+	"\x12RemoveEmailRequest\x12\x1b\n" +
+	"\tdevice_id\x18\x01 \x01(\tR\bdeviceId\x125\n" +
+	"\x17verified_2fa_session_id\x18\x02 \x01(\tR\x14verified2faSessionId\"4\n" +
 	"\x13RemoveEmailResponse\x12\x1d\n" +
 	"\n" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\"W\n" +
@@ -1563,24 +1504,22 @@ const file_auth_proto_rawDesc = "" +
 	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x10\n" +
 	"\x03otp\x18\x02 \x01(\tR\x03otp\x12\x1b\n" +
 	"\tdevice_id\x18\x03 \x01(\tR\bdeviceId\x12'\n" +
-	"\x0fremember_device\x18\x04 \x01(\bR\x0erememberDevice\"H\n" +
-	"\x12VerifyCodeResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xa1\x01\n" +
-	"\x10Toggle2FaRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12\x1b\n" +
-	"\tdevice_id\x18\x02 \x01(\tR\bdeviceId\x12\x16\n" +
-	"\x06enable\x18\x03 \x01(\bR\x06enable\x125\n" +
-	"\x17verified_2fa_session_id\x18\x04 \x01(\tR\x14verified2faSessionId\"\x87\x01\n" +
+	"\x0fremember_device\x18\x04 \x01(\bR\x0erememberDevice\"M\n" +
+	"\x12VerifyCodeResponse\x12\x1d\n" +
+	"\n" +
+	"is_success\x18\x01 \x01(\bR\tisSuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"~\n" +
+	"\x10Toggle2FaRequest\x12\x1b\n" +
+	"\tdevice_id\x18\x01 \x01(\tR\bdeviceId\x12\x16\n" +
+	"\x06enable\x18\x02 \x01(\bR\x06enable\x125\n" +
+	"\x17verified_2fa_session_id\x18\x03 \x01(\tR\x14verified2faSessionId\"k\n" +
 	"\x11Toggle2FaResponse\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1a\n" +
-	"\tis_two_fa\x18\x02 \x01(\bR\aisTwoFa\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
-	"is_success\x18\x04 \x01(\bR\tisSuccess\"6\n" +
-	"\x11GetProfileRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\"\xc1\x01\n" +
+	"is_success\x18\x03 \x01(\bR\tisSuccess\"\x13\n" +
+	"\x11GetProfileRequest\"\xc1\x01\n" +
 	"\x12GetProfileResponse\x12\x1d\n" +
 	"\n" +
 	"avatar_url\x18\x01 \x01(\tR\tavatarUrl\x12!\n" +
@@ -1590,12 +1529,11 @@ const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\x03R\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\x03R\tupdatedAt\"{\n" +
+	"updated_at\x18\x06 \x01(\x03R\tupdatedAt\"X\n" +
 	"\x14UpdateProfileRequest\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12!\n" +
-	"\fdisplay_name\x18\x02 \x01(\tR\vdisplayName\x12\x1d\n" +
+	"\fdisplay_name\x18\x01 \x01(\tR\vdisplayName\x12\x1d\n" +
 	"\n" +
-	"avatar_url\x18\x03 \x01(\tR\tavatarUrl\"1\n" +
+	"avatar_url\x18\x02 \x01(\tR\tavatarUrl\"1\n" +
 	"\x15UpdateProfileResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage2\xe9\x06\n" +
 	"\vAuthService\x129\n" +
