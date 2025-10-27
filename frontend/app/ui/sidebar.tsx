@@ -47,7 +47,8 @@ function NavItem({
   href: string;
   pathname: string;
 }) {
-  const isActive = pathname.includes(href);
+  
+  const isActive = (pathname === "/" && href === "/") ? true : href.includes(pathname);
 
   return (
     <Link href={href}>

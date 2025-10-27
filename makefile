@@ -1,5 +1,5 @@
 API_GATEWAY_DIR=api-gateway
-IDENTITY_SERVICE_DIR=identity-service
+IDENTITY_SERVICE_DIR=auth-service
 SONG_SERVICE_DIR=song-service
 STREAM_SERVICE_DIR=stream-service
 

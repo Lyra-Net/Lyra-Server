@@ -1,93 +1,47 @@
 {
+  "total": 21,
   "list": [
     {
-      "createdIndex": 250,
       "value": {
-        "update_time": 1757395626,
         "create_time": 1757395626,
         "id": "00000000000000000249",
+        "update_time": 1757395626,
         "status": 1,
+        "uri": "/stream/*",
+        "priority": 0,
         "upstream": {
           "hash_on": "vars",
-          "scheme": "http",
-          "type": "roundrobin",
-          "pass_host": "pass",
           "nodes": {
             "stream-service:3002": 1
-          }
-        },
-        "priority": 0,
-        "uri": "/stream/*"
+          },
+          "scheme": "http",
+          "pass_host": "pass",
+          "type": "roundrobin"
+        }
       },
-      "key": "/apisix/routes/00000000000000000249",
-      "modifiedIndex": 250
+      "modifiedIndex": 250,
+      "createdIndex": 250,
+      "key": "/apisix/routes/00000000000000000249"
     },
     {
-      "createdIndex": 253,
       "value": {
-        "update_time": 1757649154,
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
         "create_time": 1757396917,
         "id": "00000000000000000252",
-        "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
-        "plugins": {
-          "cors": {
-            "allow_headers": "Authorization,Content-Type,*",
-            "allow_origins": "*",
-            "max_age": 5,
-            "allow_methods": "*",
-            "allow_credential": false
-          },
-          "grpc-transcode": {
-            "deadline": 0,
-            "pb_option": [
-              "enum_as_name",
-              "int64_as_number",
-              "auto_default_values",
-              "disable_hooks"
-            ],
-            "service": "auth.AuthService",
-            "proto_id": "2",
-            "method": "Register",
-            "show_status_in_body": false
-          }
-        },
         "uri": "/auth/register",
-        "upstream": {
-          "hash_on": "vars",
-          "scheme": "grpc",
-          "type": "roundrobin",
-          "pass_host": "pass",
-          "nodes": {
-            "auth-service:30003": 1
-          }
-        },
-        "priority": 0
-      },
-      "key": "/apisix/routes/00000000000000000252",
-      "modifiedIndex": 382
-    },
-    {
-      "createdIndex": 255,
-      "value": {
-        "update_time": 1757649159,
-        "create_time": 1757396927,
-        "id": "00000000000000000254",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1757649154,
+        "priority": 0,
         "plugins": {
           "cors": {
-            "allow_headers": "Authorization,Content-Type,*",
             "allow_origins": "*",
             "max_age": 5,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "Authorization,Content-Type,*"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -98,44 +52,90 @@
               "disable_hooks"
             ],
             "service": "auth.AuthService",
+            "show_status_in_body": false,
             "proto_id": "2",
-            "method": "Login",
-            "show_status_in_body": false
+            "method": "Register"
           }
         },
-        "uri": "/auth/login",
         "upstream": {
           "hash_on": "vars",
-          "scheme": "grpc",
-          "type": "roundrobin",
           "pass_host": "pass",
+          "scheme": "grpc",
           "nodes": {
             "auth-service:30003": 1
-          }
-        },
-        "priority": 0
+          },
+          "type": "roundrobin"
+        }
       },
-      "key": "/apisix/routes/00000000000000000254",
-      "modifiedIndex": 383
+      "modifiedIndex": 382,
+      "createdIndex": 253,
+      "key": "/apisix/routes/00000000000000000252"
     },
     {
-      "createdIndex": 257,
       "value": {
-        "update_time": 1757927277,
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757396927,
+        "priority": 0,
+        "id": "00000000000000000254",
+        "plugins": {
+          "real-ip": {
+            "source": "x-forwarded-for",
+            "recursive": false
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "forward_request_headers": [
+              "user-agent",
+              "x-forwarded-for"
+            ],
+            "show_status_in_body": false,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "method": "Login",
+            "proto_id": "2",
+            "service": "auth.AuthService"
+          }
+        },
+        "update_time": 1759548883,
+        "uri": "/auth/login",
+        "status": 1,
+        "upstream": {
+          "hash_on": "vars",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "scheme": "grpc",
+          "pass_host": "pass",
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 953,
+      "createdIndex": 255,
+      "key": "/apisix/routes/00000000000000000254"
+    },
+    {
+      "value": {
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
         "create_time": 1757396953,
         "id": "00000000000000000256",
-        "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "priority": 0,
         "plugins": {
           "cors": {
-            "allow_headers": "Authorization,Content-Type",
             "allow_origins": "*",
             "max_age": 5,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -145,45 +145,349 @@
               "auto_default_values",
               "disable_hooks"
             ],
-            "proto_id": "2",
-            "service": "auth.AuthService",
             "method": "RefreshToken",
-            "show_status_in_body": false
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "service": "auth.AuthService"
           }
         },
+        "status": 1,
+        "update_time": 1757927277,
         "uri": "/auth/refreshToken",
         "upstream": {
           "hash_on": "vars",
-          "scheme": "grpc",
-          "type": "roundrobin",
           "pass_host": "pass",
+          "scheme": "grpc",
           "nodes": {
             "auth-service:30003": 1
-          }
-        },
-        "priority": 0
+          },
+          "type": "roundrobin"
+        }
       },
-      "key": "/apisix/routes/00000000000000000256",
-      "modifiedIndex": 491
+      "modifiedIndex": 491,
+      "createdIndex": 257,
+      "key": "/apisix/routes/00000000000000000256"
     },
     {
-      "createdIndex": 686,
       "value": {
-        "upstream_id": "9001",
-        "create_time": 1758018600,
-        "id": "9001",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1759987616,
+        "uri": "/auth/add-email",
+        "id": "00000000000000000994",
+        "update_time": 1759993914,
+        "plugins": {
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "auth.AuthService",
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "method": "AddEmail"
+          },
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 5,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type,*"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          }
+        },
         "status": 1,
+        "priority": 0,
+        "upstream": {
+          "hash_on": "vars",
+          "pass_host": "pass",
+          "scheme": "grpc",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 1008,
+      "createdIndex": 995,
+      "key": "/apisix/routes/00000000000000000994"
+    },
+    {
+      "value": {
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1759987886,
+        "id": "00000000000000000997",
+        "priority": 0,
+        "uri": "/auth/verify-code",
+        "status": 1,
+        "update_time": 1759987886,
+        "plugins": {
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 5,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type,*"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "auth.AuthService",
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "method": "VerifyCode"
+          }
+        },
+        "upstream": {
+          "hash_on": "vars",
+          "pass_host": "pass",
+          "scheme": "grpc",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 998,
+      "createdIndex": 998,
+      "key": "/apisix/routes/00000000000000000997"
+    },
+    {
+      "value": {
         "methods": [
           "GET",
           "OPTIONS"
         ],
+        "create_time": 1759988105,
+        "id": "00000000000000000999",
+        "update_time": 1759993296,
+        "uri": "/auth/profile",
+        "status": 1,
+        "priority": 0,
+        "plugins": {
+          "jwt-auth": {
+            "header": "authorization",
+            "cookie": "jwt",
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "hide_credentials": false,
+            "query": "jwt"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "auth.AuthService",
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "method": "GetProfile"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          },
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 5,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type,*"
+          }
+        },
+        "upstream": {
+          "hash_on": "vars",
+          "pass_host": "pass",
+          "scheme": "grpc",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 1006,
+      "createdIndex": 1000,
+      "key": "/apisix/routes/00000000000000000999"
+    },
+    {
+      "value": {
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1759988133,
+        "uri": "/auth/profile",
+        "id": "00000000000000001001",
+        "update_time": 1759993839,
+        "plugins": {
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "auth.AuthService",
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "method": "UpdateProfile"
+          },
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 5,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type,*"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          }
+        },
+        "status": 1,
+        "priority": 0,
+        "upstream": {
+          "hash_on": "vars",
+          "pass_host": "pass",
+          "scheme": "grpc",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 1007,
+      "createdIndex": 1002,
+      "key": "/apisix/routes/00000000000000001001"
+    },
+    {
+      "value": {
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1759988281,
+        "id": "00000000000000001003",
+        "update_time": 1759993162,
+        "uri": "/auth/toggle-2fa",
+        "status": 1,
+        "priority": 0,
+        "plugins": {
+          "jwt-auth": {
+            "header": "authorization",
+            "cookie": "jwt",
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "hide_credentials": false,
+            "query": "jwt"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "auth.AuthService",
+            "show_status_in_body": false,
+            "proto_id": "2",
+            "method": "Toggle2Fa"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          },
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 5,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type,*"
+          }
+        },
+        "upstream": {
+          "hash_on": "vars",
+          "pass_host": "pass",
+          "scheme": "grpc",
+          "nodes": {
+            "auth-service:30003": 1
+          },
+          "type": "roundrobin"
+        }
+      },
+      "modifiedIndex": 1005,
+      "createdIndex": 1004,
+      "key": "/apisix/routes/00000000000000001003"
+    },
+    {
+      "value": {
+        "upstream_id": "9001",
+        "methods": [
+          "GET",
+          "OPTIONS"
+        ],
+        "create_time": 1758018600,
+        "uri": "/search",
+        "priority": 0,
+        "status": 1,
+        "update_time": 1758024606,
+        "id": "9001",
         "plugins": {
           "cors": {
-            "allow_headers": "*",
             "allow_origins": "*",
             "max_age": 5,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "*"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -194,37 +498,35 @@
               "disable_hooks"
             ],
             "service": "search.SearchService",
+            "show_status_in_body": false,
             "proto_id": "00000000000000000683",
-            "method": "Search",
-            "show_status_in_body": false
+            "method": "Search"
           }
-        },
-        "uri": "/search",
-        "priority": 0,
-        "update_time": 1758024606
+        }
       },
-      "key": "/apisix/routes/9001",
-      "modifiedIndex": 689
+      "modifiedIndex": 689,
+      "createdIndex": 686,
+      "key": "/apisix/routes/9001"
     },
     {
-      "createdIndex": 479,
       "value": {
-        "update_time": 1757926517,
-        "create_time": 1757925825,
-        "id": "playlist_add",
-        "status": 1,
+        "upstream_id": "playlist_upstream",
         "methods": [
           "POST",
           "OPTIONS"
         ],
+        "create_time": 1757925825,
+        "id": "playlist_add",
+        "update_time": 1757926517,
+        "status": 1,
         "plugins": {
           "cors": {
-            "allow_headers": "*",
             "expose_headers": "*",
             "allow_origins": "*",
             "max_age": 3600,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "*"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -235,17 +537,17 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "AddSongToPlaylist",
-            "show_status_in_body": false
+            "method": "AddSongToPlaylist"
           },
           "jwt-auth": {
+            "header": "authorization",
             "hide_credentials": false,
             "store_in_ctx": false,
-            "cookie": "jwt",
-            "query": "jwt",
             "key_claim_name": "key",
-            "header": "authorization"
+            "cookie": "jwt",
+            "query": "jwt"
           },
           "serverless-post-function": {
             "functions": [
@@ -255,86 +557,32 @@
           }
         },
         "uri": "/playlist/add",
-        "priority": 0,
-        "upstream_id": "playlist_upstream"
+        "priority": 0
       },
-      "key": "/apisix/routes/playlist_add",
-      "modifiedIndex": 483
+      "modifiedIndex": 483,
+      "createdIndex": 479,
+      "key": "/apisix/routes/playlist_add"
     },
     {
-      "createdIndex": 677,
       "value": {
         "upstream_id": "playlist_upstream",
-        "create_time": 1758016627,
-        "id": "playlist_add_song",
-        "status": 1,
         "methods": [
           "POST",
           "OPTIONS"
         ],
-        "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
-          },
-          "grpc-transcode": {
-            "deadline": 0,
-            "pb_option": [
-              "enum_as_name",
-              "int64_as_number",
-              "auto_default_values",
-              "disable_hooks"
-            ],
-            "service": "playlist.PlaylistService",
-            "proto_id": "playlist_bundle",
-            "method": "AddSongToPlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
-          },
-          "jwt-ctx-inject": {
-            "mappings": [
-              {
-                "sub": "x-user-id"
-              }
-            ]
-          }
-        },
+        "create_time": 1758016627,
         "uri": "/playlist/add-song",
         "priority": 0,
-        "update_time": 1758016627
-      },
-      "key": "/apisix/routes/playlist_add_song",
-      "modifiedIndex": 677
-    },
-    {
-      "createdIndex": 345,
-      "value": {
-        "upstream_id": "playlist_upstream",
-        "create_time": 1757582324,
-        "id": "playlist_create",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1758016627,
+        "id": "playlist_add_song",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -345,16 +593,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "CreatePlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "AddSongToPlaylist"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -362,34 +603,41 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
+        }
+      },
+      "modifiedIndex": 677,
+      "createdIndex": 677,
+      "key": "/apisix/routes/playlist_add_song"
+    },
+    {
+      "value": {
+        "upstream_id": "playlist_upstream",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757582324,
         "uri": "/playlist/create",
         "priority": 0,
-        "update_time": 1758016619
-      },
-      "key": "/apisix/routes/playlist_create",
-      "modifiedIndex": 676
-    },
-    {
-      "createdIndex": 481,
-      "value": {
-        "upstream_id": "playlist_upstream",
-        "create_time": 1757925842,
-        "id": "playlist_delete",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1758016619,
+        "id": "playlist_create",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -400,16 +648,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "DeletePlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "CreatePlaylist"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -417,34 +658,41 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
+        }
+      },
+      "modifiedIndex": 676,
+      "createdIndex": 345,
+      "key": "/apisix/routes/playlist_create"
+    },
+    {
+      "value": {
+        "upstream_id": "playlist_upstream",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757925842,
         "uri": "/playlist/delete",
         "priority": 0,
-        "update_time": 1758016726
-      },
-      "key": "/apisix/routes/playlist_delete",
-      "modifiedIndex": 682
-    },
-    {
-      "createdIndex": 348,
-      "value": {
-        "upstream_id": "playlist_upstream",
-        "create_time": 1757582367,
-        "id": "playlist_get",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1758016726,
+        "id": "playlist_delete",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -455,16 +703,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "GetPlaylistByID",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "DeletePlaylist"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -472,34 +713,41 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
+        }
+      },
+      "modifiedIndex": 682,
+      "createdIndex": 481,
+      "key": "/apisix/routes/playlist_delete"
+    },
+    {
+      "value": {
+        "upstream_id": "playlist_upstream",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757582367,
         "uri": "/playlist/get",
         "priority": 0,
-        "update_time": 1758016708
-      },
-      "key": "/apisix/routes/playlist_get",
-      "modifiedIndex": 680
-    },
-    {
-      "createdIndex": 349,
-      "value": {
-        "upstream_id": "playlist_upstream",
-        "create_time": 1757582372,
-        "id": "playlist_list",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1758016708,
+        "id": "playlist_get",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -510,16 +758,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "ListMyPlaylists",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "GetPlaylistByID"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -527,34 +768,95 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
-        "uri": "/playlist/list",
-        "priority": 0,
-        "update_time": 1758016525
+        }
       },
-      "key": "/apisix/routes/playlist_list",
-      "modifiedIndex": 675
+      "modifiedIndex": 680,
+      "createdIndex": 348,
+      "key": "/apisix/routes/playlist_get"
     },
     {
-      "createdIndex": 347,
       "value": {
-        "update_time": 1757926526,
-        "create_time": 1757582333,
-        "id": "playlist_move",
-        "status": 1,
+        "upstream_id": "playlist_upstream",
         "methods": [
           "POST",
           "OPTIONS"
         ],
+        "create_time": 1757582372,
+        "uri": "/playlist/list",
+        "priority": 0,
+        "status": 1,
+        "update_time": 1758016525,
+        "id": "playlist_list",
         "plugins": {
           "cors": {
-            "allow_headers": "*",
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
+            "proto_id": "playlist_bundle",
+            "method": "ListMyPlaylists"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
+          }
+        }
+      },
+      "modifiedIndex": 675,
+      "createdIndex": 349,
+      "key": "/apisix/routes/playlist_list"
+    },
+    {
+      "value": {
+        "upstream_id": "playlist_upstream",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757582333,
+        "id": "playlist_move",
+        "update_time": 1757926526,
+        "status": 1,
+        "plugins": {
+          "cors": {
             "expose_headers": "*",
             "allow_origins": "*",
             "max_age": 3600,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "*"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -565,17 +867,17 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "MoveSongInPlaylist",
-            "show_status_in_body": false
+            "method": "MoveSongInPlaylist"
           },
           "jwt-auth": {
+            "header": "authorization",
             "hide_credentials": false,
             "store_in_ctx": false,
-            "cookie": "jwt",
-            "query": "jwt",
             "key_claim_name": "key",
-            "header": "authorization"
+            "cookie": "jwt",
+            "query": "jwt"
           },
           "serverless-post-function": {
             "functions": [
@@ -585,31 +887,32 @@
           }
         },
         "uri": "/playlist/move",
-        "priority": 0,
-        "upstream_id": "playlist_upstream"
+        "priority": 0
       },
-      "key": "/apisix/routes/playlist_move",
-      "modifiedIndex": 485
+      "modifiedIndex": 485,
+      "createdIndex": 347,
+      "key": "/apisix/routes/playlist_move"
     },
     {
-      "createdIndex": 679,
       "value": {
         "upstream_id": "playlist_upstream",
-        "create_time": 1758016687,
-        "id": "playlist_move_song",
-        "status": 1,
         "methods": [
           "POST",
           "OPTIONS"
         ],
+        "create_time": 1758016687,
+        "uri": "/playlist/move-song",
+        "priority": 0,
+        "status": 1,
+        "update_time": 1758016687,
+        "id": "playlist_move_song",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -620,16 +923,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "MoveSongInPlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "MoveSongInPlaylist"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -637,34 +933,40 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
-        "uri": "/playlist/move-song",
-        "priority": 0,
-        "update_time": 1758016687
+        }
       },
-      "key": "/apisix/routes/playlist_move_song",
-      "modifiedIndex": 679
+      "modifiedIndex": 679,
+      "createdIndex": 679,
+      "key": "/apisix/routes/playlist_move_song"
     },
     {
-      "createdIndex": 346,
       "value": {
-        "update_time": 1757926522,
-        "create_time": 1757582329,
-        "id": "playlist_remove",
-        "status": 1,
+        "upstream_id": "playlist_upstream",
         "methods": [
           "POST",
           "OPTIONS"
         ],
+        "create_time": 1757582329,
+        "id": "playlist_remove",
+        "update_time": 1757926522,
+        "status": 1,
         "plugins": {
           "cors": {
-            "allow_headers": "*",
             "expose_headers": "*",
             "allow_origins": "*",
             "max_age": 3600,
             "allow_methods": "*",
-            "allow_credential": false
+            "allow_credential": false,
+            "allow_headers": "*"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -675,17 +977,17 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "RemoveSongFromPlaylist",
-            "show_status_in_body": false
+            "method": "RemoveSongFromPlaylist"
           },
           "jwt-auth": {
+            "header": "authorization",
             "hide_credentials": false,
             "store_in_ctx": false,
-            "cookie": "jwt",
-            "query": "jwt",
             "key_claim_name": "key",
-            "header": "authorization"
+            "cookie": "jwt",
+            "query": "jwt"
           },
           "serverless-post-function": {
             "functions": [
@@ -695,86 +997,32 @@
           }
         },
         "uri": "/playlist/remove",
-        "priority": 0,
-        "upstream_id": "playlist_upstream"
+        "priority": 0
       },
-      "key": "/apisix/routes/playlist_remove",
-      "modifiedIndex": 484
+      "modifiedIndex": 484,
+      "createdIndex": 346,
+      "key": "/apisix/routes/playlist_remove"
     },
     {
-      "createdIndex": 678,
       "value": {
         "upstream_id": "playlist_upstream",
-        "create_time": 1758016670,
-        "id": "playlist_remove_song",
-        "status": 1,
         "methods": [
           "POST",
           "OPTIONS"
         ],
-        "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
-          },
-          "grpc-transcode": {
-            "deadline": 0,
-            "pb_option": [
-              "enum_as_name",
-              "int64_as_number",
-              "auto_default_values",
-              "disable_hooks"
-            ],
-            "service": "playlist.PlaylistService",
-            "proto_id": "playlist_bundle",
-            "method": "RemoveSongFromPlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
-          },
-          "jwt-ctx-inject": {
-            "mappings": [
-              {
-                "sub": "x-user-id"
-              }
-            ]
-          }
-        },
+        "create_time": 1758016670,
         "uri": "/playlist/remove-song",
         "priority": 0,
-        "update_time": 1758016670
-      },
-      "key": "/apisix/routes/playlist_remove_song",
-      "modifiedIndex": 678
-    },
-    {
-      "createdIndex": 480,
-      "value": {
-        "upstream_id": "playlist_upstream",
-        "create_time": 1757925836,
-        "id": "playlist_update",
         "status": 1,
-        "methods": [
-          "POST",
-          "OPTIONS"
-        ],
+        "update_time": 1758016670,
+        "id": "playlist_remove_song",
         "plugins": {
-          "jwt-auth": {
-            "hide_credentials": false,
-            "store_in_ctx": true,
-            "cookie": "jwt",
-            "query": "jwt",
-            "header": "authorization",
-            "key_claim_name": "key"
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
           },
           "grpc-transcode": {
             "deadline": 0,
@@ -785,16 +1033,9 @@
               "disable_hooks"
             ],
             "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
             "proto_id": "playlist_bundle",
-            "method": "UpdatePlaylist",
-            "show_status_in_body": false
-          },
-          "cors": {
-            "allow_headers": "Authorization,Content-Type",
-            "allow_origins": "*",
-            "max_age": 3600,
-            "allow_credential": false,
-            "allow_methods": "*"
+            "method": "RemoveSongFromPlaylist"
           },
           "jwt-ctx-inject": {
             "mappings": [
@@ -802,15 +1043,75 @@
                 "sub": "x-user-id"
               }
             ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
           }
-        },
+        }
+      },
+      "modifiedIndex": 678,
+      "createdIndex": 678,
+      "key": "/apisix/routes/playlist_remove_song"
+    },
+    {
+      "value": {
+        "upstream_id": "playlist_upstream",
+        "methods": [
+          "POST",
+          "OPTIONS"
+        ],
+        "create_time": 1757925836,
         "uri": "/playlist/update",
         "priority": 0,
-        "update_time": 1758016719
+        "status": 1,
+        "update_time": 1758016719,
+        "id": "playlist_update",
+        "plugins": {
+          "cors": {
+            "allow_origins": "*",
+            "max_age": 3600,
+            "allow_credential": false,
+            "allow_methods": "*",
+            "allow_headers": "Authorization,Content-Type"
+          },
+          "grpc-transcode": {
+            "deadline": 0,
+            "pb_option": [
+              "enum_as_name",
+              "int64_as_number",
+              "auto_default_values",
+              "disable_hooks"
+            ],
+            "service": "playlist.PlaylistService",
+            "show_status_in_body": false,
+            "proto_id": "playlist_bundle",
+            "method": "UpdatePlaylist"
+          },
+          "jwt-ctx-inject": {
+            "mappings": [
+              {
+                "sub": "x-user-id"
+              }
+            ]
+          },
+          "jwt-auth": {
+            "header": "authorization",
+            "hide_credentials": false,
+            "store_in_ctx": true,
+            "key_claim_name": "key",
+            "cookie": "jwt",
+            "query": "jwt"
+          }
+        }
       },
-      "key": "/apisix/routes/playlist_update",
-      "modifiedIndex": 681
+      "modifiedIndex": 681,
+      "createdIndex": 480,
+      "key": "/apisix/routes/playlist_update"
     }
-  ],
-  "total": 16
+  ]
 }

@@ -1,5 +1,6 @@
 CREATE TABLE users (
     user_id UUID PRIMARY KEY,
+    avatar_url TEXT,
     display_name TEXT,
     username TEXT NOT NULL,
     password_hash TEXT NOT NULL,

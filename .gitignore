@@ -1,3 +1,5 @@
 apisix_data
 data.ms
 .env
+dump_apisix.sh
+keys

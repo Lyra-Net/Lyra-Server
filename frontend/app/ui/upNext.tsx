@@ -2,8 +2,11 @@
 import { usePlayerStore } from '@/stores/player';
 
 export default function UpNext() {
-  const { queue, shuffledQueue, shuffledIndex, shuffle } = usePlayerStore();
-
+  const queue = usePlayerStore(s => s.queue);
+  const shuffledQueue = usePlayerStore(s => s.shuffledQueue);
+  const shuffledIndex = usePlayerStore(s => s.shuffledIndex);
+  const shuffle = usePlayerStore(s => s.shuffle);
+  
   const upNext = shuffle
     ? shuffledQueue.slice(shuffledIndex + 1)
     : queue;

@@ -77,14 +77,13 @@ export default function PlaylistDetailPage() {
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
   const [showAddSong, setShowAddSong] = useState(false);
-  const {
-    setQueue,
-    addToQueueUnique,
-    isPlaying,
-    source,
-    setPlaying,
-    currentSong
-  } = usePlayerStore();
+
+  const currentSong = usePlayerStore(s => s.currentSong);
+  const isPlaying = usePlayerStore(s => s.isPlaying);
+  const source = usePlayerStore(s => s.source);
+  const addToQueueUnique = usePlayerStore(s => s.addToQueueUnique);
+  const setQueue = usePlayerStore(s => s.setQueue);
+  const setPlaying = usePlayerStore(s => s.setPlaying);
 
   const isCurrentPlaylist = currentSong &&
     source?.type === "playlist" && source?.id === playlist?.playlist_id;

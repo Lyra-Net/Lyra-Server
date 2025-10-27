@@ -1,5 +1,7 @@
-version: "3"
 services:
+    # ========================
+    # APISIX & etcd
+    # ========================
     etcd:
         image: bitnami/etcd:latest
         container_name: etcd
@@ -26,11 +28,15 @@ services:
             - ETCD_HOST=etcd:2379
         volumes:
             - ./apisix_data/conf/config.yaml:/usr/local/apisix/conf/config.yaml
+            - ./apisix_data/plugins/jwt-ctx-inject.lua:/usr/local/apisix/apisix/plugins/jwt-ctx-inject.lua
         depends_on:
             - etcd
         networks:
             - backend-net
 
+    # ========================
+    # Kafka stack
+    # ========================
     zookeeper:
         image: confluentinc/cp-zookeeper:7.5.1
         container_name: zookeeper
@@ -46,23 +52,170 @@ services:
         image: confluentinc/cp-kafka:7.5.1
         container_name: kafka
         ports:
-            - "9092:9092"
-            - "9093:9093"
+            - "9092:9092" # internal only
         environment:
             KAFKA_BROKER_ID: 1
             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
-            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+            KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+            KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
             KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
         depends_on:
             - zookeeper
         networks:
             - backend-net
 
+    kafka-ui:
+        image: provectuslabs/kafka-ui:latest
+        container_name: kafka-ui
+        ports:
+            - "8080:8080"
+        environment:
+            KAFKA_CLUSTERS_0_NAME: local
+            KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+            KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper: 2181
+        depends_on:
+            - kafka
+        networks:
+            - backend-net
+
+    # ========================
+    # Meilisearch
+    # ========================
+    meilisearch:
+        image: getmeili/meilisearch:v1.19.1
+        container_name: meilisearch
+        ports:
+            - "7700:7700"
+        env_file:
+            - ./.env
+        volumes:
+            - meili_data:/meili_data
+        networks:
+            - backend-net
+        depends_on:
+            - kafka
+
+    # ========================
+    # Postgres
+    # ========================
+    postgres:
+        image: postgres:15
+        container_name: postgres
+        restart: always
+        env_file:
+            - ./.env
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - backend-net
+
+    # ========================
+    # MinIO
+    # ========================
+    minio:
+        image: minio/minio:latest
+        container_name: minio
+        ports:
+            - "9000:9000"   # S3 API
+            - "9001:9001"   # Console UI
+        env_file:
+            - ./.env
+        command: server /data --console-address ":9001"
+        volumes:
+            - minio_data:/data
+        networks:
+            - backend-net
+
+    mc:
+        image: minio/mc
+        container_name: minio-mc
+        depends_on:
+            - minio
+        networks:
+            - backend-net
+        entrypoint: /bin/sh
+        tty: true
+        volumes:
+            - ./stream-service/audios:/audios 
+
+    # ========================
+    # Redis
+    # ========================
+    redis:
+        image: redis:7-alpine
+        container_name: redis
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        networks:
+            - backend-net
+        command: ["redis-server", "--appendonly", "yes"]
+
+    # ========================
+    # Analytics stack
+    # ========================
+    clickhouse:
+        image: clickhouse/clickhouse-server:24.8
+        container_name: clickhouse
+        ports:
+            - "8123:8123"   # HTTP
+            - "9009:9000"   # Native TCP
+        environment:
+            CLICKHOUSE_USER: analytics_user
+            CLICKHOUSE_PASSWORD: secret123
+            CLICKHOUSE_DB: analytics
+        ulimits:
+            nofile:
+                soft: 262144
+                hard: 262144
+        volumes:
+            - ./clickhouse/init:/docker-entrypoint-initdb.d
+            - clickhouse_data:/var/lib/clickhouse
+        networks:
+            - backend-net
+
+
+    prometheus:
+        image: prom/prometheus:latest
+        container_name: prometheus
+        ports:
+            - "9090:9090"
+        volumes:
+            - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+        networks:
+            - backend-net
+
+    grafana:
+        image: grafana/grafana:latest
+        container_name: grafana
+        ports:
+            - "3030:3000" # avoid conflict with frontend
+        environment:
+            - GF_SECURITY_ADMIN_USER=admin
+            - GF_SECURITY_ADMIN_PASSWORD=admin
+        depends_on:
+            - prometheus
+        networks:
+            - backend-net
+
     # ========================
     # Go microservices
     # ========================
+    auth-service:
+        build: ./auth-service
+        container_name: auth-service
+        env_file: ./auth-service/.env
+        ports:
+          - "30003:30003"
+        networks:
+            - backend-net
+        depends_on:
+            - postgres
+        volumes:
+            - ./keys:/keys:ro
+            
     song-service:
         build: ./song-service
         container_name: song-service
@@ -74,6 +227,7 @@ services:
             - backend-net
         depends_on:
             - kafka
+            - postgres
 
     search-service:
         build: ./search-service
@@ -86,10 +240,40 @@ services:
             - backend-net
         depends_on:
             - kafka
+            - meilisearch
+            - postgres
+    
+    stream-service:
+        build: ./stream-service
+        container_name: stream-service
+        env_file:
+            - ./stream-service/.env
+        ports:
+            - "3002:3002"
+        networks:
+            - backend-net
+    
+    analytics-service:
+        build: ./analytics-service
+        container_name: analytics-service
+        env_file:
+            - ./analytics-service/.env
+        depends_on:
+            - clickhouse
+        networks:
+            - backend-net
 
+# ========================
+# Networks & Volumes
+# ========================
 networks:
     backend-net:
         driver: bridge
 
 volumes:
     etcd-data:
+    meili_data:
+    postgres_data:
+    minio_data:
+    redis_data:
+    clickhouse_data:

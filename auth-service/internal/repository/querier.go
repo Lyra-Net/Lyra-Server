@@ -22,11 +22,17 @@ type Querier interface {
 	DeleteUser(ctx context.Context, userID uuid.UUID) error
 	DeleteUserRefreshTokens(ctx context.Context, userID uuid.UUID) error
 	GetDeletedEmail(ctx context.Context, emailHash string) (DeletedEmail, error)
+	GetEmail(ctx context.Context, userID uuid.UUID) (GetEmailRow, error)
+	GetProfile(ctx context.Context, userID uuid.UUID) (GetProfileRow, error)
 	GetRefreshToken(ctx context.Context, arg GetRefreshTokenParams) (RefreshToken, error)
 	GetTrustedDevices(ctx context.Context, userID uuid.UUID) ([]GetTrustedDevicesRow, error)
 	GetUserByID(ctx context.Context, userID uuid.UUID) (User, error)
 	GetUserByUsername(ctx context.Context, username string) (User, error)
 	IsValidTrustedDevice(ctx context.Context, arg IsValidTrustedDeviceParams) (int32, error)
+	RemoveEmail(ctx context.Context, userID uuid.UUID) error
+	Toggle2Fa(ctx context.Context, arg Toggle2FaParams) error
+	UpdateAvatarURL(ctx context.Context, arg UpdateAvatarURLParams) error
+	UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) error
 	UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error
 }
 

@@ -43,6 +43,7 @@ type TrustedDevice struct {
 
 type User struct {
 	UserID         uuid.UUID        `json:"user_id"`
+	AvatarUrl      pgtype.Text      `json:"avatar_url"`
 	DisplayName    pgtype.Text      `json:"display_name"`
 	Username       string           `json:"username"`
 	PasswordHash   string           `json:"password_hash"`

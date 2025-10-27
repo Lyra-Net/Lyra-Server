@@ -36,7 +36,7 @@ export default function Player() {
   } = usePlayerStore();
 
   const [hasHydrated, setHasHydrated] = useState(false);
-
+  
   useEffect(() => {
     setHasHydrated(usePlayerStore.persist.hasHydrated());
   }, []);

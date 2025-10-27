@@ -75,8 +75,55 @@ func (q *Queries) DeleteUser(ctx context.Context, userID uuid.UUID) error {
 	return err
 }
 
+const getEmail = `-- name: GetEmail :one
+SELECT email_encrypted, email_hash
+FROM users
+WHERE user_id = $1
+`
+
+type GetEmailRow struct {
+	EmailEncrypted pgtype.Text `json:"email_encrypted"`
+	EmailHash      pgtype.Text `json:"email_hash"`
+}
+
+func (q *Queries) GetEmail(ctx context.Context, userID uuid.UUID) (GetEmailRow, error) {
+	row := q.db.QueryRow(ctx, getEmail, userID)
+	var i GetEmailRow
+	err := row.Scan(&i.EmailEncrypted, &i.EmailHash)
+	return i, err
+}
+
+const getProfile = `-- name: GetProfile :one
+SELECT avatar_url, display_name, email_encrypted, is_2fa, created_at, updated_at
+FROM users
+WHERE user_id = $1
+`
+
+type GetProfileRow struct {
+	AvatarUrl      pgtype.Text      `json:"avatar_url"`
+	DisplayName    pgtype.Text      `json:"display_name"`
+	EmailEncrypted pgtype.Text      `json:"email_encrypted"`
+	Is2fa          pgtype.Bool      `json:"is_2fa"`
+	CreatedAt      pgtype.Timestamp `json:"created_at"`
+	UpdatedAt      pgtype.Timestamp `json:"updated_at"`
+}
+
+func (q *Queries) GetProfile(ctx context.Context, userID uuid.UUID) (GetProfileRow, error) {
+	row := q.db.QueryRow(ctx, getProfile, userID)
+	var i GetProfileRow
+	err := row.Scan(
+		&i.AvatarUrl,
+		&i.DisplayName,
+		&i.EmailEncrypted,
+		&i.Is2fa,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
+SELECT user_id, avatar_url, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
 WHERE user_id = $1
 `
 
@@ -85,6 +132,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (User, erro
 	var i User
 	err := row.Scan(
 		&i.UserID,
+		&i.AvatarUrl,
 		&i.DisplayName,
 		&i.Username,
 		&i.PasswordHash,
@@ -99,7 +147,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID uuid.UUID) (User, erro
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT user_id, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
+SELECT user_id, avatar_url, display_name, username, password_hash, email_encrypted, email_hash, is_2fa, change_pass_at, created_at, updated_at FROM users
 WHERE username = $1
 LIMIT 1
 `
@@ -109,6 +157,7 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 	var i User
 	err := row.Scan(
 		&i.UserID,
+		&i.AvatarUrl,
 		&i.DisplayName,
 		&i.Username,
 		&i.PasswordHash,
@@ -122,9 +171,69 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 	return i, err
 }
 
+const removeEmail = `-- name: RemoveEmail :exec
+UPDATE users
+SET email_encrypted = NULL,
+    email_hash = NULL
+WHERE user_id = $1
+`
+
+func (q *Queries) RemoveEmail(ctx context.Context, userID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, removeEmail, userID)
+	return err
+}
+
+const toggle2Fa = `-- name: Toggle2Fa :exec
+UPDATE users
+SET is_2fa = $2, updated_at = now()
+WHERE user_id = $1
+`
+
+type Toggle2FaParams struct {
+	UserID uuid.UUID   `json:"user_id"`
+	Is2fa  pgtype.Bool `json:"is_2fa"`
+}
+
+func (q *Queries) Toggle2Fa(ctx context.Context, arg Toggle2FaParams) error {
+	_, err := q.db.Exec(ctx, toggle2Fa, arg.UserID, arg.Is2fa)
+	return err
+}
+
+const updateAvatarURL = `-- name: UpdateAvatarURL :exec
+UPDATE users
+SET avatar_url = $2, updated_at = now()
+WHERE user_id = $1
+`
+
+type UpdateAvatarURLParams struct {
+	UserID    uuid.UUID   `json:"user_id"`
+	AvatarUrl pgtype.Text `json:"avatar_url"`
+}
+
+func (q *Queries) UpdateAvatarURL(ctx context.Context, arg UpdateAvatarURLParams) error {
+	_, err := q.db.Exec(ctx, updateAvatarURL, arg.UserID, arg.AvatarUrl)
+	return err
+}
+
+const updateDisplayName = `-- name: UpdateDisplayName :exec
+UPDATE users
+SET display_name = $2, updated_at = now()
+WHERE user_id = $1
+`
+
+type UpdateDisplayNameParams struct {
+	UserID      uuid.UUID   `json:"user_id"`
+	DisplayName pgtype.Text `json:"display_name"`
+}
+
+func (q *Queries) UpdateDisplayName(ctx context.Context, arg UpdateDisplayNameParams) error {
+	_, err := q.db.Exec(ctx, updateDisplayName, arg.UserID, arg.DisplayName)
+	return err
+}
+
 const updatePassword = `-- name: UpdatePassword :exec
 UPDATE users
-SET password_hash = $2, updated_at = now()
+SET password_hash = $2, updated_at = now(), change_pass_at = now()
 WHERE user_id = $1
 `
 

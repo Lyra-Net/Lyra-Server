@@ -1,15 +1,15 @@
 {
+  "total": 1,
   "list": [
     {
-      "createdIndex": 464,
       "value": {
-        "update_time": 1757988814,
         "create_time": 1757925355,
-        "username": "playlist-consumer"
+        "username": "playlist-consumer",
+        "update_time": 1757988814
       },
-      "key": "/apisix/consumers/playlist-consumer",
-      "modifiedIndex": 576
+      "modifiedIndex": 576,
+      "createdIndex": 464,
+      "key": "/apisix/consumers/playlist-consumer"
     }
-  ],
-  "total": 1
+  ]
 }

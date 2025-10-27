@@ -16,6 +16,7 @@ const (
 	// Longer 8-digit OTPs
 	FORGOT_PASS_OTP  OtpType = 8
 	REMOVE_EMAIL_OTP OtpType = 8
+	TOGGLE_2FA_OTP   OtpType = 8
 )
 
 var seededRand *rand.Rand = rand.New(

@@ -1,9 +1,5 @@
-import axios, { AxiosRequestConfig } from 'axios';
-import { getSession } from 'next-auth/react';
-
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
-});
+import axios from "axios";
+import { useAuthStore } from "@/stores/useAuth";
 
 let isRefreshing = false;
 let failedQueue: any[] = [];
@@ -16,39 +12,44 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-api.interceptors.request.use(async (config) => {
-  const session = await getSession();
-  const token = (session as any)?.accessToken;
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+});
+
+api.interceptors.request.use((config) => {
+  const token = useAuthStore.getState().accessToken;
   if (token && config.headers) {
-    config.headers.Authorization = `${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-
 api.interceptors.response.use(
-  response => response,
-  async error => {
+(response) => response,
+  async (error) => {
     const originalRequest = error.config;
-
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+          .then((newToken) => {
+            originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return api(originalRequest);
           })
-          .catch(err => Promise.reject(err));
+          .catch((err) => Promise.reject(err));
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        const refreshRes = await axios.post('/api/refresh', {}); 
-        const newToken = refreshRes.data.accessToken;
+        const refreshRes = await axios.post("/api/refresh", {},);
+        const newToken = refreshRes.data.access_token;
+
+        const authStore = useAuthStore.getState();
+        authStore.setAuth(authStore.userId!, authStore.username!, authStore.email!, authStore.displayName!, newToken, authStore.exp!);
 
         processQueue(null, newToken);
 
@@ -56,6 +57,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (err) {
         processQueue(err, null);
+        useAuthStore.getState().clearAuth();
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

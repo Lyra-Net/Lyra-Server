@@ -48,6 +48,12 @@ github.com/trandinh0506/BypassBeats/proto v0.0.0-20251005085912-a167c707b610 h1:
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20251005085912-a167c707b610/go.mod h1:KzKhJKYwR+ugl0bo18NHWyVmaBxW3eSwOHM0ZssoLsM=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20251008024211-657e5b004c60 h1:DDrvEY9StVKjHS+d3VB+KtzWEuDhQWFkRY+0qN3lG5s=
 github.com/trandinh0506/BypassBeats/proto v0.0.0-20251008024211-657e5b004c60/go.mod h1:KzKhJKYwR+ugl0bo18NHWyVmaBxW3eSwOHM0ZssoLsM=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251008032632-fc874b2a526b h1:YngTKKibEILW5hzyBkkdEVmvRJZ5d4zITp7jp4yCeGc=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251008032632-fc874b2a526b/go.mod h1:KzKhJKYwR+ugl0bo18NHWyVmaBxW3eSwOHM0ZssoLsM=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251009013751-750efda685dc h1:JV914ChgNVP6Hwa1cEwrFe155vDWD4cjfb8pOt4Y+zo=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251009013751-750efda685dc/go.mod h1:KzKhJKYwR+ugl0bo18NHWyVmaBxW3eSwOHM0ZssoLsM=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251010080835-7981a4ecd428 h1:sxO4ZYk289VxzdeAdRoG/t4eMidcadR3/qAFpXVG09g=
+github.com/trandinh0506/BypassBeats/proto v0.0.0-20251010080835-7981a4ecd428/go.mod h1:KzKhJKYwR+ugl0bo18NHWyVmaBxW3eSwOHM0ZssoLsM=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
 go.opentelemetry.io/auto/sdk v1.1.0/go.mod h1:3wSPjt5PWp2RhlCcmmOial7AvC4DQqZb7a7wCow3W8A=
 go.opentelemetry.io/otel v1.37.0 h1:9zhNfelUvx0KBfu/gb+ZgeAfAgtWrfHJZcAqFC228wQ=

@@ -19,6 +19,20 @@
     "CreateSongResponse": {
         "id": "string"
     },
+    "CreatePlaylistRequest": {
+        "playlist_name": "string",
+        "owner_id": "string",
+        "is_public": true
+    },
+    "CreatePlaylistResponse": {
+        "playlist_id": "string"
+    },
+    "GetPlaylistByIdResponse": {
+        "playlist_id": "string",
+        "playlist_name": "string",
+        "songs": ["Song"]
+    },
+
     "Artist": {
         "id": 1,
         "name": "string"

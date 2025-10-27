@@ -4,49 +4,54 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Link from 'next/link';
-
-import { signIn } from "next-auth/react";
 import { getDeviceId } from '@/utils/device';
+import { useAuthStore } from '@/stores/useAuth';
 
 export default function LoginPage() {
   const [showForm, setShowForm] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isPending, setIsPending] = useState(false);
+  const setAuth = useAuthStore(s => s.setAuth)
 
   const router = useRouter();
   useEffect(() => {
     setTimeout(() => setShowForm(true), 50);
   }, []);
 
-  const handleLogin = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (isPending) return;
-      setIsPending(true);
-      try {
-        const res = await signIn("credentials", {
+  const handleLogin = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isPending) return;
+    setIsPending(true);
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           username,
           password,
           device_id: getDeviceId(),
-          redirect: false,
-        });
-        if (res?.error) {
-          console.log('Login error', res.error);
-          toast.error(res.error);
-        } else {
-          toast.success('Logged in successfuly!');
-          router.push('/');
-        }        
-      } catch (err: any) {
-        toast.error(err.response?.data?.message || 'Login failure');
-        console.error('Login failed', err.response?.data || err.message);
-      } finally {
-        setIsPending(false);
+        }),
+      });
+
+      if (!res.ok) {
+        toast.error('Login failed');
+        return;
       }
-    },
-    [username, password, isPending]
-  );
+      const { access_token, userId, displayName, exp } = await res.json();
+
+      setAuth(userId, username, "", displayName, access_token, exp);
+      
+      toast.success('Logged in successfully!');
+      router.push('/');
+    } catch (err) {
+      console.error(err);
+      toast.error('Something went wrong');
+    } finally {
+      setIsPending(false);
+    }
+  }, [username, password, isPending, setAuth, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-transparent">

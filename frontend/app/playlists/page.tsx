@@ -1,25 +1,25 @@
 'use client';
 
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from 'react';
 import DashboardLayout from '../ui/dashboardLayout';
 import { Playlist } from '@/declarations/playlists';
 import api from '@/lib/api';
 import AuthRequiredForm from "../components/AuthRequiredForm";
 import Link from "next/link";
+import { useAuthStore } from "@/stores/useAuth";
 
 export default function PlaylistPage() {
   const [myPlaylist, setMyPlaylist] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(true);
-  const { data: session } = useSession();
-
+  const { userId, accessToken } = useAuthStore();
+  console.log({userId, accessToken})
   const [newName, setNewName] = useState("");
   const [isPublic, setIsPublic] = useState(false);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    if (!session) {
+    if (!accessToken) {
       setAuthenticated(false);
       setLoading(false);
       return;
@@ -35,21 +35,21 @@ export default function PlaylistPage() {
         setAuthenticated(false);
       })
       .finally(() => setLoading(false));
-  }, [session]);
+  }, [accessToken]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session) return;
+    if (!accessToken) return;
 
     setCreating(true);
     try {
       await api.post('/playlist/create', {
-        owner_id: (session.user as any)?.id,
+        owner_id: userId,
         playlist_name: newName,
         is_public: isPublic,
       });
 
-      const updated = await api.post('/playlist/list', { owner_id: (session.user as any)?.id });
+      const updated = await api.post('/playlist/list', { owner_id: userId });
       setMyPlaylist(updated.data?.playlists || []);
       setNewName("");
       setIsPublic(true);

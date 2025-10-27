@@ -20,7 +20,7 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/stretchr/testify v1.9.0 // indirect
-	github.com/trandinh0506/BypassBeats/proto v0.0.0-20251008024211-657e5b004c60
+	github.com/trandinh0506/BypassBeats/proto v0.0.0-20251010080835-7981a4ecd428
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect

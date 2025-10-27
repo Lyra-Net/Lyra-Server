@@ -129,7 +129,7 @@ func SetVerifiedSession(sessionId, deviceId string) error {
 
 func SetVerifing2Fa(userId string) error {
 	key := fmt.Sprintf("%s:verifing", userId)
-	return Client.Set(Ctx, key, 1, time.Minute*30).Err()
+	return Client.Set(Ctx, key, 1, time.Minute*15).Err()
 }
 
 func GetVerifing2Fa(userId string) (string, error) {

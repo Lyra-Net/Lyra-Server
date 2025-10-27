@@ -10,6 +10,7 @@ import Link from 'next/link';
 export default function RegisterPage() {
   const [showForm, setShowForm] = useState(false);
   const [username, setUsername] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [isPending, setIsPending] = useState(false);
@@ -35,6 +36,7 @@ export default function RegisterPage() {
       try {
         const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
           username,
+          display_name: displayName,
           password,
           device_id,
         });
@@ -84,6 +86,26 @@ export default function RegisterPage() {
               peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
             >
               Username
+            </label>
+          </div>
+          <div className="relative z-0 w-full mb-6 group">
+            <input
+              type="text"
+              name="displayName"
+              id="displayName"
+              value={displayName}
+              onChange={e => setDisplayName(e.target.value)}
+              disabled={isPending}
+              className="block py-2.5 px-0 w-full text-sm text-gray-900 dark:text-white bg-transparent border-0 border-b-2 border-gray-300 dark:border-gray-600 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+              placeholder=" "
+              required
+            />
+            <label
+              htmlFor="username"
+              className="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-placeholder-shown:scale-100 
+              peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+            >
+              Display name
             </label>
           </div>
           <div className="relative z-0 w-full mb-6 group">
