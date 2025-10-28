@@ -1,4 +1,4 @@
-module github.com/trandinh0506/BypassBeats/proto
+module github.com/Lyra-Net/Lyra-Server/proto
 
 go 1.25.1
 
