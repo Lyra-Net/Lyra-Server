@@ -5,9 +5,9 @@ option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/auth;auth";
 
 service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse);
-  rpc Login(LoginRequest) returns (AuthResponse);
+  rpc Login(LoginRequest) returns (LoginResponse);
   rpc Logout(LogoutRequest) returns (LogoutResponse);
-  rpc RefreshToken(RefreshTokenRequest) returns (AuthResponse);
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse);
 
   rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
   rpc ForgotPassword(ForgotPasswordRequest) returns (ForgotPasswordResponse);
@@ -15,8 +15,7 @@ service AuthService {
   rpc AddEmail(AddEmailRequest) returns (AddEmailResponse);
   rpc RemoveEmail(RemoveEmailRequest) returns (RemoveEmailResponse);
 
-  rpc ResendVerification(ResendVerificationRequest) returns (ResendVerificationResponse);
-  rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse);
+  rpc ResendOTP(ResendOTPRequest) returns (ResendOTPResponse);
 
   rpc Toggle2Fa(Toggle2FaRequest) returns (Toggle2FaResponse);
 
@@ -39,13 +38,27 @@ message LoginRequest {
   string username = 1;
   string password = 2;
   string device_id = 3;
-  string verified_2fa_session_id = 4;
+  string session_id = 4;
+  string otp = 5;
+}
+
+message LoginResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string user_id = 3;
+  bool is_2fa = 4;
+  string session_id = 5;
 }
 
 message RefreshTokenRequest {
   string access_token = 1;
   string refresh_token = 2;
   string device_id = 3;
+}
+
+message RefreshTokenResponse {
+  string access_token = 1;
+  string refresh_token = 2;
 }
 
 message LogoutRequest {
@@ -58,31 +71,26 @@ message LogoutResponse {
   string message = 1;
 }
 
-message AuthResponse {
-  string access_token = 1;
-  string refresh_token = 2;
-}
-
 message ChangePasswordRequest {
   string old_password = 1;
   string new_password = 2;
   string device_id = 3;
-  string verified_2fa_session_id = 4;
+  string session_id = 4;
+  string otp = 5;
 }
 
 message ChangePasswordResponse {
-  bool is_two_fa = 1;
+  bool is_2fa = 1;
   string session_id = 2;
 }
 
-// client { email, device_id } -> server -> send otp to email & return session_id ->
-// client {email, device_id, new_password, verified_2fa_session_id} -> server
 message ForgotPasswordRequest {
   string email = 1;
   string username = 2;
   string device_id = 3;
   string new_password = 4;
-  string verified_2fa_session_id = 5;
+  string session_id = 5;
+  string otp = 6;
 }
 
 message ForgotPasswordResponse {
@@ -90,9 +98,10 @@ message ForgotPasswordResponse {
 }
 
 message AddEmailRequest {
-  string device_id = 2;
-  string email = 3;
-  string verified_2fa_session_id = 4;
+  string device_id = 1;
+  string email = 2;
+  string session_id = 3;
+  string otp = 4;
 }
 
 message AddEmailResponse {
@@ -102,7 +111,8 @@ message AddEmailResponse {
 
 message RemoveEmailRequest {
   string device_id = 1;
-  string verified_2fa_session_id = 2;
+  string session_id = 2;
+  string otp = 3;
 }
 
 message RemoveEmailResponse {
@@ -110,37 +120,25 @@ message RemoveEmailResponse {
 }
 
 
-message ResendVerificationRequest {
+message ResendOTPRequest {
   string session_id = 1;
   string device_id = 2;
 }
 
-message ResendVerificationResponse {
+message ResendOTPResponse {
   string session_id = 1;
-  string message = 2;
-}
-
-message VerifyCodeRequest {
-  string session_id = 1;
-  string otp = 2;
-  string device_id = 3;
-  bool remember_device = 4;
-}
-
-message VerifyCodeResponse {
-  bool is_success = 1;
   string message = 2;
 }
 
 message Toggle2FaRequest {
   string device_id = 1;
-  bool enable = 2;
-  string verified_2fa_session_id = 3;
+  string session_id = 2;
+  string otp = 3;
 }
 
 message Toggle2FaResponse {
   string session_id = 1;
-  string message = 2;
+  bool is_2fa = 2;
   bool is_success = 3;
 }
 
