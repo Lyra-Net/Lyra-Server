@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package auth;
-option go_package = "github.com/trandinh0506/BypassBeats/proto/gen/auth;auth";
+option go_package = "github.com/Lyra-Net/Lyra-Server/proto/gen/auth;auth";
 
 service AuthService {
   rpc Register(RegisterRequest) returns (RegisterResponse);

@@ -19,19 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName           = "/auth.AuthService/Register"
-	AuthService_Login_FullMethodName              = "/auth.AuthService/Login"
-	AuthService_Logout_FullMethodName             = "/auth.AuthService/Logout"
-	AuthService_RefreshToken_FullMethodName       = "/auth.AuthService/RefreshToken"
-	AuthService_ChangePassword_FullMethodName     = "/auth.AuthService/ChangePassword"
-	AuthService_ForgotPassword_FullMethodName     = "/auth.AuthService/ForgotPassword"
-	AuthService_AddEmail_FullMethodName           = "/auth.AuthService/AddEmail"
-	AuthService_RemoveEmail_FullMethodName        = "/auth.AuthService/RemoveEmail"
-	AuthService_ResendVerification_FullMethodName = "/auth.AuthService/ResendVerification"
-	AuthService_VerifyCode_FullMethodName         = "/auth.AuthService/VerifyCode"
-	AuthService_Toggle2Fa_FullMethodName          = "/auth.AuthService/Toggle2Fa"
-	AuthService_GetProfile_FullMethodName         = "/auth.AuthService/GetProfile"
-	AuthService_UpdateProfile_FullMethodName      = "/auth.AuthService/UpdateProfile"
+	AuthService_Register_FullMethodName       = "/auth.AuthService/Register"
+	AuthService_Login_FullMethodName          = "/auth.AuthService/Login"
+	AuthService_Logout_FullMethodName         = "/auth.AuthService/Logout"
+	AuthService_RefreshToken_FullMethodName   = "/auth.AuthService/RefreshToken"
+	AuthService_ChangePassword_FullMethodName = "/auth.AuthService/ChangePassword"
+	AuthService_ForgotPassword_FullMethodName = "/auth.AuthService/ForgotPassword"
+	AuthService_AddEmail_FullMethodName       = "/auth.AuthService/AddEmail"
+	AuthService_RemoveEmail_FullMethodName    = "/auth.AuthService/RemoveEmail"
+	AuthService_ResendOTP_FullMethodName      = "/auth.AuthService/ResendOTP"
+	AuthService_Toggle2Fa_FullMethodName      = "/auth.AuthService/Toggle2Fa"
+	AuthService_GetProfile_FullMethodName     = "/auth.AuthService/GetProfile"
+	AuthService_UpdateProfile_FullMethodName  = "/auth.AuthService/UpdateProfile"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -39,15 +38,14 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
-	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	Logout(ctx context.Context, in *LogoutRequest, opts ...grpc.CallOption) (*LogoutResponse, error)
-	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*AuthResponse, error)
+	RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
 	ForgotPassword(ctx context.Context, in *ForgotPasswordRequest, opts ...grpc.CallOption) (*ForgotPasswordResponse, error)
 	AddEmail(ctx context.Context, in *AddEmailRequest, opts ...grpc.CallOption) (*AddEmailResponse, error)
 	RemoveEmail(ctx context.Context, in *RemoveEmailRequest, opts ...grpc.CallOption) (*RemoveEmailResponse, error)
-	ResendVerification(ctx context.Context, in *ResendVerificationRequest, opts ...grpc.CallOption) (*ResendVerificationResponse, error)
-	VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts ...grpc.CallOption) (*VerifyCodeResponse, error)
+	ResendOTP(ctx context.Context, in *ResendOTPRequest, opts ...grpc.CallOption) (*ResendOTPResponse, error)
 	Toggle2Fa(ctx context.Context, in *Toggle2FaRequest, opts ...grpc.CallOption) (*Toggle2FaResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
 	UpdateProfile(ctx context.Context, in *UpdateProfileRequest, opts ...grpc.CallOption) (*UpdateProfileResponse, error)
@@ -71,9 +69,9 @@ func (c *authServiceClient) Register(ctx context.Context, in *RegisterRequest, o
 	return out, nil
 }
 
-func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+func (c *authServiceClient) Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthResponse)
+	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, AuthService_Login_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -91,9 +89,9 @@ func (c *authServiceClient) Logout(ctx context.Context, in *LogoutRequest, opts 
 	return out, nil
 }
 
-func (c *authServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*AuthResponse, error) {
+func (c *authServiceClient) RefreshToken(ctx context.Context, in *RefreshTokenRequest, opts ...grpc.CallOption) (*RefreshTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(AuthResponse)
+	out := new(RefreshTokenResponse)
 	err := c.cc.Invoke(ctx, AuthService_RefreshToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -141,20 +139,10 @@ func (c *authServiceClient) RemoveEmail(ctx context.Context, in *RemoveEmailRequ
 	return out, nil
 }
 
-func (c *authServiceClient) ResendVerification(ctx context.Context, in *ResendVerificationRequest, opts ...grpc.CallOption) (*ResendVerificationResponse, error) {
+func (c *authServiceClient) ResendOTP(ctx context.Context, in *ResendOTPRequest, opts ...grpc.CallOption) (*ResendOTPResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ResendVerificationResponse)
-	err := c.cc.Invoke(ctx, AuthService_ResendVerification_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) VerifyCode(ctx context.Context, in *VerifyCodeRequest, opts ...grpc.CallOption) (*VerifyCodeResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(VerifyCodeResponse)
-	err := c.cc.Invoke(ctx, AuthService_VerifyCode_FullMethodName, in, out, cOpts...)
+	out := new(ResendOTPResponse)
+	err := c.cc.Invoke(ctx, AuthService_ResendOTP_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -196,15 +184,14 @@ func (c *authServiceClient) UpdateProfile(ctx context.Context, in *UpdateProfile
 // for forward compatibility.
 type AuthServiceServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
-	Login(context.Context, *LoginRequest) (*AuthResponse, error)
+	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	Logout(context.Context, *LogoutRequest) (*LogoutResponse, error)
-	RefreshToken(context.Context, *RefreshTokenRequest) (*AuthResponse, error)
+	RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
 	ForgotPassword(context.Context, *ForgotPasswordRequest) (*ForgotPasswordResponse, error)
 	AddEmail(context.Context, *AddEmailRequest) (*AddEmailResponse, error)
 	RemoveEmail(context.Context, *RemoveEmailRequest) (*RemoveEmailResponse, error)
-	ResendVerification(context.Context, *ResendVerificationRequest) (*ResendVerificationResponse, error)
-	VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error)
+	ResendOTP(context.Context, *ResendOTPRequest) (*ResendOTPResponse, error)
 	Toggle2Fa(context.Context, *Toggle2FaRequest) (*Toggle2FaResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
 	UpdateProfile(context.Context, *UpdateProfileRequest) (*UpdateProfileResponse, error)
@@ -221,13 +208,13 @@ type UnimplementedAuthServiceServer struct{}
 func (UnimplementedAuthServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
 }
-func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*AuthResponse, error) {
+func (UnimplementedAuthServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAuthServiceServer) Logout(context.Context, *LogoutRequest) (*LogoutResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
-func (UnimplementedAuthServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*AuthResponse, error) {
+func (UnimplementedAuthServiceServer) RefreshToken(context.Context, *RefreshTokenRequest) (*RefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshToken not implemented")
 }
 func (UnimplementedAuthServiceServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
@@ -242,11 +229,8 @@ func (UnimplementedAuthServiceServer) AddEmail(context.Context, *AddEmailRequest
 func (UnimplementedAuthServiceServer) RemoveEmail(context.Context, *RemoveEmailRequest) (*RemoveEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveEmail not implemented")
 }
-func (UnimplementedAuthServiceServer) ResendVerification(context.Context, *ResendVerificationRequest) (*ResendVerificationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ResendVerification not implemented")
-}
-func (UnimplementedAuthServiceServer) VerifyCode(context.Context, *VerifyCodeRequest) (*VerifyCodeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method VerifyCode not implemented")
+func (UnimplementedAuthServiceServer) ResendOTP(context.Context, *ResendOTPRequest) (*ResendOTPResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResendOTP not implemented")
 }
 func (UnimplementedAuthServiceServer) Toggle2Fa(context.Context, *Toggle2FaRequest) (*Toggle2FaResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Toggle2Fa not implemented")
@@ -422,38 +406,20 @@ func _AuthService_RemoveEmail_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_ResendVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ResendVerificationRequest)
+func _AuthService_ResendOTP_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResendOTPRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).ResendVerification(ctx, in)
+		return srv.(AuthServiceServer).ResendOTP(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_ResendVerification_FullMethodName,
+		FullMethod: AuthService_ResendOTP_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).ResendVerification(ctx, req.(*ResendVerificationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_VerifyCode_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(VerifyCodeRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).VerifyCode(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_VerifyCode_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).VerifyCode(ctx, req.(*VerifyCodeRequest))
+		return srv.(AuthServiceServer).ResendOTP(ctx, req.(*ResendOTPRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -552,12 +518,8 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _AuthService_RemoveEmail_Handler,
 		},
 		{
-			MethodName: "ResendVerification",
-			Handler:    _AuthService_ResendVerification_Handler,
-		},
-		{
-			MethodName: "VerifyCode",
-			Handler:    _AuthService_VerifyCode_Handler,
+			MethodName: "ResendOTP",
+			Handler:    _AuthService_ResendOTP_Handler,
 		},
 		{
 			MethodName: "Toggle2Fa",
